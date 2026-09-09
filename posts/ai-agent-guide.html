@@ -49,19 +49,23 @@
       </ol>
 
       <h2><span class="step">1</span>用云端 API：先让它回一句话</h2>
-      <p>选一家模型服务注册（GPT / Claude / DeepSeek 等），创建一个 API Key，存进环境变量：</p>
+      <p>选一家<b>国内能直接访问</b>的模型服务（DeepSeek、通义千问、智谱 GLM、Kimi 等都行，大多是 OpenAI 兼容接口）。本文以 <b>DeepSeek</b> 为例。先创建 API Key 并存进环境变量：</p>
       <pre><code># PowerShell
-$env:OPENAI_API_KEY = "sk-你的key"
+$env:DEEPSEEK_API_KEY = "sk-你的key"
 
 # macOS / Linux / Git Bash
-export OPENAI_API_KEY="sk-你的key"</code></pre>
+export DEEPSEEK_API_KEY="sk-你的key"</code></pre>
       <p>新建 <code>hello.py</code>，粘贴并运行 <code>python hello.py</code>：</p>
       <pre><code>from openai import OpenAI
+import os
 
-client = OpenAI()  # 自动读环境变量里的 key
+client = OpenAI(
+    base_url="https://api.deepseek.com",   # OpenAI 兼容，国内可直接访问
+    api_key=os.environ["DEEPSEEK_API_KEY"],
+)
 
 resp = client.chat.completions.create(
-    model="gpt-4o-mini",   # 换成你服务商支持的模型名
+    model="deepseek-chat",
     messages=[
         {"role": "system", "content": "你是个只说结论的技术助手"},
         {"role": "user", "content": "解释什么是 Agent，50 字以内"},
@@ -94,8 +98,12 @@ print(resp.choices[0].message.content)</code></pre>
       <p>给模型一个计算器工具，遇到数学题它会自己决定调用，而不是瞎算。新建 <code>agent.py</code>：</p>
       <pre><code>import json
 from openai import OpenAI
+import os
 
-client = OpenAI()
+client = OpenAI(
+    base_url="https://api.deepseek.com",
+    api_key=os.environ["DEEPSEEK_API_KEY"],
+)
 
 def calc(expr):
     return str(eval(expr))   # 演示用；正式项目用安全计算库
@@ -119,7 +127,7 @@ messages = [{"role": "user", "content": "123*456 等于多少？顺便告诉我 
 
 for _ in range(5):                      # 最多循环 5 轮，防止死循环
     resp = client.chat.completions.create(
-        model="gpt-4o-mini", messages=messages, tools=tools
+        model="deepseek-chat", messages=messages, tools=tools
     )
     msg = resp.choices[0].message
     messages.append(msg)
@@ -143,8 +151,12 @@ for _ in range(5):                      # 最多循环 5 轮，防止死循环
       <p>想让模型回答你自己的文档，做法：切片 → 转向量 → 检索 → 拼进 Prompt。用最朴素的实现：</p>
       <pre><code>import numpy as np
 from openai import OpenAI
+import os
 
-client = OpenAI()
+client = OpenAI(
+    base_url="https://api.deepseek.com",
+    api_key=os.environ["DEEPSEEK_API_KEY"],
+)
 
 docs = [
     "redwenzi 是数据科学专业的学生",
@@ -153,7 +165,8 @@ docs = [
 ]
 
 def emb(texts):
-    r = client.embeddings.create(model="text-embedding-3-small", input=texts)
+    # DeepSeek 暂不提供 embedding；改用支持 embedding 的国内服务或本地模型
+    r = client.embeddings.create(model="你服务商的-embedding-模型", input=texts)
     return [x.embedding for x in r.data]
 
 doc_vecs = np.array(emb(docs))
@@ -162,7 +175,7 @@ scores = doc_vecs @ q_vec                 # 余弦相似度（未归一化也可
 top = docs[int(np.argmax(scores))]
 
 prompt = f"只根据下面资料回答：\n资料：{top}\n问题：redwenzi 学什么专业？"
-ans = client.chat.completions.create(model="gpt-4o-mini",
+ans = client.chat.completions.create(model="deepseek-chat",
                                      messages=[{"role": "user", "content": prompt}])
 print(ans.choices[0].message.content)</code></pre>
       <p>资料多了以后，把向量存进向量库（Chroma / pgvector 等），检索取 TopK 即可。</p>
