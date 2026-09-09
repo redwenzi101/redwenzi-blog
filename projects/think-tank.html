@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Think Tank 智库平台 · 项目介绍 · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:760px; margin:0 auto; padding:0 24px; }
+    header { padding:64px 0 32px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:14px; font-size:clamp(28px,5vw,38px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:12px; }
+    article { background:var(--surface); border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:20px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:12px 0; color:#3d4552; }
+    ul { margin:10px 0 12px 22px; }
+    li { margin:6px 0; }
+    .lock { background:#fff7ed; border:1px solid #fed7aa; border-radius:14px; padding:14px 18px; margin:20px 0; color:#7c2d12; }
+    .chip { display:inline-block; background:var(--surface); border:1px solid var(--line); border-radius:980px; padding:6px 14px; font-size:13px; margin:4px 6px 0 0; box-shadow:var(--shadow); }
+    .btn { display:inline-block; margin-top:18px; background:var(--accent); color:#fff; padding:11px 24px; border-radius:980px; font-size:15px; }
+    .btn:hover { opacity:.9; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 20px} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="../index.html">← 返回主页</a>
+      <h1>Think Tank · 智库平台</h1>
+      <div class="meta">red wenzi · 2026-09-10 · 项目</div>
+    </header>
+
+    <article>
+      <div class="lock">🔒 本项目的代码暂不公开（高校/团队项目），此处仅作项目介绍。如有合作或交流意向，欢迎联系我。</div>
+
+      <p>Think Tank 是一个面向高校院系的智库平台，用来做<b>资讯发布、知识库管理、用户评论与讨论</b>，让院系里的好内容能沉淀下来、被更多人看到。</p>
+
+      <h2>核心功能</h2>
+      <ul>
+        <li>资讯发布：管理员发布行业资讯与研究成果</li>
+        <li>知识库：结构化整理，方便检索与学习</li>
+        <li>用户系统：注册、登录与评论讨论</li>
+        <li>权限管理：管理员可审核与管理内容</li>
+      </ul>
+
+      <h2>技术栈</h2>
+      <div style="margin-top:8px">
+        <span class="chip">Next.js 14 (App Router)</span>
+        <span class="chip">Tailwind CSS</span>
+        <span class="chip">MongoDB / Mongoose</span>
+        <span class="chip">NextAuth.js</span>
+        <span class="chip">Vercel</span>
+      </div>
+
+      <h2>我在其中做的事</h2>
+      <p>负责平台整体规划与关键模块实现，包括图片上传/访问/删除的统一接口设计，以及前后端联调、部署环境配置。这算是我第一个从规划到落地都比较完整的 Web 全栈项目。</p>
+
+      <p style="margin-top:22px">对这个项目或相关技术感兴趣？</p>
+      <a class="btn" href="../index.html#contact">联系我聊聊</a>
+    </article>
+
+    <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>
