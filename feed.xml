@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>red wenzi 的博客</title>
+  <subtitle>数据、AI、服务器与建站笔记</subtitle>
+  <link href="https://redwenzi-blog.pages.dev/"/>
+  <id>https://redwenzi-blog.pages.dev/</id>
+  <updated>2026-09-10T00:00:00Z</updated>
+  <author><name>red wenzi</name></author>
+
+  <entry>
+    <title>AI 是什么？它能做什么？</title>
+    <link href="https://redwenzi-blog.pages.dev/posts/what-is-ai.html"/>
+    <id>https://redwenzi-blog.pages.dev/posts/what-is-ai.html</id>
+    <updated>2026-09-10T00:00:00Z</updated>
+    <summary>从“会判断”到“会生成”，五大类能力、真实例子和边界，零基础也看得懂。</summary>
+  </entry>
+  <entry>
+    <title>用 AI 的几种方式：App / 命令行 / API / 中转站</title>
+    <link href="https://redwenzi-blog.pages.dev/posts/ways-to-use-ai.html"/>
+    <id>https://redwenzi-blog.pages.dev/posts/ways-to-use-ai.html</id>
+    <updated>2026-09-10T00:00:00Z</updated>
+    <summary>官方网页、第三方客户端、终端、代码调 API、中转站和本地模型，怎么接一次讲清。</summary>
+  </entry>
+  <entry>
+    <title>AI Agent 上手实操：从调 API 到最小 Agent</title>
+    <link href="https://redwenzi-blog.pages.dev/posts/ai-agent-guide.html"/>
+    <id>https://redwenzi-blog.pages.dev/posts/ai-agent-guide.html</id>
+    <updated>2026-09-10T00:00:00Z</updated>
+    <summary>跟着代码跑：云端调用 → 本地模型 → 最小 Agent → RAG → 部署。</summary>
+  </entry>
+  <entry>
+    <title>网站、网址、域名、服务器：一次讲清楚</title>
+    <link href="https://redwenzi-blog.pages.dev/posts/web-domain-server-guide.html"/>
+    <id>https://redwenzi-blog.pages.dev/posts/web-domain-server-guide.html</id>
+    <updated>2026-09-10T00:00:00Z</updated>
+    <summary>服务器、网站、域名、网址到底是什么；个人还能拿它们做网盘、机器人、API 等。</summary>
+  </entry>
+  <entry>
+    <title>博客搭建指南：从域名到上线</title>
+    <link href="https://redwenzi-blog.pages.dev/posts/build-blog-guide.html"/>
+    <id>https://redwenzi-blog.pages.dev/posts/build-blog-guide.html</id>
+    <updated>2026-09-10T00:00:00Z</updated>
+    <summary>域名、服务器、备案、HTTPS 逐步操作，看完能搭出自己的博客。</summary>
+  </entry>
+</feed>

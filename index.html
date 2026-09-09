@@ -102,6 +102,7 @@
     @media (prefers-reduced-motion:reduce) { * { animation:none !important; transition:none !important; } .reveal { opacity:1; transform:none; } }
     @media (max-width:640px){ header{padding:80px 0 56px} nav ul{gap:16px} }
   </style>
+  <link rel="stylesheet" href="assets/theme.css">
 </head>
 <body>
   <div class="blobs"><div class="blob b1" data-parallax></div><div class="blob b2" data-parallax></div><div class="blob b3" data-parallax></div></div>
@@ -116,6 +117,7 @@
         <li><a href="#projects">项目</a></li>
         <li><a href="#blog">博客</a></li>
         <li><a href="knowledge/index.html">知识</a></li>
+        <li><a href="tags/index.html">标签</a></li>
         <li><a href="#contact">联系</a></li>
       </ul>
     </div>
@@ -138,8 +140,8 @@
         <div class="rule"></div>
       </div>
       <div class="strip">
-        <div class="stat reveal"><div class="num">🎓</div><div class="lab">某 985 高校 · 数据科学在读</div></div>
-        <div class="stat reveal"><div class="num">📍</div><div class="lab">现居国内</div></div>
+        <div class="stat reveal"><div class="num">🎓</div><div class="lab">山东大学 · 数据科学</div></div>
+        <div class="stat reveal"><div class="num">📍</div><div class="lab">现居济南</div></div>
         <div class="stat reveal"><div class="num">⚡</div><div class="lab">「你跑不过我信不信」</div></div>
         <div class="stat reveal"><div class="num">✨</div><div class="lab">保持热爱，持续折腾</div></div>
       </div>
@@ -313,9 +315,11 @@
     <div class="wrap">
       <p>✨ 保持热爱，持续折腾 · <span class="heart">♥</span> red wenzi © 2026</p>
       <p style="margin-top:8px">浙ICP备00000000号-1（备案通过后替换）</p>
+      <p style="margin-top:8px"><a href="feed.xml">📡 RSS 订阅</a> · <a href="tags/index.html">标签归档</a></p>
     </div>
   </footer>
 
+  <script src="assets/interact.js"></script>
   <script>
     // typing
     const lines=["Data Alchemist · Code Artisan","让数据「说话」","「你跑不过我信不信」"];
