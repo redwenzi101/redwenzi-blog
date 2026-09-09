@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 是什么？它能做什么？· red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:800px; margin:0 auto; padding:0 24px; }
+    header { padding:60px 0 28px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(28px,5vw,38px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:var(--surface); border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:38px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ul,ol { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    .chips { display:flex; flex-wrap:wrap; gap:10px; margin:12px 0; }
+    .chip { background:#f6f8fa; border:1px solid var(--line); border-radius:980px; padding:6px 14px; font-size:14px; color:var(--text); }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} }
+  </style>
+  <link rel="stylesheet" href="../assets/article.css">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="../index.html">← 返回主页</a>
+      <h1>AI 是什么？它能做什么？</h1>
+      <div class="meta">red wenzi · 2026-09-10 · AI · 入门第一讲</div>
+    </header>
+
+    <article>
+      <div class="tip">这是 AI 主题的第一篇，帮你把“AI”这个词拆开看清楚：它到底是什么、现在到底能帮你做什么、又有什么坑。看完这篇，顺着「用 AI 的几种方式」→「AI Agent 上手实操」往下走，会非常顺。</div>
+      <div class="tip">🎯 <b>你会学到：</b>AI 的两种形态（判断型 / 生成型）、大模型为什么能“写”、五大类能力与真实例子、怎么从“用 App”升级到“做自动化”，以及它的边界。零基础也能懂。</div>
+
+      <h2>一、AI 是什么：从“会判断”到“会生成”</h2>
+      <p>这两年你听到的大部分“AI”，其实分两个阶段。</p>
+      <p><b>第一个阶段是“会判断”</b>。机器能识别一张图里是不是猫、能判断一封邮件是不是垃圾邮件、能预测明天会不会下雨。它的核心是<b>从数据里找规律</b>：你喂给它很多“猫的照片 + 是猫”的样本，它就学会了“看到什么特征 → 判断成什么”。这类我们常叫<b>机器学习</b>，它擅长的是<b>分类和预测</b>。</p>
+      <p><b>第二个阶段是“会生成”</b>。它不只是判断，而是能<b>照着你的话“创造”出新东西</b>——一段文字、一张图、一段代码、一首歌、一段视频。ChatGPT、DeepSeek、通义千问、豆包、Kimi 都属于这类，统称<b>生成式 AI / 大语言模型</b>。</p>
+      <p>那它凭什么会“写话”？通俗讲：大模型在训练时看了海量的文章、代码、书籍，学到的是“<b>在某个上下文里，下一个词最可能是什么</b>”。所以它其实是一个超级厉害的“接着往下写”的预测机器——你给它“今天天气很”，它能根据规律续上“好”。平时你觉得它“懂你”，本质是它把这种概率续写做得足够细腻。</p>
+      <div class="tip">一句话记忆：<b>大模型 = 看过海量资料、会顺着你的话往下猜的预测机器</b>。它很会“模仿人类说话”，但它不是真的在“思考”。</div>
+
+      <h2>二、它能做什么：五大类，附真实例子</h2>
+      <div class="chips">
+        <span class="chip">文字</span>
+        <span class="chip">代码</span>
+        <span class="chip">图片</span>
+        <span class="chip">语音</span>
+        <span class="chip">数据与分析</span>
+        <span class="chip">自动化 / Agent</span>
+      </div>
+      <h3>文字：最常见的用途</h3>
+      <ul>
+        <li>问答：不懂就问，它用大白话解释。</li>
+        <li>写作：写文案、周报、总结、润色、翻译、改写。</li>
+        <li>例子：把一堆会议记录让它“整理成 5 条要点的周报”，几秒钟就出来。</li>
+      </ul>
+      <h3>代码：程序员的好帮手</h3>
+      <ul>
+        <li>写函数、改 bug、解释一段代码、生成注释和测试用例。</li>
+        <li>例子：把“我有一段 Python，冒号老写错”扔给它，它能指出并改好。</li>
+      </ul>
+      <h3>图片：看得见的生成</h3>
+      <ul>
+        <li>文生图、风格迁移、抠图、修图、做配图灵感。</li>
+        <li>例子：输入“一只戴墨镜的柴犬，插画风”，就能得到一张图。</li>
+      </ul>
+      <h3>语音：让电脑“听”和“说”</h3>
+      <ul>
+        <li>语音转文字、文字转语音、会议纪要。</li>
+        <li>例子：把一段录音转成文字，再自动总结成议程。</li>
+      </ul>
+      <h3>数据与分析：和我的专业最搭</h3>
+      <ul>
+        <li>把一段 CSV / 表格变成结论，甚至生成画图、分析的代码。</li>
+        <li>例子：“这是销售数据，帮我找出哪个月增长最快，并画成柱状图的代码。”</li>
+      </ul>
+      <h3>自动化 / Agent：从“会聊天”到“会干活”</h3>
+      <ul>
+        <li>不只“你问我答”，而是让它<b>自己规划步骤、调用工具、反复尝试</b>完成目标。</li>
+        <li>例子：“帮我每天从某网站抓数据，整理进表格，有新数据提醒我”——这就是 Agent 的方向。</li>
+      </ul>
+
+      <h2>三、一个真实小例子：让 AI 帮你写周报</h2>
+      <p>假设你今天很忙，只有一堆零散随手记。你可以直接对 App 说：</p>
+      <p style="color:#3d4552;background:#f6f8fa;border-radius:10px;padding:12px 16px">“我今天的记录：上午开会定了三个需求、下午改了登录页 bug、晚上优化了一个数据库查询。请帮我整理成结构化的周报，用词正式一点，发给领导。”</p>
+      <p>它会先帮你归类，再补上小标题、成果、下一步，最后还可能提醒你“记得补充 XX 待办”。这就是典型“把杂事变成成果”的用法——你不用会写，但要会<b>说清需求</b>。</p>
+
+      <h2>四、怎么从“会用”到“能自动化”</h2>
+      <p>对个人来说，用 AI 大概有四层，刚好对应后面的文章：</p>
+      <ol>
+        <li><b>直接用 App</b>：手机上装 DeepSeek / 通义 / 豆包，会打字就能用。——见 <a href="ways-to-use-ai.html">《用 AI 的几种方式》</a></li>
+        <li><b>接 API</b>：把它接进自己的程序、网站、工具里。</li>
+        <li><b>本地部署</b>：用 Ollama 在自己电脑跑开源模型，数据不出门。</li>
+        <li><b>做 Agent</b>：给工具、给目标，让它自动执行任务。——见 <a href="ai-agent-guide.html">《AI Agent 上手实操》</a></li>
+      </ol>
+      <div class="warn">🇨🇳 国内使用：优先选 DeepSeek、通义千问、智谱 GLM、Kimi 等<b>国内可直接访问</b>的服务，或本地开源模型；OpenAI / Claude 官方在大陆需要代理，一般不是首选。</div>
+
+      <h2>五、它的边界：这些别指望</h2>
+      <ul>
+        <li><b>会“一本正经地胡说”</b>：可能编造不存在的资料，这叫<b>幻觉</b>。重要事实、数据、引用一定要自己核实。</li>
+        <li><b>没有长期记忆</b>：它只“看得到”这次对话窗口里的内容，不记得你上次聊了什么。</li>
+        <li><b>数学/代码不一定对</b>：复杂计算、高风险业务（法律、医疗、金融）要人工复核。</li>
+        <li><b>钱和隐私</b>：云端对话会发到厂商、按 Token 计费；敏感信息别乱发，重要资料用本地模型。</li>
+        <li><b>不是决策者</b>：它更像“很会接话的助手”，最终判断和决定得你自己定。</li>
+      </ul>
+
+      <h2>六、怎么判断一个 AI 工具值不值得用</h2>
+      <ul>
+        <li>看它<b>国内能不能直接访问</b>：网页/App 打开顺不顺，注册要不要外币。</li>
+        <li>看<b>回答质量</b>：用同一道问题对比几家，选更少“胡说”的。</li>
+        <li>看<b>成本</b>：免费额度够不够，按量计费贵不贵，会不会超支。</li>
+        <li>看<b>隐私</b>：要不要上传敏感资料；能本地模型就别用云端。</li>
+        <li>看<b>更新</b>：更新越勤、社区越大，越靠谱。</li>
+      </ul>
+
+      <h2>七、下一步看哪篇</h2>
+      <p>这条 AI 学习线，建议按顺序：</p>
+      <ol>
+        <li><a href="ways-to-use-ai.html">用 AI 的几种方式</a> —— 有哪些入口，怎么接 API / Token / 中转站</li>
+        <li><a href="ai-agent-guide.html">AI Agent 上手实操</a> —— 跟着代码把“会聊天”升级成“会干活”</li>
+        <li>遇到新词就查 <a href="../knowledge/index.html">知识大全</a>，概念都集中在那。</li>
+      </ol>
+
+      <div class="tip">
+        <b>📚 本文概念都在知识大全：</b>
+        <p style="margin-top:6px"><a href="../knowledge/index.html#llm">LLM</a> · <a href="../knowledge/index.html#token">Token</a> · <a href="../knowledge/index.html#api">API</a> · <a href="../knowledge/index.html#context">上下文窗口</a> · <a href="../knowledge/index.html#agent">Agent</a> · <a href="../knowledge/index.html#ollama">本地部署</a></p>
+      </div>
+    </article>
+
+    <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+  <script src="../assets/article.js"></script>
+</body>
+</html>

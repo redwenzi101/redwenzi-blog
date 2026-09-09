@@ -43,6 +43,7 @@
 
     <article>
       <div class="tip">本文讲“有哪几条路能用上 AI、每条怎么接”。概念（API / Token / 模型等）见📚知识大全。</div>
+      <div class="tip">🎯 <b>你会学到：</b>AI 的 5 种上手方式、API 和 Token 怎么用、官方 API / 中转站 / 本地模型怎么选。适合刚接触 AI、想动手用起来的人。</div>
       <div class="warn">🇨🇳 大陆使用提示：优先选<b>国内能直接访问</b>的服务——DeepSeek、通义千问、智谱 GLM、Kimi 等（App 或 API 都能用），或本地模型 / 中转站；OpenAI、Claude 官方在大陆需要代理，通常不是首选。静态托管若选 pages.dev / vercel.app，国内访问可能偏慢。</div>
 
       <h2>先看总表：五条路</h2>
@@ -85,12 +86,21 @@ aichat "用一句话解释什么是 API"</code></pre>
       <p>命令行工具通常会读环境变量；要连本地模型就把它指向 Ollama 的地址（见下文方式⑤）。</p>
 
       <h2>方式 ④ 代码 / API（把 AI 接进自己的程序）</h2>
+      <p>先装库，并把 Key 放进环境变量（以 DeepSeek 为例）：</p>
       <pre><code>pip install openai</code></pre>
+      <pre><code># PowerShell
+$env:DEEPSEEK_API_KEY = "sk-你的key"
+# macOS / Linux / Git Bash
+export DEEPSEEK_API_KEY="sk-你的key"</code></pre>
       <pre><code>from openai import OpenAI
+import os
 
-client = OpenAI()  # 读环境变量 OPENAI_API_KEY
+client = OpenAI(
+    base_url="https://api.deepseek.com",   # 国内可直接访问；想换别家就改这里
+    api_key=os.environ["DEEPSEEK_API_KEY"],
+)
 resp = client.chat.completions.create(
-    model="gpt-4o-mini",
+    model="deepseek-chat",
     messages=[{"role": "user", "content": "你好"}],
 )
 print(resp.choices[0].message.content)</code></pre>
@@ -125,7 +135,8 @@ print(resp.choices[0].message.content)</code></pre>
         <b>📚 本文概念都在知识大全：</b>
         <p style="margin-top:6px"><a href="../knowledge/index.html#llm">LLM</a> · <a href="../knowledge/index.html#token">Token</a> · <a href="../knowledge/index.html#api">API</a> · <a href="../knowledge/index.html#openai-compat">OpenAI 兼容 API</a> · <a href="../knowledge/index.html#ollama">Ollama</a> · <a href="../knowledge/index.html#vllm">vLLM</a></p>
       </div>
-  </article>
+      <div class="tip">➡️ <b>下一篇（AI 线第 3 讲）：</b><a href="ai-agent-guide.html">AI Agent 上手实操：从调 API 到最小 Agent</a> —— 学会调用之后，把它升级成“会干活”的 Agent。</div>
+    </article>
 
   <script src="../assets/article.js"></script>
   <footer>
