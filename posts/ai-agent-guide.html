@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Agent 入门指南：Agent、API 与 Token · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:760px; margin:0 auto; padding:0 24px; }
+    header { padding:64px 0 32px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:14px; font-size:clamp(28px,5vw,38px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:12px; }
+    article { background:var(--surface); border:1px solid var(--line); border-radius:22px; padding:36px 34px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:38px 0 14px; font-size:24px; font-weight:700; letter-spacing:-.01em; }
+    h3 { margin:24px 0 8px; font-size:19px; font-weight:600; }
+    p { margin:12px 0; color:#3d4552; }
+    ul,ol { margin:12px 0 12px 22px; }
+    li { margin:6px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:16px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:14px 18px; margin:18px 0; color:#25324a; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:26px 20px} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="../index.html">← 返回主页</a>
+      <h1>AI Agent 入门指南：Agent、API 与 Token 到底是什么</h1>
+      <div class="meta">red wenzi · 2026-09-10 · AI</div>
+    </header>
+
+    <article>
+      <p>这两年 AI 圈最常听到的词大概就是：大模型、API、Token、Agent、RAG、本地部署……听起来很多，其实是一条完整的链路。这篇我用大白话把它们串起来，并给一个从“会聊天”到“会干活”的最小上手路线。</p>
+
+      <h2>一、先分清这几个名词</h2>
+
+      <h3>LLM：大语言模型</h3>
+      <p>LLM（Large Language Model）就是 GPT 这类“能理解文字、能生成文字”的模型。它不会主动做事，只会“回答”你给它的输入。</p>
+
+      <h3>Token：模型的“字数”单位</h3>
+      <p>模型不是按“字”算，而是按 <b>Token</b> 算。Token 大概是半个到一两个汉字的长度。它的作用有两个：</p>
+      <ul>
+        <li><b>计费</b>：云端 API 按输入 + 输出 Token 收费</li>
+        <li><b>上下文窗口</b>：模型一次能“记住”的内容上限，也是 Token 数</li>
+      </ul>
+      <div class="tip">“我的上下文不够了” = 你塞进去的文本超过了模型的窗口长度，需要精简或加 RAG。</div>
+
+      <h3>API：让程序调用模型的大门</h3>
+      <p>API 就是“接口”。模型厂商把能力包装成一个网址 + 一套规则，你用 <b>API Key</b> 调用它，程序就能把文字发过去、拿回结果。国内常见的做法是接 OpenAI 兼容的 API（很多云服务都兼容这套格式），也可以自己在云服务器上部署一个兼容端点。</p>
+
+      <h3>Prompt：你给模型的“指令”</h3>
+      <p>你输入的文字就叫 Prompt。会写 Prompt（系统指令、角色、格式要求、示例）的人，能让同一个模型发挥完全不同的水平，这就是“Prompt 工程”。</p>
+
+      <h3>RAG：给模型装“外挂资料”</h3>
+      <p>RAG（检索增强生成）意思是：先把自己的文档切成片段、向量化存起来，用户提问时先检索相关片段，再连同问题一起交给模型。这样模型就能回答它“没学过”的你自己的资料。</p>
+
+      <h3>Agent：从“聊天”到“干活”</h3>
+      <p>普通聊天模型是“你问一句，它答一句”。<b>Agent（智能体）</b>则是一个能自己规划步骤、调用工具、反复试错完成目标的小程序。典型循环：</p>
+      <ol>
+        <li><b>理解任务</b>：把目标拆成步骤</li>
+        <li><b>选择工具</b>：调用搜索、查数据库、执行代码、读文件等</li>
+        <li><b>观察结果</b>：把工具返回的结果再看一遍</li>
+        <li><b>继续或结束</b>：直到任务完成</li>
+      </ol>
+      <p>让 Agent“会工具”的关键机制叫 <b>Function Calling（工具调用）</b>：模型不直接执行，而是输出“我要调用某某函数、参数是什么”，由你的程序真正执行后把结果喂回去。</p>
+
+      <h2>二、怎么用起来：一条最小路线</h2>
+
+      <h3>第一步：拿一个 API Key</h3>
+      <p>选一家提供 LLM API 的服务（官方或国内合规云），注册后创建 Key，充值少量额度。把 Key 放进环境变量，别写进代码、别提交到 Git。</p>
+      <pre><code>export OPENAI_API_KEY="sk-你的key"</code></pre>
+
+      <h3>第二步：写第一段调用</h3>
+      <pre><code>from openai import OpenAI
+
+client = OpenAI()  # 默认读取 OPENAI_API_KEY
+
+resp = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "system", "content": "你是一个擅长讲人话的技术老师"},
+        {"role": "user", "content": "用一句话解释什么是 Agent"},
+    ],
+)
+print(resp.choices[0].message.content)</code></pre>
+      <p>换成本地模型也很简单：本地部署（比如 Ollama）会暴露一个 OpenAI 兼容端点，把 <code>base_url</code> 指过去、Key 随便填即可。</p>
+      <pre><code>client = OpenAI(
+    base_url="http://localhost:11434/v1",  # Ollama 的兼容端点
+    api_key="ollama",
+)</code></pre>
+
+      <h3>第三步：把它变成一个最小 Agent</h3>
+      <p>给模型注册一个“计算器工具”，让它遇到数学问题时自己决定调用：</p>
+      <pre><code>def calc(expr: str) -> str:
+    return str(eval(expr))
+
+# 告诉模型有这个工具（tools 声明），模型输出 function_call 后，
+# 由程序执行 calc 并把结果作为 tool 消息返回，再让模型总结。
+# 这就是 Agent + Function Calling 的最小形态。</code></pre>
+      <p>把“工具列表”换成搜索、数据库查询、写文件、发消息，再套一层任务循环，就逐步接近真正的 Agent 了。</p>
+
+      <h2>三、什么时候考虑本地部署</h2>
+      <ul>
+        <li><b>数据敏感</b>：不想把内部数据送到云端</li>
+        <li><b>成本可控</b>：调用量很大时，本地跑可能更划算</li>
+        <li><b>折腾与学习</b>：理解模型推理、显存、量化是怎么回事</li>
+      </ul>
+      <p>常见工具：<b>Ollama</b>（最简单，一行装好）、<b>vLLM</b>（高并发推理）、LM Studio（图形界面）。个人电脑先装 Ollama 跑 7B~14B 的小模型练手；有显卡和云服务器再上更大的模型和量化。</p>
+
+      <h2>四、给你的避坑清单</h2>
+      <ul>
+        <li>API Key 是“钱 + 权限”，别外泄，云端权限越小越好</li>
+        <li>Token 计费看“输入 + 输出”，塞一堆长文档前先算成本</li>
+        <li>Agent 不是越多工具越好，每多一个工具就多一类“翻车”可能</li>
+        <li>本地部署先看显存/内存，模型不是越大越好</li>
+        <li>把“人机回环”留好：关键操作让用户确认，别让 Agent 全自动改数据</li>
+      </ul>
+
+      <p>一句话总结：<b>LLM 是大脑，API 是门，Token 是邮费，RAG 是资料库，Agent 是把这一切组装起来替你干活的小员工。</b>想入门，就先从“调通一个 API”开始，再慢慢给它加工具、加资料、加流程。</p>
+    </article>
+
+    <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>
