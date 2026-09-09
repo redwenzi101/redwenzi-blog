@@ -7,11 +7,13 @@
 - `index.html`：博客主页（可本地预览，双击打开）
 - `posts/build-blog-guide.html`：《博客搭建指南：从域名到上线》文章页
 - `posts/ai-agent-guide.html`：《AI Agent 入门指南：Agent、API 与 Token》文章页
+- `posts/web-domain-server-guide.html`：《网站、网址、域名、服务器》科普文章页
 
 ## 文章
 
 - 博客搭建指南：从域名到上线 —— 域名解析 / 服务器 / 备案 / 安装 / HTTPS
 - AI Agent 入门指南 —— LLM / API / Token / RAG / Agent / 本地部署
+- 网站、网址、域名、服务器 —— 概念拆解 + 个人玩法大全
 
 ## 预览
 

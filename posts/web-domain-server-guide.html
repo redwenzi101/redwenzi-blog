@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>网站、网址、域名、服务器：一次讲清楚 · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:760px; margin:0 auto; padding:0 24px; }
+    header { padding:64px 0 32px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:14px; font-size:clamp(28px,5vw,38px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:12px; }
+    article { background:var(--surface); border:1px solid var(--line); border-radius:22px; padding:36px 34px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:38px 0 14px; font-size:24px; font-weight:700; letter-spacing:-.01em; }
+    h3 { margin:24px 0 8px; font-size:19px; font-weight:600; }
+    p { margin:12px 0; color:#3d4552; }
+    ul,ol { margin:12px 0 12px 22px; }
+    li { margin:6px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:16px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:14px 18px; margin:18px 0; color:#25324a; }
+    table { width:100%; border-collapse:collapse; margin:16px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:9px 12px; text-align:left; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:26px 20px} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="../index.html">← 返回主页</a>
+      <h1>网站、网址、域名、服务器：一次讲清楚</h1>
+      <div class="meta">red wenzi · 2026-09-10 · 科普</div>
+    </header>
+
+    <article>
+      <p>很多人分不清「网站、网址、域名、服务器」这几个词，其实它们关系很简单：<b>服务器是房子，网站是房子里的东西，域名是门牌号，网址是“怎么走到那个房间”的完整路径</b>。而且这些东西不只是用来做博客——个人能玩的花样比你想的多得多。</p>
+
+      <h2>一、四个词分别是什么</h2>
+
+      <h3>服务器</h3>
+      <p>一台<b>长期开机、有公网地址</b>的电脑。它负责“接客”：收到请求 → 处理 → 返回内容。它可以是云服务器（阿里云/腾讯云等），也可以是你家一台旧电脑（用内网穿透暴露出去）。</p>
+
+      <h3>网站</h3>
+      <p>运行在服务器上、能通过浏览器访问的内容，由 <b>HTML/CSS/JS（前端）</b>和可能的<b>后端程序 + 数据库</b>组成。博客只是网站的一种。</p>
+
+      <h3>域名</h3>
+      <p>服务器的 IP 是一串数字（如 <code>1.2.3.4</code>），人记不住，于是有了域名（如 <code>example.com</code>）。域名本身不存内容，靠 <b>DNS</b> 把名字翻译成 IP。</p>
+
+      <h3>网址（URL）</h3>
+      <p>访问某个具体资源时的完整地址，通常长这样：</p>
+      <pre><code>https://example.com/posts/guide.html
+└─协议─┘ └───域名────┘ └──路径──┘</code></pre>
+      <ul>
+        <li><b>协议</b>：怎么传输，常见 <code>http</code> / <code>https</code>（s 代表加密）</li>
+        <li><b>域名</b>：去哪台服务器</li>
+        <li><b>路径</b>：服务器上的哪个文件或接口</li>
+      </ul>
+
+      <h3>常用 DNS 记录</h3>
+      <table>
+        <tr><th>记录</th><th>作用</th><th>例子</th></tr>
+        <tr><td>A</td><td>域名指向 IPv4 地址</td><td>@ → 1.2.3.4</td></tr>
+        <tr><td>AAAA</td><td>域名指向 IPv6 地址</td><td>@ → ::1</td></tr>
+        <tr><td>CNAME</td><td>域名指向另一个域名</td><td>www → example.com</td></tr>
+        <tr><td>MX</td><td>邮件服务器</td><td>@ → mail.example.com</td></tr>
+        <tr><td>TXT</td><td>验证/SPF 等文本信息</td><td>v=spf1 ...</td></tr>
+      </table>
+
+      <h2>二、个人能拿它们做什么（不止博客）</h2>
+
+      <h3>1. 个人主页 / 作品集</h3>
+      <p>一个介绍你自己的网站：项目、技能、简历、联系方式。很多开发者都会做一个，不写文章也行。</p>
+
+      <h3>2. 自托管私人服务</h3>
+      <ul>
+        <li><b>私人网盘</b>：Nextcloud 等，自己的文件自己管</li>
+        <li><b>密码库</b>：Vaultwarden 自建密码管理</li>
+        <li><b>图床</b>：给文章/头像/截图提供稳定外链</li>
+        <li><b>笔记库</b>：部署自己的笔记应用</li>
+      </ul>
+
+      <h3>3. 自定义域名邮箱</h3>
+      <p>用 <code>you@example.com</code> 这样的邮箱收信，靠的就是 MX/TXT 记录。个人看起来专业，也好记。</p>
+
+      <h3>4. API、机器人与自动化</h3>
+      <p>服务器上跑定时任务、爬虫、Telegram/QQ 机器人，或者把自己写的模型/接口部署成一个 API 给别人调——这就是“把代码变成服务”。</p>
+
+      <h3>5. AI 与模型部署</h3>
+      <p>在带显卡的服务器上部署开源大模型，用 Ollama/vLLM 起一个 OpenAI 兼容端点，供自己或小范围使用。</p>
+
+      <h3>6. 游戏服务器 / 远程实验室</h3>
+      <p>和朋友联机开 Minecraft 服务器、搭开发测试环境，或者配 Tailscale/FRP 远程连回家里的电脑。</p>
+
+      <h2>三、那“不一定需要服务器”的场景呢？</h2>
+      <p>很多静态内容其实不用买服务器：GitHub Pages、Vercel/Netlify、对象存储 + CDN 都能托管。判断标准很简单：</p>
+      <ul>
+        <li>只是<b>展示</b>（静态页、作品集）→ 免费托管就行</li>
+        <li>需要<b>后端</b>（登录、数据库、机器人、跑程序）→ 才需要服务器</li>
+        <li>数据<b>隐私敏感</b> → 自托管更安心，但你要负责维护</li>
+      </ul>
+
+      <h2>四、给自己的提醒</h2>
+      <ul>
+        <li>域名和服务器是“租赁”关系，记得续费，别让域名/证书过期</li>
+        <li>大陆服务器对外提供服务要<b>备案</b>；海外服务器/免费托管则不用</li>
+        <li>暴露到公网的服务越少越安全：端口最小化、密码强一点、勤备份</li>
+        <li>先想清楚“我到底需要什么”，再决定买域名还是买服务器，能省不少钱</li>
+      </ul>
+
+      <p>总结：<b>网址帮你找到它，域名让你记住它，服务器让它活着，网站是你放在那的东西。</b>至于放博客还是网盘还是机器人，选择权在你。</p>
+    </article>
+
+    <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>
