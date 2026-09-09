@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>用 AI 的几种方式：App / 命令行 / API / 中转站 · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:820px; margin:0 auto; padding:0 24px; }
+    header { padding:60px 0 28px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(28px,5vw,38px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:var(--surface); border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="../index.html">← 返回主页</a>
+      <h1>用 AI 的几种方式：App / 命令行 / API / 中转站</h1>
+      <div class="meta">red wenzi · 2026-09-10 · AI · 操作教程</div>
+    </header>
+
+    <article>
+      <div class="tip">本文讲“有哪几条路能用上 AI、每条怎么接”。概念（API / Token / 模型等）见📚知识大全。</div>
+
+      <h2>先看总表：五条路</h2>
+      <table>
+        <tr><th>方式</th><th>典型工具</th><th>要准备什么</th><th>适合谁</th></tr>
+        <tr><td>① 官方网页 / App</td><td>ChatGPT、Claude、DeepSeek 官网/客户端</td><td>注册账号（可免费额度）</td><td>所有人，零门槛</td></tr>
+        <tr><td>② 第三方客户端</td><td>Chatbox、Cherry Studio、LM Studio</td><td>一个 API Key 或本地模型</td><td>想一个界面用多家模型</td></tr>
+        <tr><td>③ 命令行</td><td>aichat、各家 CLI、Ollama CLI</td><td>环境变量里的 Key</td><td>开发者 / 终端党</td></tr>
+        <tr><td>④ 代码 / API</td><td>Python + openai 库</td><td>Key + 接口地址</td><td>写程序、做自动化</td></tr>
+        <tr><td>⑤ 本地模型</td><td>Ollama、LM Studio、vLLM</td><td>一台有内存/显卡的电脑</td><td>要隐私、要免费、爱折腾</td></tr>
+      </table>
+
+      <h2>方式 ① 官方网页 / App（最省事）</h2>
+      <ol>
+        <li>打开官网（或手机应用商店）注册账号。</li>
+        <li>用免费额度直接聊；不够再订阅或按量充值。</li>
+        <li>重要数据、隐私内容先想清楚再发——网页对话会送到厂商服务器。</li>
+      </ol>
+
+      <h2>方式 ② 第三方客户端（一个界面用多家模型）</h2>
+      <p>Chatbox / Cherry Studio 这类桌面客户端支持“OpenAI 兼容接口”，等于把各家模型装进一个聊天窗。接法三步：</p>
+      <ol>
+        <li>先在厂商/中转站拿到 <b>接口地址(base_url) + API Key</b>。</li>
+        <li>客户端设置里新建“自定义服务”，填：接口地址、Key、默认模型名。</li>
+        <li>保存后像普通聊天软件一样用；模型名改一行就能切换。</li>
+      </ol>
+      <p>不想花钱就用 LM Studio：它能在本机跑模型，界面和客户端一样，不需要 Key。</p>
+
+      <h2>方式 ③ 命令行（终端里直接问）</h2>
+      <p>先存 Key，再装一个命令行客户端：</p>
+      <pre><code># PowerShell
+$env:OPENAI_API_KEY = "sk-你的key"
+# macOS / Linux / Git Bash
+export OPENAI_API_KEY="sk-你的key"</code></pre>
+      <pre><code># 安装 aichat（示例）
+curl -sSf https://raw.githubusercontent.com/sigoden/aichat/main/install.sh | sh
+
+# 在终端直接问
+aichat "用一句话解释什么是 API"</code></pre>
+      <p>命令行工具通常会读环境变量；要连本地模型就把它指向 Ollama 的地址（见下文方式⑤）。</p>
+
+      <h2>方式 ④ 代码 / API（把 AI 接进自己的程序）</h2>
+      <pre><code>pip install openai</code></pre>
+      <pre><code>from openai import OpenAI
+
+client = OpenAI()  # 读环境变量 OPENAI_API_KEY
+resp = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[{"role": "user", "content": "你好"}],
+)
+print(resp.choices[0].message.content)</code></pre>
+      <p>三个关键值：<b>base_url</b>（接口地址）、<b>api_key</b>（钥匙）、<b>model</b>（模型名）。它们决定你走哪条通道：</p>
+      <table>
+        <tr><th>通道</th><th>base_url</th><th>api_key</th><th>说明</th></tr>
+        <tr><td>官方 API</td><td>官方给的地址</td><td>官方控制台创建</td><td>最稳、最正规，直接对接模型厂商</td></tr>
+        <tr><td>中转站</td><td>中转站给的地址</td><td>中转站买的 Key</td><td>聚合多家模型 / 方便国内支付，但有风险</td></tr>
+        <tr><td>本地模型</td><td><code>http://localhost:11434/v1</code></td><td>随意填</td><td>免费、私密，吃自己电脑配置</td></tr>
+      </table>
+
+      <h2>Key、Token 和“中转站”到底怎么回事</h2>
+      <h3>官方 API</h3>
+      <p>在模型厂商官网注册 → 绑定支付方式 → 创建 API Key。计费按 Token：<b>费用 = 输入 Token 数 × 输入单价 + 输出 Token 数 × 输出单价</b>。长对话、长文档烧钱最快。</p>
+      <h3>中转站（API 转发/聚合）</h3>
+      <p>第三方把多家官方 API 聚合起来，给你一个统一的 OpenAI 兼容地址。对用户的好处：一个 Key 用多家模型、支付方便（常支持微信/支付宝）、国内访问更稳。接法就是把客户端/代码里的 base_url 换成中转站的地址。</p>
+      <div class="warn">⚠️ 中转站风险：可能跑路、吞余额、记录你的请求内容、甚至盗用 Key。规则：小额充值、只放“丢了也不心疼”的额度、别往里传隐私/机密；能走官方就走官方。</div>
+      <h3>本地模型</h3>
+      <p>免费、离线、数据不出门，代价是模型能力和速度受限于你的电脑。入门命令：<code>ollama run qwen2.5:3b</code>，然后它会给一个 <code>http://localhost:11434/v1</code> 的兼容地址，客户端和代码都能直接用。</p>
+
+      <h2>实操检查清单</h2>
+      <ul>
+        <li>网页用：账号密码就能上，先分清“免费额度”和“会员”。</li>
+        <li>客户端用：三样必填——base_url、api_key、model；填完先发一句“你好”测试。</li>
+        <li>命令行用：Key 放环境变量，别写进脚本再提交 Git。</li>
+        <li>程序用：把 Key 放环境变量 / 配置文件（.env），加进 .gitignore。</li>
+        <li>中转站用：小额试水 → 稳定再考虑；敏感数据一律不传。</li>
+        <li>Token 超支：给账号设额度上限，养成看用量习惯。</li>
+      </ul>
+
+      <div class="tip">
+        <b>📚 本文概念都在知识大全：</b>
+        <p style="margin-top:6px"><a href="../knowledge/index.html#llm">LLM</a> · <a href="../knowledge/index.html#token">Token</a> · <a href="../knowledge/index.html#api">API</a> · <a href="../knowledge/index.html#openai-compat">OpenAI 兼容 API</a> · <a href="../knowledge/index.html#ollama">Ollama</a> · <a href="../knowledge/index.html#vllm">vLLM</a></p>
+      </div>
+    </article>
+
+    <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

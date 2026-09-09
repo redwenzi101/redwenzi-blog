@@ -8,12 +8,13 @@
 - `knowledge/index.html`：📚 知识大全（工具指南，持续补充）
 - `posts/build-blog-guide.html`：《博客搭建指南：从域名到上线》文章页
 - `posts/ai-agent-guide.html`：《AI Agent 入门指南：Agent、API 与 Token》文章页
+- `posts/ways-to-use-ai.html`：《用 AI 的几种方式：App / 命令行 / API / 中转站》文章页
 - `posts/web-domain-server-guide.html`：《网站、网址、域名、服务器》科普文章页
 
 ## 内容结构（统筹）
 
 - 🏗️ 建站与运维：博客搭建指南、网站/域名/服务器科普
-- 🤖 AI 与大模型：AI Agent 入门指南
+- 🤖 AI 与大模型：AI Agent 上手实操、用 AI 的几种方式
 - 📚 知识大全：所有文章中的概念词条，按锚点供文章跳转，随时补充
 
 ## 文章与知识库联动规则
