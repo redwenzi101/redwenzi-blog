@@ -1,0 +1,59 @@
+/* 统一文章阅读样式（在每篇文章原有样式之后加载，作覆盖/增强） */
+
+/* 文章内容最大宽度、留白节奏 */
+article { line-height:1.9; }
+article h2 { margin-top:42px !important; scroll-margin-top:16px; }
+article h3 { scroll-margin-top:16px; }
+
+/* 让提示框更“轻”，去掉大红大蓝 */
+.tip {
+  background:#f5f9ff !important;
+  border-left:3px solid #8ab8ff !important;
+  border-radius:12px !important;
+  color:#3b4a5e !important;
+  padding:14px 18px !important;
+}
+.warn {
+  background:#fffaf0 !important;
+  border:1px solid #ffe1b8 !important;
+  border-left:3px solid #ffb020 !important;
+  border-radius:12px !important;
+  color:#6b4b12 !important;
+}
+
+/* 代码块统一：更浅、圆角、可横向滚动，右下角加复制按钮 */
+pre {
+  background:#f7f9fc !important;
+  border:1px solid #e5e9f0 !important;
+  border-radius:12px !important;
+  padding:16px 18px !important;
+  line-height:1.7 !important;
+  overflow-x:auto;
+  position:relative;
+  max-width:100%;
+}
+pre code { color:#2b3440 !important; }
+.copy-btn {
+  position:absolute; top:10px; right:10px;
+  background:#eef2f7; border:1px solid #d8dee9; color:#5a6472;
+  font-size:12px; padding:3px 10px; border-radius:980px; cursor:pointer;
+  transition:.2s;
+}
+.copy-btn:hover { background:#e2e9f3; color:#1f6feb; }
+
+/* 文内目录：清爽简洁 */
+.toc-inline {
+  background:#fbfcfe; border:1px solid #e6eaf1; border-radius:14px;
+  padding:14px 20px; margin:0 0 24px;
+}
+.toc-inline b { font-size:13px; color:#6e6e73; display:block; margin-bottom:6px; }
+.toc-inline ol { margin:0 0 0 4px; list-style:none; display:flex; flex-wrap:wrap; gap:6px 16px; }
+.toc-inline a { font-size:14px; color:#1f6feb; }
+.toc-inline a:hover { text-decoration:underline; }
+
+/* 表格更整齐 */
+table { font-size:14px; }
+th { background:#f6f8fa !important; }
+
+/* 移动端更宽松 */
+@media (max-width:640px){ article{padding:22px 16px !important;} }
