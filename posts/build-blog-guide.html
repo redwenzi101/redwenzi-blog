@@ -47,8 +47,8 @@
         <li><b>实名认证</b>：国内注册的域名（尤其是备案时）必须完成实名。</li>
         <li><b>解析（DNS 记录）</b>：把域名指向服务器 IP，最常用的是 <b>A 记录</b>。</li>
       </ol>
-      <pre><code>example.com  A  1.2.3.4
-www          A  1.2.3.4   # 让 www 也指向同一个 IP</code></pre>
+      <pre><code>example.com  A  1.2.3.4          # 换成你自己的公网 IP
+www          A  1.2.3.4          # 让 www 也指向同一个 IP</code></pre>
       <div class="tip">常见坑：主域名指向了服务器，但 <code>www</code> 或子域名没配、或配错 IP，导致网站时好时坏。建议所有 A 记录严格一致。</div>
 
       <h2>二、选购服务器</h2>
