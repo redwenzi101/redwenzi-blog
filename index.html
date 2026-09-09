@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>红温子的博客 · redwenzi</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --ink:#20242b; --muted:#8a929c; --line:#e6e9ee; --accent:#4f6bfe; --bg:#f7f8fa; }
+    body { font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif; line-height:1.75; color:var(--ink); background:var(--bg); }
+    .container { max-width:780px; margin:0 auto; padding:0 22px; }
+    a { color:var(--accent); text-decoration:none; }
+    header { background:linear-gradient(135deg,#2b3a67,#4f6bfe); color:#fff; padding:58px 0 46px; }
+    header h1 { font-size:32px; font-weight:700; letter-spacing:.5px; }
+    header p { margin-top:12px; color:#d8ddf2; font-size:15px; }
+    header .tagline { display:inline-block; margin-top:18px; padding:6px 14px; border:1px solid rgba(255,255,255,.35); border-radius:999px; font-size:13px; color:#eef1fb; }
+    .section { margin:40px 0; }
+    .card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:26px 28px; margin-bottom:18px; box-shadow:0 2px 8px rgba(31,41,55,.04); }
+    .section h2 { font-size:20px; margin-bottom:16px; }
+    .about p { color:#3d4552; font-size:15px; }
+    .chips { display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; }
+    .chip { background:#eef1fb; color:#3a4c8c; border-radius:999px; padding:6px 14px; font-size:13px; }
+    .post h3 { font-size:17px; margin-bottom:6px; }
+    .post h3 a { color:var(--ink); }
+    .post .meta { color:var(--muted); font-size:13px; margin-bottom:8px; }
+    .post p { color:#4a5360; font-size:15px; }
+    footer { text-align:center; padding:30px 0 44px; color:var(--muted); font-size:13px; }
+    .btn { display:inline-block; margin-top:14px; background:var(--accent); color:#fff; padding:9px 20px; border-radius:8px; font-size:14px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>红温子的博客</h1>
+      <p>记录编程、折腾和一切值得写下来的东西</p>
+      <span class="tagline">example.com · 正在备案中</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="section">
+      <div class="card about">
+        <h2>关于我</h2>
+        <p>
+          你好，我是红温子。喜欢折腾代码、搭环境和写点东西。
+          这个博客会分享一些学习笔记、开发经验和日常。
+        </p>
+        <div class="chips">
+          <span class="chip">C / C++</span>
+          <span class="chip">VS Code</span>
+          <span class="chip">Linux</span>
+          <span class="chip">WordPress</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>最新文章</h2>
+      <article class="card post">
+        <h3><a href="#">从零搭一台自己的博客服务器</a></h3>
+        <div class="meta">2026-09-10 · 技术</div>
+        <p>从买服务器、装环境到备案，一步步记录我自己的博客上线过程。</p>
+      </article>
+      <article class="card post">
+        <h3><a href="#">VS Code + MinGW 配置 C/C++ 环境</a></h3>
+        <div class="meta">2026-09-10 · C++</div>
+        <p>记录在 Windows 上安装 VS Code、MSYS2 和 MinGW-w64，并配好 PATH 的方法。</p>
+      </article>
+      <article class="card post">
+        <h3><a href="#">欢迎来到我的博客</a></h3>
+        <div class="meta">2026-09-10 · 公告</div>
+        <p>站点上线前的第一篇文章，占位内容，等你来写真正的好文章。</p>
+      </article>
+    </section>
+
+    <section class="section">
+      <div class="card" style="text-align:center">
+        <h2>找到我</h2>
+        <p style="color:#4a5360">GitHub：待补充</p>
+        <a class="btn" href="#">提交第一个 GitHub 链接</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>© 2026 红温子 · 浙ICP备00000000号-1 · Powered by 红温子的小站</p>
+    </div>
+  </footer>
+</body>
+</html>
