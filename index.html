@@ -6,75 +6,107 @@
   <title>red wenzi · 主页</title>
   <style>
     :root {
-      --bg:#f5f5f7;
+      --bg:#fbfbfd;
       --surface:#ffffff;
       --text:#1d1d1f;
       --sub:#6e6e73;
       --line:rgba(0,0,0,.08);
       --accent:#0071e3;
-      --shadow:0 8px 30px rgba(0,0,0,.06);
+      --accent2:#00c7be;
+      --shadow:0 10px 40px rgba(0,0,0,.06);
+      --ease:cubic-bezier(.22,.61,.36,1);
     }
     * { margin:0; padding:0; box-sizing:border-box; }
     html { scroll-behavior:smooth; }
-    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; -webkit-font-smoothing:antialiased; }
+    body { position:relative; font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
     a { color:var(--accent); text-decoration:none; }
-    a:hover { text-decoration:underline; }
-    .wrap { max-width:1000px; margin:0 auto; padding:0 24px; }
+    .wrap { max-width:1040px; margin:0 auto; padding:0 28px; }
 
-    nav { position:sticky; top:0; z-index:50; background:rgba(245,245,247,.8); backdrop-filter:saturate(180%) blur(20px); border-bottom:1px solid var(--line); }
-    nav .wrap { display:flex; align-items:center; justify-content:space-between; height:52px; }
-    nav .logo { font-weight:700; font-size:17px; color:var(--text); }
-    nav .logo span { color:var(--accent); }
-    nav ul { display:flex; gap:24px; list-style:none; }
-    nav ul a { color:var(--sub); font-size:14px; }
-    nav ul a:hover { color:var(--text); text-decoration:none; }
+    /* ---- soft animated gradient blobs ---- */
+    .blobs { position:fixed; inset:0; overflow:hidden; z-index:-1; pointer-events:none; }
+    .blob { position:absolute; border-radius:50%; filter:blur(70px); opacity:.55; will-change:transform; }
+    .b1 { width:520px; height:520px; top:-160px; left:-120px; background:radial-gradient(circle,#dbeafe,transparent 70%); animation:drift 22s var(--ease) infinite alternate; }
+    .b2 { width:460px; height:460px; top:20%; right:-140px; background:radial-gradient(circle,#e0f2fe,transparent 70%); animation:drift 26s var(--ease) infinite alternate-reverse; }
+    .b3 { width:420px; height:420px; bottom:-150px; left:30%; background:radial-gradient(circle,#e6f7f4,transparent 70%); animation:drift 30s var(--ease) infinite alternate; }
+    @keyframes drift { from{transform:translate(0,0) scale(1)} to{transform:translate(60px,-40px) scale(1.15)} }
 
-    header { padding:96px 0 72px; text-align:center; }
-    header h1 { font-size:clamp(38px,6vw,60px); font-weight:700; letter-spacing:-.02em; color:var(--text); }
-    header h1 .grad { background:linear-gradient(90deg,#0071e3,#00c7be); -webkit-background-clip:text; background-clip:text; color:transparent; }
-    .sub { margin-top:18px; font-size:20px; color:var(--sub); font-weight:400; }
-    .typed { margin-top:12px; font-size:17px; color:var(--sub); min-height:26px; }
-    header .pill { display:inline-block; margin-top:26px; padding:10px 22px; border-radius:980px; background:var(--surface); color:var(--text); font-size:14px; box-shadow:var(--shadow); }
+    /* ---- progress bar ---- */
+    #progress { position:fixed; top:0; left:0; height:3px; width:0; background:linear-gradient(90deg,var(--accent),var(--accent2)); z-index:60; }
 
-    section { padding:56px 0; }
-    .sec-title { font-size:30px; font-weight:700; letter-spacing:-.015em; margin-bottom:6px; color:var(--text); }
-    .sec-sub { color:var(--sub); margin-bottom:30px; font-size:16px; }
+    nav { position:sticky; top:0; z-index:50; background:rgba(251,251,253,.72); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); border-bottom:1px solid var(--line); }
+    nav .wrap { display:flex; align-items:center; justify-content:space-between; height:56px; }
+    .logo { font-weight:700; font-size:17px; }
+    .logo span { color:var(--accent); }
+    nav ul { display:flex; gap:28px; list-style:none; }
+    nav ul a { position:relative; color:var(--sub); font-size:14px; }
+    nav ul a::after { content:""; position:absolute; left:0; bottom:-4px; width:0; height:2px; background:var(--accent); transition:width .3s var(--ease); }
+    nav ul a:hover { color:var(--text); }
+    nav ul a:hover::after { width:100%; }
 
-    .card { background:var(--surface); border-radius:20px; padding:28px 30px; box-shadow:var(--shadow); border:1px solid var(--line); }
-    .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:18px; }
-    .item { background:var(--surface); border-radius:20px; padding:26px; box-shadow:var(--shadow); border:1px solid var(--line); transition:.3s; }
-    .item:hover { transform:translateY(-4px); box-shadow:0 16px 40px rgba(0,0,0,.1); }
-    .item .ico { font-size:30px; }
-    .item h3 { font-size:18px; font-weight:600; margin:14px 0 6px; color:var(--text); }
-    .item p { color:var(--sub); font-size:14px; }
+    header { padding:110px 0 72px; text-align:center; }
+    .kicker { display:inline-block; font-size:13px; color:var(--accent); letter-spacing:.14em; text-transform:uppercase; }
+    header h1 { margin-top:16px; font-size:clamp(40px,7vw,68px); font-weight:700; letter-spacing:-.02em; line-height:1.05; color:var(--text); }
+    header h1 .grad { background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent)); background-size:200% auto; -webkit-background-clip:text; background-clip:text; color:transparent; animation:shine 6s linear infinite; }
+    @keyframes shine { to { background-position:200% center; } }
+    .lead { margin:20px auto 0; max-width:640px; font-size:19px; color:var(--sub); }
+    .typed { margin-top:12px; font-size:16px; color:var(--sub); min-height:26px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
 
-    .chips { display:flex; flex-wrap:wrap; gap:12px; margin-top:16px; }
-    .chip { background:var(--surface); border:1px solid var(--line); color:var(--text); padding:8px 16px; border-radius:980px; font-size:14px; box-shadow:var(--shadow); }
-    .chip b { margin-right:6px; color:var(--accent); font-weight:600; }
+    section { padding:64px 0; }
+    .sec-head { margin-bottom:40px; }
+    .sec-title { font-size:clamp(26px,4vw,34px); font-weight:700; letter-spacing:-.015em; color:var(--text); }
+    .sec-sub { color:var(--sub); font-size:16px; margin-top:8px; }
+    .rule { width:56px; height:4px; border-radius:999px; background:linear-gradient(90deg,var(--accent),var(--accent2)); margin-top:16px; }
 
-    .post { display:flex; gap:20px; background:var(--surface); border-radius:20px; padding:24px 28px; margin-bottom:14px; box-shadow:var(--shadow); border:1px solid var(--line); }
-    .post .date { color:var(--sub); font-size:13px; white-space:nowrap; min-width:96px; }
+    /* stats strip (keeps space meaningful, not empty) */
+    .strip { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; }
+    .stat { background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:26px; text-align:center; box-shadow:var(--shadow); }
+    .stat .num { font-size:26px; font-weight:700; background:linear-gradient(90deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    .stat .lab { color:var(--sub); font-size:14px; margin-top:6px; }
+
+    .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:22px; }
+    .card { background:var(--surface); border:1px solid var(--line); border-radius:24px; padding:30px; box-shadow:var(--shadow); position:relative; overflow:hidden; transition:transform .45s var(--ease),box-shadow .45s var(--ease); }
+    .card::before { content:""; position:absolute; inset:0; background:linear-gradient(135deg,rgba(0,113,227,.06),transparent 60%); opacity:0; transition:opacity .45s; }
+    .card:hover { transform:translateY(-6px); box-shadow:0 22px 50px rgba(0,0,0,.1); }
+    .card:hover::before { opacity:1; }
+    .card .ico { font-size:34px; }
+    .card h3 { font-size:19px; font-weight:600; margin:18px 0 8px; color:var(--text); }
+    .card p { color:var(--sub); font-size:15px; }
+    .card a { position:relative; z-index:1; display:inline-block; margin-top:14px; font-size:14px; }
+    .card .soon { display:inline-block; margin-top:14px; color:var(--sub); font-size:13px; }
+
+    .chips { display:flex; flex-wrap:wrap; gap:12px; }
+    .chip { background:var(--surface); border:1px solid var(--line); color:var(--text); padding:9px 18px; border-radius:980px; font-size:14px; box-shadow:var(--shadow); transition:.3s var(--ease); }
+    .chip:hover { transform:translateY(-2px); border-color:var(--accent); color:var(--accent); }
+
+    .post { display:flex; gap:24px; align-items:flex-start; background:var(--surface); border:1px solid var(--line); border-radius:22px; padding:26px 30px; margin-bottom:16px; box-shadow:var(--shadow); transition:transform .4s var(--ease); }
+    .post:hover { transform:translateX(4px); }
+    .post .date { color:var(--sub); font-size:13px; white-space:nowrap; min-width:90px; padding-top:2px; }
     .post h3 { font-size:18px; font-weight:600; color:var(--text); }
     .post p { color:var(--sub); font-size:14px; margin-top:4px; }
-    .post .tag { display:inline-block; margin-left:8px; color:var(--accent); font-size:12px; }
+    .post .tag { color:var(--accent); font-size:12px; margin-left:8px; }
 
-    .stats img { max-width:100%; border-radius:16px; border:1px solid var(--line); }
     .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; align-items:start; }
-    .stats-grid > div { background:var(--surface); border-radius:16px; padding:12px; box-shadow:var(--shadow); }
+    .stats-grid > div { background:var(--surface); border-radius:18px; padding:12px; box-shadow:var(--shadow); border:1px solid var(--line); }
+    .stats-grid img { max-width:100%; border-radius:12px; }
 
     .contact { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; }
-    .contact a { display:flex; align-items:center; justify-content:center; gap:8px; background:var(--surface); border:1px solid var(--line); padding:14px 18px; border-radius:980px; color:var(--text); box-shadow:var(--shadow); }
-    .contact a:hover { border-color:var(--accent); text-decoration:none; }
+    .contact a { display:flex; align-items:center; justify-content:center; gap:8px; background:var(--surface); border:1px solid var(--line); padding:16px 18px; border-radius:980px; color:var(--text); box-shadow:var(--shadow); transition:.3s var(--ease); }
+    .contact a:hover { transform:translateY(-2px); border-color:var(--accent); }
 
-    footer { text-align:center; padding:44px 24px 64px; color:var(--sub); font-size:13px; }
+    footer { text-align:center; padding:50px 24px 70px; color:var(--sub); font-size:13px; }
     footer .heart { color:var(--accent); }
 
-    .fade { opacity:0; transform:translateY(16px); transition:.6s ease; }
-    .fade.show { opacity:1; transform:none; }
-    @media (max-width:640px){ nav ul{ gap:14px; } header{ padding:72px 0 56px; } }
+    /* scroll reveal */
+    .reveal { opacity:0; transform:translateY(24px); transition:opacity .7s var(--ease),transform .7s var(--ease); }
+    .reveal.show { opacity:1; transform:none; }
+    @media (prefers-reduced-motion:reduce) { * { animation:none !important; transition:none !important; } .reveal { opacity:1; transform:none; } }
+    @media (max-width:640px){ header{padding:80px 0 56px} nav ul{gap:16px} }
   </style>
 </head>
 <body>
+  <div class="blobs"><div class="blob b1" data-parallax></div><div class="blob b2" data-parallax></div><div class="blob b3" data-parallax></div></div>
+  <div id="progress"></div>
+
   <nav>
     <div class="wrap">
       <div class="logo">red<span>wenzi</span></div>
@@ -90,80 +122,88 @@
 
   <header>
     <div class="wrap">
+      <span class="kicker">Personal Site</span>
       <h1>hi，我是 <span class="grad">red wenzi</span></h1>
-      <p class="sub">数据科学 · AI · 服务器</p>
+      <p class="lead">数据科学 · AI · 服务器 —— 让数据「说话」</p>
       <div class="typed" id="typed"></div>
-      <span class="pill">🎓 山东大学 · 数据科学 · 本科在读 · 现居济南</span>
     </div>
   </header>
 
   <main class="wrap">
     <section id="about">
-      <h2 class="sec-title">关于我</h2>
-      <p class="sec-sub">Data Alchemist · Code Artisan</p>
-      <div class="card fade">
-        <p style="color:var(--sub)">你好，我是 <b style="color:var(--accent)">red wenzi</b>，喜欢折腾数据、AI 和服务器，对一切能让数据「说话」的东西充满好奇。这里记录我的学习、项目和日常。</p>
+      <div class="sec-head reveal">
+        <h2 class="sec-title">关于我</h2>
+        <p class="sec-sub">Data Alchemist · Code Artisan</p>
+        <div class="rule"></div>
+      </div>
+      <div class="strip">
+        <div class="stat reveal"><div class="num">🎓</div><div class="lab">山东大学 · 数据科学</div></div>
+        <div class="stat reveal"><div class="num">📍</div><div class="lab">现居济南</div></div>
+        <div class="stat reveal"><div class="num">⚡</div><div class="lab">「你跑不过我信不信」</div></div>
+        <div class="stat reveal"><div class="num">✨</div><div class="lab">保持热爱，持续折腾</div></div>
       </div>
     </section>
 
     <section id="skills">
-      <h2 class="sec-title">技术</h2>
-      <p class="sec-sub">我在折腾的东西</p>
-      <div class="card fade">
-        <div class="chips">
-          <span class="chip">C / C++</span>
-          <span class="chip">Java</span>
-          <span class="chip">Python</span>
-          <span class="chip">HTML5 · CSS3</span>
-          <span class="chip">Linux · 服务器</span>
-          <span class="chip">Git · GitHub</span>
-          <span class="chip">机器学习 · 数据可视化</span>
-        </div>
+      <div class="sec-head reveal">
+        <h2 class="sec-title">技术</h2>
+        <p class="sec-sub">我在折腾的东西</p>
+        <div class="rule"></div>
+      </div>
+      <div class="chips reveal">
+        <span class="chip">C / C++</span>
+        <span class="chip">Java</span>
+        <span class="chip">Python</span>
+        <span class="chip">HTML5 · CSS3</span>
+        <span class="chip">Linux · 服务器</span>
+        <span class="chip">Git · GitHub</span>
+        <span class="chip">机器学习 · 数据可视化</span>
       </div>
     </section>
 
     <section id="projects">
-      <h2 class="sec-title">项目</h2>
-      <p class="sec-sub">正在做和想做的事</p>
+      <div class="sec-head reveal">
+        <h2 class="sec-title">项目</h2>
+        <p class="sec-sub">正在做和想做的事</p>
+        <div class="rule"></div>
+      </div>
       <div class="cards">
-        <div class="item fade">
+        <div class="card reveal">
           <div class="ico">💘</div>
           <h3>Yourself-Skill</h3>
           <p>「找到属于你的灵魂伴侣」—— 用数据帮你找到对的人。</p>
-          <a href="https://github.com/redwenzi101/yourself-skill-master">查看 →</a>
+          <a href="https://github.com/redwenzi101/yourself-skill-master">查看项目 →</a>
         </div>
-        <div class="item fade">
+        <div class="card reveal">
           <div class="ico">📊</div>
           <h3>DataViz Playground</h3>
           <p>用 Python 把复杂数据变成一眼能看懂的图。</p>
-          <span style="display:inline-block;margin-top:10px;color:var(--sub);font-size:13px">🚧 开发中</span>
+          <span class="soon">🚧 开发中</span>
         </div>
-        <div class="item fade">
+        <div class="card reveal">
           <div class="ico">🤖</div>
           <h3>CodeMate Bot</h3>
           <p>智能学习助手：整理笔记、提醒打卡、陪你写代码。</p>
-          <span style="display:inline-block;margin-top:10px;color:var(--sub);font-size:13px">🚧 开发中</span>
-        </div>
-        <div class="item fade">
-          <div class="ico">🧠</div>
-          <h3>Think Tank</h3>
-          <p>Next.js + MongoDB 智库平台，资讯、知识库与评论。</p>
-          <a href="https://github.com/redwenzi101/think-tank">查看 →</a>
+          <span class="soon">🚧 开发中</span>
         </div>
       </div>
     </section>
 
     <section id="blog">
-      <h2 class="sec-title">博客</h2>
-      <p class="sec-sub">正在备案，上线后会有更多文章</p>
-      <div class="post fade">
+      <div class="sec-head reveal">
+        <h2 class="sec-title">博客</h2>
+        <p class="sec-sub">正在备案，上线后会有更多文章</p>
+        <div class="rule"></div>
+      </div>
+      <div class="post reveal">
         <div class="date">2026-09-10</div>
         <div>
-          <h3>从零搭一台自己的博客服务器 <span class="tag">技术</span></h3>
-          <p>买服务器 → 装环境 → 备案，记录我的博客上线过程。</p>
+          <h3><a href="posts/build-blog-guide.html">博客搭建指南：从域名到上线 <span class="tag">指南</span></a></h3>
+          <p>域名、服务器、备案、HTTPS，一篇讲清楚我是怎么做的。</p>
+          <p><a href="posts/build-blog-guide.html">阅读完整指南 →</a></p>
         </div>
       </div>
-      <div class="post fade">
+      <div class="post reveal">
         <div class="date">2026-09-10</div>
         <div>
           <h3>用数据讲一个故事 <span class="tag">数据</span></h3>
@@ -173,19 +213,25 @@
     </section>
 
     <section class="stats" id="stats">
-      <h2 class="sec-title">GitHub</h2>
-      <p class="sec-sub">我的代码足迹</p>
-      <div class="stats-grid fade">
-        <div><img src="https://dev-stats.mintimate.cn/api?username=redwenzi101&show_icons=true&count_private=true&title_color=0071e3&icon_color=00c7be&text_color=24292f&bg_color=ffffff&border_color=e1e4e8" alt="Stats"></div>
+      <div class="sec-head reveal">
+        <h2 class="sec-title">GitHub</h2>
+        <p class="sec-sub">我的代码足迹</p>
+        <div class="rule"></div>
+      </div>
+      <div class="stats-grid reveal">
+        <div><img src="https://dev-stats.mintimate.cn/api?username=redwenzi101&show_icons=true&count_private=true&title_color=0071e3&icon_color=00c7be&text_color=24292f&bg_color=ffffff&border_color=e1e4e8" alt="GitHub"></div>
         <div><img src="https://streak-stats.demolab.com?user=redwenzi101&theme=default&hide_border=true&border_radius=8" alt="Streak"></div>
         <div><img src="https://dev-stats.mintimate.cn/api/top-langs?username=redwenzi101&layout=compact&title_color=0071e3&text_color=24292f&bg_color=ffffff&border_color=e1e4e8&langs_count=8" alt="Languages"></div>
       </div>
     </section>
 
     <section id="contact">
-      <h2 class="sec-title">联系我</h2>
-      <p class="sec-sub">欢迎交流数据、AI、服务器和一切有意思的事</p>
-      <div class="contact fade">
+      <div class="sec-head reveal">
+        <h2 class="sec-title">联系我</h2>
+        <p class="sec-sub">欢迎交流数据、AI、服务器和一切有意思的事</p>
+        <div class="rule"></div>
+      </div>
+      <div class="contact reveal">
         <a href="mailto:[removed]">📧 Email</a>
         <a href="https://github.com/redwenzi101">💻 GitHub</a>
         <a href="#">💬 WeChat</a>
@@ -202,16 +248,25 @@
   </footer>
 
   <script>
+    // typing
     const lines=["Data Alchemist · Code Artisan","让数据「说话」","「你跑不过我信不信」"];
-    let li=0,ci=0,del=false;
-    const el=document.getElementById('typed');
+    let li=0,ci=0,del=false; const el=document.getElementById('typed');
     function type(){ const cur=lines[li]; el.textContent=cur.slice(0,ci);
       if(!del){ ci++; if(ci>cur.length){ del=true; setTimeout(type,1600); return; } }
       else { ci--; if(ci===0){ del=false; li=(li+1)%lines.length; } }
       setTimeout(type, del?40:95); }
     type();
-    const io=new IntersectionObserver((es)=>es.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('show'); }),{threshold:.12});
-    document.querySelectorAll('.fade').forEach(el=>io.observe(el));
+
+    // reveal with stagger
+    const io=new IntersectionObserver((es)=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('show'); io.unobserve(e.target); } }),{threshold:.12});
+    document.querySelectorAll('.reveal').forEach((el,i)=>{ el.style.transitionDelay=(i%4)*70+'ms'; io.observe(el); });
+
+    // progress bar
+    const p=document.getElementById('progress');
+    addEventListener('scroll',()=>{ const h=document.documentElement; p.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'; },{passive:true});
+
+    // subtle parallax blobs
+    addEventListener('scroll',()=>{ const y=scrollY; document.querySelectorAll('[data-parallax]').forEach((b,i)=>{ b.style.transform='translateY('+(y*0.12*(i+1))+'px)'; }); },{passive:true});
   </script>
 </body>
 </html>
