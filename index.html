@@ -3,89 +3,215 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>redwenzi 的博客</title>
+  <title>red wenzi · 主页</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root { --ink:#20242b; --muted:#8a929c; --line:#e6e9ee; --accent:#4f6bfe; --bg:#f7f8fa; }
-    body { font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif; line-height:1.75; color:var(--ink); background:var(--bg); }
-    .container { max-width:780px; margin:0 auto; padding:0 22px; }
+    :root {
+      --bg:#f5f5f7;
+      --surface:#ffffff;
+      --text:#1d1d1f;
+      --sub:#6e6e73;
+      --line:rgba(0,0,0,.08);
+      --accent:#0071e3;
+      --shadow:0 8px 30px rgba(0,0,0,.06);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; -webkit-font-smoothing:antialiased; }
     a { color:var(--accent); text-decoration:none; }
-    header { background:linear-gradient(135deg,#2b3a67,#4f6bfe); color:#fff; padding:58px 0 46px; }
-    header h1 { font-size:32px; font-weight:700; letter-spacing:.5px; }
-    header p { margin-top:12px; color:#d8ddf2; font-size:15px; }
-    header .tagline { display:inline-block; margin-top:18px; padding:6px 14px; border:1px solid rgba(255,255,255,.35); border-radius:999px; font-size:13px; color:#eef1fb; }
-    .section { margin:40px 0; }
-    .card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:26px 28px; margin-bottom:18px; box-shadow:0 2px 8px rgba(31,41,55,.04); }
-    .section h2 { font-size:20px; margin-bottom:16px; }
-    .about p { color:#3d4552; font-size:15px; }
-    .chips { display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; }
-    .chip { background:#eef1fb; color:#3a4c8c; border-radius:999px; padding:6px 14px; font-size:13px; }
-    .post h3 { font-size:17px; margin-bottom:6px; }
-    .post h3 a { color:var(--ink); }
-    .post .meta { color:var(--muted); font-size:13px; margin-bottom:8px; }
-    .post p { color:#4a5360; font-size:15px; }
-    footer { text-align:center; padding:30px 0 44px; color:var(--muted); font-size:13px; }
-    .btn { display:inline-block; margin-top:14px; background:var(--accent); color:#fff; padding:9px 20px; border-radius:8px; font-size:14px; }
+    a:hover { text-decoration:underline; }
+    .wrap { max-width:1000px; margin:0 auto; padding:0 24px; }
+
+    nav { position:sticky; top:0; z-index:50; background:rgba(245,245,247,.8); backdrop-filter:saturate(180%) blur(20px); border-bottom:1px solid var(--line); }
+    nav .wrap { display:flex; align-items:center; justify-content:space-between; height:52px; }
+    nav .logo { font-weight:700; font-size:17px; color:var(--text); }
+    nav .logo span { color:var(--accent); }
+    nav ul { display:flex; gap:24px; list-style:none; }
+    nav ul a { color:var(--sub); font-size:14px; }
+    nav ul a:hover { color:var(--text); text-decoration:none; }
+
+    header { padding:96px 0 72px; text-align:center; }
+    header h1 { font-size:clamp(38px,6vw,60px); font-weight:700; letter-spacing:-.02em; color:var(--text); }
+    header h1 .grad { background:linear-gradient(90deg,#0071e3,#00c7be); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    .sub { margin-top:18px; font-size:20px; color:var(--sub); font-weight:400; }
+    .typed { margin-top:12px; font-size:17px; color:var(--sub); min-height:26px; }
+    header .pill { display:inline-block; margin-top:26px; padding:10px 22px; border-radius:980px; background:var(--surface); color:var(--text); font-size:14px; box-shadow:var(--shadow); }
+
+    section { padding:56px 0; }
+    .sec-title { font-size:30px; font-weight:700; letter-spacing:-.015em; margin-bottom:6px; color:var(--text); }
+    .sec-sub { color:var(--sub); margin-bottom:30px; font-size:16px; }
+
+    .card { background:var(--surface); border-radius:20px; padding:28px 30px; box-shadow:var(--shadow); border:1px solid var(--line); }
+    .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:18px; }
+    .item { background:var(--surface); border-radius:20px; padding:26px; box-shadow:var(--shadow); border:1px solid var(--line); transition:.3s; }
+    .item:hover { transform:translateY(-4px); box-shadow:0 16px 40px rgba(0,0,0,.1); }
+    .item .ico { font-size:30px; }
+    .item h3 { font-size:18px; font-weight:600; margin:14px 0 6px; color:var(--text); }
+    .item p { color:var(--sub); font-size:14px; }
+
+    .chips { display:flex; flex-wrap:wrap; gap:12px; margin-top:16px; }
+    .chip { background:var(--surface); border:1px solid var(--line); color:var(--text); padding:8px 16px; border-radius:980px; font-size:14px; box-shadow:var(--shadow); }
+    .chip b { margin-right:6px; color:var(--accent); font-weight:600; }
+
+    .post { display:flex; gap:20px; background:var(--surface); border-radius:20px; padding:24px 28px; margin-bottom:14px; box-shadow:var(--shadow); border:1px solid var(--line); }
+    .post .date { color:var(--sub); font-size:13px; white-space:nowrap; min-width:96px; }
+    .post h3 { font-size:18px; font-weight:600; color:var(--text); }
+    .post p { color:var(--sub); font-size:14px; margin-top:4px; }
+    .post .tag { display:inline-block; margin-left:8px; color:var(--accent); font-size:12px; }
+
+    .stats img { max-width:100%; border-radius:16px; border:1px solid var(--line); }
+    .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; align-items:start; }
+    .stats-grid > div { background:var(--surface); border-radius:16px; padding:12px; box-shadow:var(--shadow); }
+
+    .contact { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; }
+    .contact a { display:flex; align-items:center; justify-content:center; gap:8px; background:var(--surface); border:1px solid var(--line); padding:14px 18px; border-radius:980px; color:var(--text); box-shadow:var(--shadow); }
+    .contact a:hover { border-color:var(--accent); text-decoration:none; }
+
+    footer { text-align:center; padding:44px 24px 64px; color:var(--sub); font-size:13px; }
+    footer .heart { color:var(--accent); }
+
+    .fade { opacity:0; transform:translateY(16px); transition:.6s ease; }
+    .fade.show { opacity:1; transform:none; }
+    @media (max-width:640px){ nav ul{ gap:14px; } header{ padding:72px 0 56px; } }
   </style>
 </head>
 <body>
+  <nav>
+    <div class="wrap">
+      <div class="logo">red<span>wenzi</span></div>
+      <ul>
+        <li><a href="#about">关于</a></li>
+        <li><a href="#skills">技能</a></li>
+        <li><a href="#projects">项目</a></li>
+        <li><a href="#blog">博客</a></li>
+        <li><a href="#contact">联系</a></li>
+      </ul>
+    </div>
+  </nav>
+
   <header>
-    <div class="container">
-      <h1>redwenzi 的博客</h1>
-      <p>记录编程、折腾和一切值得写下来的东西</p>
-      <span class="tagline">example.com · 正在备案中</span>
+    <div class="wrap">
+      <h1>hi，我是 <span class="grad">red wenzi</span></h1>
+      <p class="sub">数据科学 · AI · 服务器</p>
+      <div class="typed" id="typed"></div>
+      <span class="pill">🎓 山东大学 · 数据科学 · 本科在读 · 现居济南</span>
     </div>
   </header>
 
-  <main class="container">
-    <section class="section">
-      <div class="card about">
-        <h2>关于我</h2>
-        <p>
-          你好，我是 redwenzi。喜欢折腾代码、搭环境和写点东西。
-          这个博客会分享一些学习笔记、开发经验和日常。
-        </p>
+  <main class="wrap">
+    <section id="about">
+      <h2 class="sec-title">关于我</h2>
+      <p class="sec-sub">Data Alchemist · Code Artisan</p>
+      <div class="card fade">
+        <p style="color:var(--sub)">你好，我是 <b style="color:var(--accent)">red wenzi</b>，喜欢折腾数据、AI 和服务器，对一切能让数据「说话」的东西充满好奇。这里记录我的学习、项目和日常。</p>
+      </div>
+    </section>
+
+    <section id="skills">
+      <h2 class="sec-title">技术</h2>
+      <p class="sec-sub">我在折腾的东西</p>
+      <div class="card fade">
         <div class="chips">
           <span class="chip">C / C++</span>
-          <span class="chip">VS Code</span>
-          <span class="chip">Linux</span>
-          <span class="chip">WordPress</span>
+          <span class="chip">Java</span>
+          <span class="chip">Python</span>
+          <span class="chip">HTML5 · CSS3</span>
+          <span class="chip">Linux · 服务器</span>
+          <span class="chip">Git · GitHub</span>
+          <span class="chip">机器学习 · 数据可视化</span>
         </div>
       </div>
     </section>
 
-    <section class="section">
-      <h2>最新文章</h2>
-      <article class="card post">
-        <h3><a href="#">从零搭一台自己的博客服务器</a></h3>
-        <div class="meta">2026-09-10 · 技术</div>
-        <p>从买服务器、装环境到备案，一步步记录我自己的博客上线过程。</p>
-      </article>
-      <article class="card post">
-        <h3><a href="#">VS Code + MinGW 配置 C/C++ 环境</a></h3>
-        <div class="meta">2026-09-10 · C++</div>
-        <p>记录在 Windows 上安装 VS Code、MSYS2 和 MinGW-w64，并配好 PATH 的方法。</p>
-      </article>
-      <article class="card post">
-        <h3><a href="#">欢迎来到我的博客</a></h3>
-        <div class="meta">2026-09-10 · 公告</div>
-        <p>站点上线前的第一篇文章，占位内容，等你来写真正的好文章。</p>
-      </article>
+    <section id="projects">
+      <h2 class="sec-title">项目</h2>
+      <p class="sec-sub">正在做和想做的事</p>
+      <div class="cards">
+        <div class="item fade">
+          <div class="ico">💘</div>
+          <h3>Yourself-Skill</h3>
+          <p>「找到属于你的灵魂伴侣」—— 用数据帮你找到对的人。</p>
+          <a href="https://github.com/redwenzi101/yourself-skill-master">查看 →</a>
+        </div>
+        <div class="item fade">
+          <div class="ico">📊</div>
+          <h3>DataViz Playground</h3>
+          <p>用 Python 把复杂数据变成一眼能看懂的图。</p>
+          <span style="display:inline-block;margin-top:10px;color:var(--sub);font-size:13px">🚧 开发中</span>
+        </div>
+        <div class="item fade">
+          <div class="ico">🤖</div>
+          <h3>CodeMate Bot</h3>
+          <p>智能学习助手：整理笔记、提醒打卡、陪你写代码。</p>
+          <span style="display:inline-block;margin-top:10px;color:var(--sub);font-size:13px">🚧 开发中</span>
+        </div>
+        <div class="item fade">
+          <div class="ico">🧠</div>
+          <h3>Think Tank</h3>
+          <p>Next.js + MongoDB 智库平台，资讯、知识库与评论。</p>
+          <a href="https://github.com/redwenzi101/think-tank">查看 →</a>
+        </div>
+      </div>
     </section>
 
-    <section class="section">
-      <div class="card" style="text-align:center">
-        <h2>找到我</h2>
-        <p style="color:#4a5360">GitHub：待补充</p>
-        <a class="btn" href="#">提交第一个 GitHub 链接</a>
+    <section id="blog">
+      <h2 class="sec-title">博客</h2>
+      <p class="sec-sub">正在备案，上线后会有更多文章</p>
+      <div class="post fade">
+        <div class="date">2026-09-10</div>
+        <div>
+          <h3>从零搭一台自己的博客服务器 <span class="tag">技术</span></h3>
+          <p>买服务器 → 装环境 → 备案，记录我的博客上线过程。</p>
+        </div>
+      </div>
+      <div class="post fade">
+        <div class="date">2026-09-10</div>
+        <div>
+          <h3>用数据讲一个故事 <span class="tag">数据</span></h3>
+          <p>为什么我痴迷数据可视化 —— 让数字开口说话。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats" id="stats">
+      <h2 class="sec-title">GitHub</h2>
+      <p class="sec-sub">我的代码足迹</p>
+      <div class="stats-grid fade">
+        <div><img src="https://dev-stats.mintimate.cn/api?username=redwenzi101&show_icons=true&count_private=true&title_color=0071e3&icon_color=00c7be&text_color=24292f&bg_color=ffffff&border_color=e1e4e8" alt="Stats"></div>
+        <div><img src="https://streak-stats.demolab.com?user=redwenzi101&theme=default&hide_border=true&border_radius=8" alt="Streak"></div>
+        <div><img src="https://dev-stats.mintimate.cn/api/top-langs?username=redwenzi101&layout=compact&title_color=0071e3&text_color=24292f&bg_color=ffffff&border_color=e1e4e8&langs_count=8" alt="Languages"></div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <h2 class="sec-title">联系我</h2>
+      <p class="sec-sub">欢迎交流数据、AI、服务器和一切有意思的事</p>
+      <div class="contact fade">
+        <a href="mailto:[removed]">📧 Email</a>
+        <a href="https://github.com/redwenzi101">💻 GitHub</a>
+        <a href="#">💬 WeChat</a>
+        <a href="#">🐧 QQ</a>
       </div>
     </section>
   </main>
 
   <footer>
-    <div class="container">
-      <p>© 2026 redwenzi · 浙ICP备00000000号-1 · Powered by redwenzi 的小站</p>
+    <div class="wrap">
+      <p>✨ 保持热爱，持续折腾 · <span class="heart">♥</span> red wenzi © 2026</p>
+      <p style="margin-top:8px">浙ICP备00000000号-1（备案通过后替换）</p>
     </div>
   </footer>
+
+  <script>
+    const lines=["Data Alchemist · Code Artisan","让数据「说话」","「你跑不过我信不信」"];
+    let li=0,ci=0,del=false;
+    const el=document.getElementById('typed');
+    function type(){ const cur=lines[li]; el.textContent=cur.slice(0,ci);
+      if(!del){ ci++; if(ci>cur.length){ del=true; setTimeout(type,1600); return; } }
+      else { ci--; if(ci===0){ del=false; li=(li+1)%lines.length; } }
+      setTimeout(type, del?40:95); }
+    type();
+    const io=new IntersectionObserver((es)=>es.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('show'); }),{threshold:.12});
+    document.querySelectorAll('.fade').forEach(el=>io.observe(el));
+  </script>
 </body>
 </html>
