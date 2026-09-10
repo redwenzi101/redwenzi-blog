@@ -149,14 +149,29 @@ nav.nav-scrolled {
 }
 nav a.active { color:var(--accent-gold) !important; border-bottom:2px solid var(--accent-gold); }
 
-/* ---------- 代码块：深蓝黑 + 行号 ---------- */
-pre { background:var(--code-bg) !important; border:1px solid rgba(255,255,255,.1) !important; border-radius:var(--radius) !important; padding:1.2rem 1.4rem !important; position:relative; overflow-x:auto; }
-pre code { color:var(--code-text) !important; display:block; font-family:"Fira Code",Consolas,monospace !important; font-size:14px; line-height:1.7; counter-reset:ln; }
-pre code .ln { display:block; counter-increment:ln; }
-pre code .ln::before {
-  content:counter(ln); display:inline-block; width:2em; margin-right:1em;
-  color:rgba(255,255,255,.3); text-align:right; border-right:1px solid rgba(255,255,255,.12); padding-right:.6em;
+/* ---------- 代码块：深蓝黑 + 语法高亮 + 侧边行号 ---------- */
+pre {
+  background:var(--code-bg) !important;
+  border:1px solid rgba(255,255,255,.1) !important;
+  border-radius:var(--radius) !important;
+  padding:1.2rem 1.4rem 1.2rem 3.6rem !important;
+  position:relative; overflow-x:auto;
 }
+pre code { background:transparent !important; color:var(--code-text) !important; display:block; font-family:"Fira Code",Consolas,monospace !important; font-size:14px; line-height:1.7; }
+.ln-gutter {
+  position:absolute; left:0; top:1.2rem; width:2.6rem; text-align:right;
+  padding-right:.6rem; border-right:1px solid rgba(255,255,255,.12);
+  color:rgba(255,255,255,.3); font-family:"Fira Code",Consolas,monospace;
+  font-size:14px; line-height:1.7; white-space:pre; user-select:none; pointer-events:none;
+}
+/* 语法高亮配色（深色奶油配） */
+.hljs { background:transparent !important; color:var(--code-text) !important; }
+.hljs-keyword, .hljs-selector-tag, .hljs-built_in { color:#c9a227 !important; }
+.hljs-string, .hljs-attr, .hljs-template-variable { color:#7ec699 !important; }
+.hljs-comment, .hljs-quote { color:#5c6370 !important; font-style:italic; }
+.hljs-title, .hljs-function, .hljs-name { color:#61afef !important; }
+.hljs-number, .hljs-literal { color:#d19a66 !important; }
+.hljs-variable, .hljs-params { color:#e8e6e3 !important; }
 .copy-btn { background:rgba(255,255,255,.08) !important; color:#cbd5e1 !important; border:1px solid rgba(255,255,255,.15) !important; }
 .copy-btn:hover { background:rgba(255,255,255,.2) !important; color:#fff !important; }
 
