@@ -1,75 +1,198 @@
-/* ============ 暖色奶油纸感 · 主题定版 ============ */
-/* 颜色/圆角/阴影全部走变量，备案后可直接移植到 WordPress */
+/* ============ 暖色奶油纸质风 · 主题定版 v2 ============ */
+/* 所有颜色/圆角/阴影/渐变走变量，备案后可移植 WordPress */
 
 :root {
+  /* 背景 */
   --bg: #faf7f2;
-  --surface: #ffffff;
   --card: #ffffff;
+  --card-hover: #fefcf8;
+  /* 文字 */
   --text: #2b2b2b;
   --text-soft: #666666;
+  --text-muted: #999999;
   --sub: #6a6a6a;
+  /* 主强调：钢笔墨蓝 */
   --accent: #1f3a5f;
   --accent2: #c9a227;
+  --accent-light: #3a5a8c;
+  --accent-lighter: #e8eef5;
+  --accent-dark: #152a45;
+  /* 次强调：旧书烫金 */
   --accent-gold: #c9a227;
-  --line: #ece6da;
+  --accent-gold-light: #e0c255;
+  --accent-gold-lighter: #faf3e0;
+  --accent-gold-dark: #a0801a;
+  /* 中性 */
   --border: #ece6da;
+  --border-light: #f2ede3;
+  --line: #ece6da;
   --code-bg: #1f2430;
+  --code-text: #e8e6e3;
+  /* 圆角 */
   --radius: 12px;
-  --shadow: 0 2px 8px rgba(0,0,0,0.05);
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+  /* 阴影：多层柔和，像纸片叠纸 */
+  --shadow: 0 1px 3px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.04);
+  --shadow-hover: 0 4px 12px rgba(0,0,0,.08), 0 8px 24px rgba(0,0,0,.06);
+  --shadow-inner: inset 0 1px 0 rgba(255,255,255,.8);
+  /* 渐变 */
+  --gradient-title: linear-gradient(135deg, #1f3a5f 0%, #c9a227 100%);
+  --gradient-divider: linear-gradient(90deg, transparent, #c9a227, transparent);
+  --gradient-bg: radial-gradient(ellipse at top, #fdfaf5 0%, #faf7f2 50%, #f5f0e8 100%);
 }
 
-body { background:#faf7f2 !important; color:#2b2b2b !important; -webkit-font-smoothing:antialiased; }
-h1, h2, h3, h4 { font-family: Georgia,"Noto Serif SC","Source Han Serif SC","Songti SC",serif !important; color:#2b2b2b; }
-article p, article li { font-size:17px; line-height:1.8; color:#3a3a3a; }
+/* ---------- 背景：暖米黄渐变 + 极淡纸张噪点 ---------- */
+body {
+  background-color: #faf7f2 !important;
+  background-image:
+    var(--gradient-bg),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E") !important;
+  background-attachment: fixed;
+  color: #2b2b2b !important;
+  -webkit-font-smoothing: antialiased;
+}
 
-/* 代码块：深蓝黑底 + 复制按钮 */
-pre { background:#1f2430 !important; border:1px solid #2b3440 !important; border-radius:12px !important; }
-pre code { color:#e6edf3 !important; }
-.copy-btn { background:#2b3440 !important; color:#cbd5e1 !important; border:1px solid #3b4756 !important; }
-.copy-btn:hover { background:#37455a !important; color:#fff !important; }
+/* ---------- 排版：柔和衬线标题 + 无衬线正文 ---------- */
+h1, h2, h3, h4 {
+  font-family: "Noto Serif SC","Source Han Serif SC","Songti SC","STSong",Georgia,"Times New Roman",serif !important;
+  font-weight: 600 !important;
+  letter-spacing: .01em;
+  color: #2f2f2f;
+}
+h1 { font-weight: 600 !important; line-height: 1.25; }
+h2 { font-weight: 600 !important; }
+h3 { font-weight: 500 !important; color: #1f3a5f; }
 
-/* 卡片统一圆角/阴影 */
+article p, article li { font-size:17px; line-height:1.8; color:#3a3a3a; letter-spacing:.01em; }
+article h2 { margin-top:2em; padding-bottom:.5rem; position:relative; }
+article h2::after {
+  content:""; display:block; width:60px; height:3px; border-radius:2px;
+  background:var(--gradient-divider); margin-top:10px;
+}
+article h3 { margin-top:1.5em; }
+
+/* 首字下沉（焦糖金） */
+article p:first-of-type::first-letter {
+  font-family: Georgia,"Noto Serif SC",serif;
+  font-size:3.2em; float:left; line-height:.85; padding:.05em .12em 0 0;
+  color:var(--accent-gold); font-weight:700;
+}
+
+/* 引用块 */
+blockquote {
+  border-left:4px solid var(--accent-gold);
+  background:var(--accent-gold-lighter);
+  padding:1rem 1.5rem; margin:1.5rem 0;
+  border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  font-style:italic; color:var(--text-soft);
+}
+
+/* 分隔线 */
+hr { border:none; height:1px; background:linear-gradient(90deg,transparent,var(--border),transparent); margin:3rem 0; }
+
+/* 链接 hover */
+article a:hover, .toc-inline a:hover { color:var(--accent-gold); }
+
+/* 标签胶囊 */
+.tag {
+  display:inline-block; padding:1px 10px; border-radius:999px; font-size:12px;
+  background:var(--accent-gold-lighter) !important; color:var(--accent-gold-dark) !important;
+  border:1px solid var(--border-light);
+}
+
+/* ---------- 卡片：纸片叠纸的光影 ---------- */
 .card, .entry, .post, .stat, .toc, .stats-grid > div, .item, .contact a {
-  border-radius:12px !important;
-  box-shadow:0 2px 8px rgba(0,0,0,.05) !important;
-  border-color:#ece6da !important;
+  background:var(--card) !important;
+  border-radius:var(--radius) !important;
+  border:1px solid var(--border-light) !important;
+  box-shadow:var(--shadow), var(--shadow-inner) !important;
+  transition:all .25s cubic-bezier(.4,0,.2,1);
 }
-
-/* 文章列表卡片左侧 accent 条 */
-.post { border-left:4px solid #1f3a5f !important; }
-.post:hover { border-left-color:#c9a227 !important; }
-
-/* 表格 */
-th { background:#f3ece2 !important; color:#1f3a5f; }
-table { border-color:#ece6da; }
-tr:nth-child(even) td { background:#fdfcf9; }
-
-/* 回到顶部按钮 */
-.backtop {
-  position:fixed; right:22px; bottom:22px; width:44px; height:44px;
-  border-radius:50%; background:#1f3a5f; color:#fff; border:none;
-  font-size:20px; cursor:pointer; display:none; align-items:center; justify-content:center;
-  box-shadow:0 4px 14px rgba(0,0,0,.16); z-index:90;
+.card, .item, .post { border-left:4px solid var(--accent) !important; }
+.card:hover, .item:hover, .post:hover, .stat:hover {
+  transform:translateY(-3px);
+  box-shadow:var(--shadow-hover), var(--shadow-inner) !important;
+  border-left-color:var(--accent-gold) !important;
+  background:var(--card-hover) !important;
 }
-.backtop:hover { background:#c9a227; }
+.card h3, .item h3, .post h3 { color:var(--accent) !important; }
 
-/* 点赞条 */
-.likebar { margin-top:22px; padding-top:14px; border-top:1px dashed #ece6da; display:flex; align-items:center; gap:10px; }
-.likebar .like { background:#fff; border:1px solid #ece6da; color:#1f3a5f; border-radius:980px; padding:8px 18px; font-size:14px; cursor:pointer; transition:.2s; }
-.likebar .like:hover { background:#1f3a5f; color:#fff; }
-.likebar small { color:#9a9a9a; font-size:12px; }
-
-/* “即将上线”占位卡片（虚线） */
+/* “即将上线”虚线占位卡 */
 .soon-card {
   background:transparent !important;
-  border:2px dashed #ece6da !important;
-  border-left:2px dashed #ece6da !important;
-  border-radius:12px !important;
+  border:2px dashed var(--border) !important;
+  border-left:2px dashed var(--border) !important;
+  border-radius:var(--radius) !important;
   padding:18px 22px !important;
-  color:#9a9a9a !important;
+  color:var(--text-muted) !important;
   box-shadow:none !important;
   transition:.25s;
 }
-.soon-card:hover { border-color:#c9a227 !important; color:#c9a227 !important; }
+.soon-card:hover { border-color:var(--accent-gold) !important; color:var(--accent-gold) !important; transform:none; }
 .soon-card b { color:inherit; font-size:15px; }
 .soon-card p { margin:4px 0 0; font-size:13px; color:inherit; }
+
+/* ---------- 首屏渐变标题 ---------- */
+.grad {
+  background:var(--gradient-title) !important;
+  -webkit-background-clip:text !important; background-clip:text !important;
+  -webkit-text-fill-color:transparent !important; color:transparent !important;
+}
+
+/* ---------- 导航：滚动模糊 + 当前项高亮 ---------- */
+nav { transition:background .3s ease, box-shadow .3s ease; }
+nav.nav-scrolled {
+  background:rgba(250,247,242,.85) !important;
+  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+  box-shadow:0 1px 8px rgba(0,0,0,.06);
+}
+nav a.active { color:var(--accent-gold) !important; border-bottom:2px solid var(--accent-gold); }
+
+/* ---------- 代码块：深蓝黑 + 行号 ---------- */
+pre { background:var(--code-bg) !important; border:1px solid rgba(255,255,255,.1) !important; border-radius:var(--radius) !important; padding:1.2rem 1.4rem !important; position:relative; overflow-x:auto; }
+pre code { color:var(--code-text) !important; display:block; font-family:"Fira Code",Consolas,monospace !important; font-size:14px; line-height:1.7; counter-reset:ln; }
+pre code .ln { display:block; counter-increment:ln; }
+pre code .ln::before {
+  content:counter(ln); display:inline-block; width:2em; margin-right:1em;
+  color:rgba(255,255,255,.3); text-align:right; border-right:1px solid rgba(255,255,255,.12); padding-right:.6em;
+}
+.copy-btn { background:rgba(255,255,255,.08) !important; color:#cbd5e1 !important; border:1px solid rgba(255,255,255,.15) !important; }
+.copy-btn:hover { background:rgba(255,255,255,.2) !important; color:#fff !important; }
+
+/* 行内代码：淡金底 + 深金字 */
+code { background:var(--accent-gold-lighter); color:var(--accent-gold-dark); border-radius:4px; padding:.12rem .4rem; font-size:.9em; }
+pre code, pre code .ln::before { background:transparent !important; }
+
+/* ---------- 表格 ---------- */
+th { background:#f3ece2 !important; color:var(--accent); }
+td, th { border-color:var(--border); }
+tr:nth-child(even) td { background:#fdfcf9; }
+
+/* ---------- 回到顶部 ---------- */
+.backtop { position:fixed; right:22px; bottom:22px; width:44px; height:44px; border-radius:50%; background:var(--accent); color:#fff; border:none; font-size:20px; cursor:pointer; display:none; align-items:center; justify-content:center; box-shadow:0 4px 14px rgba(0,0,0,.16); z-index:90; transition:.25s; }
+.backtop:hover { background:var(--accent-gold); transform:scale(1.1); }
+
+/* ---------- 点赞 ---------- */
+.likebar { margin-top:22px; padding-top:14px; border-top:1px dashed var(--border); display:flex; align-items:center; gap:10px; }
+.likebar .like { background:#fff; border:1px solid var(--border); color:var(--accent); border-radius:980px; padding:8px 18px; font-size:14px; cursor:pointer; transition:.2s; }
+.likebar .like:hover { background:var(--accent); color:#fff; }
+.likebar small { color:var(--text-muted); font-size:12px; }
+
+/* ---------- 滚动入场动效 ---------- */
+.fade-in-up { opacity:0; transform:translateY(20px); transition:opacity .6s ease, transform .6s ease; }
+.fade-in-up.visible { opacity:1; transform:translateY(0); }
+
+/* ---------- 响应式 ---------- */
+@media (max-width:1024px){ article { max-width:100%; } .cards { grid-template-columns:1fr; } }
+@media (max-width:768px){
+  h1 { font-size:2rem !important; }
+  .card, .post, .item { padding:20px !important; }
+  pre code { font-size:14px; }
+}
+
+/* ---------- 尊重“减少动效” ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation:none !important; transition:none !important; }
+  .fade-in-up, .reveal { opacity:1 !important; transform:none !important; }
+}

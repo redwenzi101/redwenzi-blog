@@ -1,4 +1,4 @@
-// 互动组件：回到顶部 + 每篇文章点赞（仅本站演示，localStorage）
+// 互动组件：回到顶部 + 点赞 + 导航滚动模糊/当前页高亮
 document.addEventListener("DOMContentLoaded", function () {
   // 回到顶部
   var top = document.createElement("button");
@@ -7,11 +7,22 @@ document.addEventListener("DOMContentLoaded", function () {
   top.title = "回到顶部";
   top.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
   document.body.appendChild(top);
+
+  // 导航滚动状态 + 当前页高亮
+  var nav = document.querySelector("nav");
   window.addEventListener("scroll", function () {
-    top.style.display = window.scrollY > 300 ? "flex" : "none";
+    var y = window.scrollY;
+    top.style.display = y > 300 ? "flex" : "none";
+    if (nav) nav.classList.toggle("nav-scrolled", y > 50);
   }, { passive: true });
 
-  // 点赞（单站演示：记录本机，跨用户不作数）
+  var here = location.pathname.split("/").pop() || "index.html";
+  document.querySelectorAll("nav a").forEach(function (a) {
+    var target = a.getAttribute("href") || "";
+    if (target.split("/").pop() === here) a.classList.add("active");
+  });
+
+  // 点赞（仅本站演示）
   var art = document.querySelector("article");
   if (art) {
     var key = "like-" + location.pathname;
