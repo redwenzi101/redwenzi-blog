@@ -58,3 +58,18 @@ tr:nth-child(even) td { background:#fdfcf9; }
 .likebar .like { background:#fff; border:1px solid #ece6da; color:#1f3a5f; border-radius:980px; padding:8px 18px; font-size:14px; cursor:pointer; transition:.2s; }
 .likebar .like:hover { background:#1f3a5f; color:#fff; }
 .likebar small { color:#9a9a9a; font-size:12px; }
+
+/* “即将上线”占位卡片（虚线） */
+.soon-card {
+  background:transparent !important;
+  border:2px dashed #ece6da !important;
+  border-left:2px dashed #ece6da !important;
+  border-radius:12px !important;
+  padding:18px 22px !important;
+  color:#9a9a9a !important;
+  box-shadow:none !important;
+  transition:.25s;
+}
+.soon-card:hover { border-color:#c9a227 !important; color:#c9a227 !important; }
+.soon-card b { color:inherit; font-size:15px; }
+.soon-card p { margin:4px 0 0; font-size:13px; color:inherit; }
