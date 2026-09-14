@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C 语言 第 5 章 数组与字符串 · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../assets/article.css">
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="index.html">← C 语言 学习路线（共 8 章）</a>
+      <h1>第 5 章　数组与字符串</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · C 语言 · 📖 预计阅读 11 分钟 · 共 2 道练习</div>
+    </header>
+
+    <article>
+<div class="tip">🎯 <b>本章你会学到：</b>数组的内存布局、越界为什么危险、C 的字符串为什么要靠 '\0' 收尾。建议边读边敲，每节练习先自己做，再展开答案对照。</div>
+      <p>数组是一段连续的内存。这一章的两个重点：一是数组下标不做边界检查，二是 C 没有字符串类型，只有“以 <code>\0</code> 结尾的字符数组”。</p>
+      <h3>数组：连续内存 + 下标越界不报错</h3>
+      <div class="code-label">数组求最大值与平均值</div><pre><code class="language-c">#include &lt;stdio.h&gt;
+
+#define MAXN 100
+
+int main(void) {
+    int n = 0;
+    if (scanf("%d", &amp;n) != 1 || n &lt;= 0 || n &gt; MAXN) {
+        return 1;                      /* 先校验规模，再开数组 */
+    }
+    int a[MAXN];
+    for (int i = 0; i &lt; n; ++i) {
+        if (scanf("%d", &amp;a[i]) != 1) {
+            return 1;
+        }
+    }
+
+    int maxv = a[0];
+    long long sum = 0;
+    for (int i = 0; i &lt; n; ++i) {
+        if (a[i] &gt; maxv) {
+            maxv = a[i];
+        }
+        sum += a[i];
+    }
+    printf("max=%d\n", maxv);
+    printf("avg=%.2f\n", (double)sum / n);
+    return 0;
+}</code></pre><div class="code-label">输入</div><pre><code class="language-text">5
+3 9 4 9 2</code></pre><div class="code-label">运行结果</div><pre><code class="language-text">max=9
+avg=5.40</code></pre>
+      <p>输入 <code>5</code> 和 <code>3 9 4 9 2</code>，输出 <code>max=9</code> 与 <code>avg=5.40</code>。注意 <code>sum</code> 用 <code>long long</code>：数组很大时 int 会溢出。</p>
+      <h3>字符串：字符数组 + 结尾的 '\0'</h3>
+      <div class="code-label">字符串长度与复制</div><pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+int main(void) {
+    char buf[64];
+    if (scanf("%63s", buf) != 1) {     /* 63：给结尾的 '\0' 留一个位置 */
+        return 1;
+    }
+
+    char copy[64];
+    strcpy(copy, buf);                 /* 复制（目标数组必须够大） */
+
+    printf("len=%zu\n", strlen(copy)); /* 长度不含 '\0' */
+    printf("first=%c\n", copy[0]);
+    return 0;
+}</code></pre><div class="code-label">输入</div><pre><code class="language-text">hello</code></pre><div class="code-label">运行结果</div><pre><code class="language-text">len=5
+first=h</code></pre>
+      <p>输入 <code>hello</code> 输出 <code>len=5</code> 与 <code>first=h</code>。<code>strlen</code> 是一个字符一个字符数到 <code>\0</code> 为止，所以它不保存长度、每次调用都是 O(n)。</p>
+      <table><thead><tr><th>函数</th><th>作用</th><th>注意</th></tr></thead><tbody><tr><td>strlen(s)</td><td>求长度（不含 '\0'）</td><td>O(n)</td></tr><tr><td>strcpy(dst, src)</td><td>复制字符串</td><td>dst 必须够大，否则缓冲区溢出</td></tr><tr><td>strcmp(a, b)</td><td>比较（返回负/0/正）</td><td>不能用 == 比较字符串</td></tr><tr><td>strcat(dst, src)</td><td>拼接</td><td>同样要保证 dst 够大</td></tr><tr><td>fgets(buf, n, stdin)</td><td>读一整行（含空格）</td><td>会保留换行符，需要自己删</td></tr></tbody></table>
+      <div class="warn"><b>⚠️ 易错点</b>　数组越界不报错：<code>int a[5]; a[5] = 1;</code> 编译通过、多数时候也能跑，但它改的是别人的内存，属于未定义行为。</div>
+      <div class="warn"><b>⚠️ 易错点</b>　用 <code>%s</code> 读入一定要限宽（<code>%63s</code>）。不限宽时，输入比缓冲区长就会溢出——这是 C 程序最经典的安全漏洞。</div>
+      <div class="warn"><b>⚠️ 易错点</b>　把数组传给函数后，<code>sizeof</code> 拿到的是指针大小（8），不是数组长度。长度必须另外传进去。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-5-1">
+      <div class="ex-head"><span class="ex-id">5.1</span><span class="badge easy">必做</span><span class="ex-title">数组反转输出</span></div>
+      <p>读入 n 和 n 个整数，按相反顺序输出，数字之间用空格分隔，末尾换行。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　第一行 n；第二行 n 个整数。</p><p class="io-line"><b>输出</b>　一行：反转后的序列。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>5
+1 2 3 4 5</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>5 4 3 2 1</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　从 <code>n - 1</code> 倒着循环，注意最后一个数字后面不要再输出空格。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary><pre><code class="language-c">#include &lt;stdio.h&gt;
+
+#define MAXN 1000
+
+int main(void) {
+    int n = 0;
+    if (scanf("%d", &amp;n) != 1 || n &lt;= 0 || n &gt; MAXN) {
+        return 1;
+    }
+    int a[MAXN];
+    for (int i = 0; i &lt; n; ++i) {
+        if (scanf("%d", &amp;a[i]) != 1) {
+            return 1;
+        }
+    }
+    for (int i = n - 1; i &gt;= 0; --i) {
+        printf("%d%c", a[i], i == 0 ? '\n' : ' ');
+    }
+    return 0;
+}</code></pre><p class="note"><b>解析</b>　用三元运算符决定“输出空格还是换行”，可以避免末尾多一个空格——在线评测系统对格式很敏感。</p></details>
+      </section>
+      <section class="ex" id="ex-5-2">
+      <div class="ex-head"><span class="ex-id">5.2</span><span class="badge hard">挑战</span><span class="ex-title">统计一行的长度和单词数</span></div>
+      <p>用 <code>fgets</code> 读入一整行（可能含空格），输出这行的字符数（不含换行）和单词数（以空格分隔）。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　一行文字（长度 ≤ 250）。</p><p class="io-line"><b>输出</b>　两行：<code>len=字符数</code>、<code>words=单词数</code>。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>hello world</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>len=11
+words=2</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　先删掉行尾的换行符，再用一个 in_word 标志遍历统计。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary><pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+int main(void) {
+    char line[256];
+    if (fgets(line, sizeof line, stdin) == NULL) {
+        return 0;
+    }
+
+    size_t len = strlen(line);
+    while (len &gt; 0 &amp;&amp; (line[len - 1] == '\n' || line[len - 1] == '\r')) {
+        line[--len] = '\0';            /* 去掉行尾换行 */
+    }
+
+    int words = 0, in_word = 0;
+    for (size_t i = 0; i &lt; len; ++i) {
+        if (line[i] != ' ' &amp;&amp; !in_word) {
+            ++words;
+            in_word = 1;
+        } else if (line[i] == ' ') {
+            in_word = 0;
+        }
+    }
+    printf("len=%zu\n", len);
+    printf("words=%d\n", words);
+    return 0;
+}</code></pre><p class="note"><b>解析</b>　<code>fgets</code> 会把换行也读进来，所以长度要先减掉它；<code>in_word</code> 标志保证连续空格不会被重复计数。</p></details>
+      </section>
+      <div class="tip"><b>📚 本文概念都在知识大全：</b><p style="margin-top:6px"><a href="../../knowledge/index.html#c-language">C 语言</a> · <a href="../../knowledge/index.html#gcc">GCC 编译器</a> · <a href="../../knowledge/index.html#pointer">指针</a> · <a href="../../knowledge/index.html#malloc-free">动态内存 malloc/free</a> · <a href="../../knowledge/index.html#c-string">C 字符串</a> · <a href="../../knowledge/index.html#struct">结构体</a> · <a href="../../knowledge/index.html#preprocessor">预处理</a> · <a href="../../knowledge/index.html#cpp-compile-link">编译与链接</a></p></div>
+      <div class="lesson-nav"><a href="04-functions-files.html">← 上一章：4. 函数与多文件组织</a><a href="06-pointers-memory.html">下一章：6. 指针与动态内存 →</a></div>
+    </article>
+
+  <script src="../../assets/highlight.min.js"></script>
+  <script src="../../assets/article.js"></script>
+  <script src="../../assets/interact.js"></script>
+  <script src="../../assets/search.js"></script>
+  <script src="../../assets/giscus-config.js"></script>
+  <script src="../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

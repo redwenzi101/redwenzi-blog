@@ -8,6 +8,27 @@
   <author><name>red wenzi</name></author>
 
   <entry>
+    <title>C 语言学习路线（8 章 · 16 题）</title>
+    <link href="https://redwenzi-blog.pages.dev/programming/c/index.html"/>
+    <id>https://redwenzi-blog.pages.dev/programming/c/index.html</id>
+    <updated>2026-09-15T00:00:00Z</updated>
+    <summary>指针、数组、字符串、动态内存、结构体与文件，全部用 gcc 实测。</summary>
+  </entry>
+  <entry>
+    <title>Java 学习路线（8 章 · 16 题）</title>
+    <link href="https://redwenzi-blog.pages.dev/programming/java/index.html"/>
+    <id>https://redwenzi-blog.pages.dev/programming/java/index.html</id>
+    <updated>2026-09-15T00:00:00Z</updated>
+    <summary>JVM、类型与字符串、类与对象、继承与接口、集合、异常与文件、Stream 实战，JDK 21 实测。</summary>
+  </entry>
+  <entry>
+    <title>Python 学习路线（8 章 · 16 题）</title>
+    <link href="https://redwenzi-blog.pages.dev/programming/python/index.html"/>
+    <id>https://redwenzi-blog.pages.dev/programming/python/index.html</id>
+    <updated>2026-09-15T00:00:00Z</updated>
+    <summary>容器与推导式、函数与模块、文件与异常、面向对象、pandas 数据处理，CPython 3.12 实测。</summary>
+  </entry>
+  <entry>
     <title>编程语言分享 · C / C++ / Java / Python 学习路线</title>
     <link href="https://redwenzi-blog.pages.dev/programming/index.html"/>
     <id>https://redwenzi-blog.pages.dev/programming/index.html</id>

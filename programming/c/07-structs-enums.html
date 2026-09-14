@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C 语言 第 7 章 结构体、枚举与 typedef · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../assets/article.css">
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="index.html">← C 语言 学习路线（共 8 章）</a>
+      <h1>第 7 章　结构体、枚举与 typedef</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · C 语言 · 📖 预计阅读 12 分钟 · 共 2 道练习</div>
+    </header>
+
+    <article>
+<div class="tip">🎯 <b>本章你会学到：</b>把相关数据打包成一个类型，并用 qsort 排序结构体数组。建议边读边敲，每节练习先自己做，再展开答案对照。</div>
+      <p>结构体让你把“一个学生的姓名和分数”这种相关数据打包成一个整体。这是从“处理变量”走向“处理对象”的第一步，也是链表、树的起点。</p>
+      <h3>定义与访问</h3>
+      <div class="code-label">结构体与指针访问</div><pre><code class="language-c">#include &lt;stdio.h&gt;
+
+typedef struct {          /* typedef 让后面可以只写 Point */
+    double x;
+    double y;
+} Point;
+
+static double dist2(const Point *p) {   /* 传指针：不拷贝整个结构体 */
+    return p-&gt;x * p-&gt;x + p-&gt;y * p-&gt;y;
+}
+
+int main(void) {
+    Point p = {3.0, 4.0};               /* 初始化列表 */
+    printf("%.1f\n", dist2(&amp;p));
+    return 0;
+}</code></pre><div class="code-label">运行结果</div><pre><code class="language-text">25.0</code></pre>
+      <p>输出 <code>25.0</code>。两个语法要分清：<code>p.x</code> 用于结构体变量本身，<code>p-&gt;x</code> 等价于 <code>(*p).x</code>，用于指向结构体的指针。</p>
+      <h3>结构体数组与 qsort</h3>
+      <div class="code-label">按分数排序结构体数组</div><pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+typedef struct {
+    char name[32];
+    int score;
+} Student;
+
+/* qsort 的比较函数：负数表示 a 排在 b 前面 */
+static int cmp_score_desc(const void *a, const void *b) {
+    const Student *x = a;
+    const Student *y = b;
+    if (x-&gt;score != y-&gt;score) {
+        return y-&gt;score - x-&gt;score;     /* 分数降序 */
+    }
+    return strcmp(x-&gt;name, y-&gt;name);    /* 同分按名字升序 */
+}
+
+int main(void) {
+    Student s[3] = {{"Ann", 90}, {"Bob", 95}, {"Cid", 88}};
+    qsort(s, 3, sizeof s[0], cmp_score_desc);
+    for (size_t i = 0; i &lt; 3; ++i) {
+        printf("%s %d\n", s[i].name, s[i].score);
+    }
+    return 0;
+}</code></pre><div class="code-label">运行结果</div><pre><code class="language-text">Bob 95
+Ann 90
+Cid 88</code></pre>
+      <p>输出顺序是 <code>Bob 95</code>、<code>Ann 90</code>、<code>Cid 88</code>。<code>qsort</code> 是标准库的通用排序，需要你告诉它“每个元素多大”和“怎么比”。</p>
+      <table><thead><tr><th>写法</th><th>含义</th><th>什么时候用</th></tr></thead><tbody><tr><td>struct Point p;</td><td>结构体变量</td><td>需要独立一份数据时</td></tr><tr><td>Point *p = &amp;other;</td><td>结构体指针</td><td>传参、动态分配时（避免整体拷贝）</td></tr><tr><td>p.x / p-&gt;x</td><td>访问成员</td><td>变量用点，指针用箭头</td></tr><tr><td>typedef struct {...} Point;</td><td>起别名</td><td>让类型名更像普通类型（推荐）</td></tr></tbody></table>
+      <div class="warn"><b>⚠️ 易错点</b>　结构体按值传参会整体拷贝。结构体很大时（比如里面有数组）要传指针，并用 <code>const</code> 表示只读。</div>
+      <div class="warn"><b>⚠️ 易错点</b>　<code>strcmp</code> 返回的是“差值”，不是 1/0/-1。想判断相等要写 <code>strcmp(a, b) == 0</code>。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-7-1">
+      <div class="ex-head"><span class="ex-id">7.1</span><span class="badge easy">必做</span><span class="ex-title">按分数排序输出学生</span></div>
+      <p>定义 <code>Student</code>（名字 + 分数），读入 3 个学生，按分数从高到低输出姓名和分数。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　三行，每行「名字 分数」。</p><p class="io-line"><b>输出</b>　三行，按分数降序。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>Ann 90
+Bob 95
+Cid 88</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>Bob 95
+Ann 90
+Cid 88</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　比较函数里返回 <code>y-&gt;score - x-&gt;score</code> 就是降序。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary><pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+typedef struct {
+    char name[32];
+    int score;
+} Student;
+
+static int cmp_desc(const void *a, const void *b) {
+    const Student *x = a;
+    const Student *y = b;
+    return y-&gt;score - x-&gt;score;
+}
+
+int main(void) {
+    Student s[3];
+    for (int i = 0; i &lt; 3; ++i) {
+        if (scanf("%31s %d", s[i].name, &amp;s[i].score) != 2) {
+            return 1;
+        }
+    }
+    qsort(s, 3, sizeof s[0], cmp_desc);
+    for (int i = 0; i &lt; 3; ++i) {
+        printf("%s %d\n", s[i].name, s[i].score);
+    }
+    return 0;
+}</code></pre><p class="note"><b>解析</b>　<code>%31s</code> 限宽保证名字不会写坏 <code>name[32]</code>；比较函数参数是 <code>const void *</code>，要先转成 <code>const Student *</code>。</p></details>
+      </section>
+      <section class="ex" id="ex-7-2">
+      <div class="ex-head"><span class="ex-id">7.2</span><span class="badge hard">挑战</span><span class="ex-title">平均分与最高分</span></div>
+      <p>读入 n 个学生（每行「名字 分数」），输出人数、平均分（保留 2 位小数）和最高分学生的名字。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　第一行 n；接下来 n 行「名字 分数」。</p><p class="io-line"><b>输出</b>　三行：<code>count=</code>、<code>avg=</code>、<code>top=</code>。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>3
+Ann 90
+Bob 95
+Cid 88</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>count=3
+avg=91.00
+top=Bob</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　一边读一边累加分数、维护最高分；最高分要顺便把名字复制下来。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary><pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+#define MAXN 100
+
+typedef struct {
+    char name[32];
+    int score;
+} Student;
+
+int main(void) {
+    int n = 0;
+    if (scanf("%d", &amp;n) != 1 || n &lt;= 0 || n &gt; MAXN) {
+        return 1;
+    }
+    Student s[MAXN];
+    long long sum = 0;
+    int best = -1, best_idx = 0;
+    for (int i = 0; i &lt; n; ++i) {
+        if (scanf("%31s %d", s[i].name, &amp;s[i].score) != 2) {
+            return 1;
+        }
+        sum += s[i].score;
+        if (s[i].score &gt; best) {
+            best = s[i].score;
+            best_idx = i;
+        }
+    }
+    printf("count=%d\n", n);
+    printf("avg=%.2f\n", (double)sum / n);
+    printf("top=%s\n", s[best_idx].name);
+    return 0;
+}</code></pre><p class="note"><b>解析</b>　记录最高分的下标而不是名字数组，最后按下标取名字，代码更短也不容易出错。</p></details>
+      </section>
+      <div class="tip"><b>📚 本文概念都在知识大全：</b><p style="margin-top:6px"><a href="../../knowledge/index.html#c-language">C 语言</a> · <a href="../../knowledge/index.html#gcc">GCC 编译器</a> · <a href="../../knowledge/index.html#pointer">指针</a> · <a href="../../knowledge/index.html#malloc-free">动态内存 malloc/free</a> · <a href="../../knowledge/index.html#c-string">C 字符串</a> · <a href="../../knowledge/index.html#struct">结构体</a> · <a href="../../knowledge/index.html#preprocessor">预处理</a> · <a href="../../knowledge/index.html#cpp-compile-link">编译与链接</a></p></div>
+      <div class="lesson-nav"><a href="06-pointers-memory.html">← 上一章：6. 指针与动态内存</a><a href="08-files-and-project.html">下一章：8. 文件、命令行参数与综合实战 →</a></div>
+    </article>
+
+  <script src="../../assets/highlight.min.js"></script>
+  <script src="../../assets/article.js"></script>
+  <script src="../../assets/interact.js"></script>
+  <script src="../../assets/search.js"></script>
+  <script src="../../assets/giscus-config.js"></script>
+  <script src="../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

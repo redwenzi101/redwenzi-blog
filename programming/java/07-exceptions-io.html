@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Java 第 7 章 异常与文件读写 · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../assets/article.css">
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="index.html">← Java 学习路线（共 8 章）</a>
+      <h1>第 7 章　异常与文件读写</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · Java · 📖 预计阅读 11 分钟 · 共 2 道练习</div>
+    </header>
+
+    <article>
+<div class="tip">🎯 <b>本章你会学到：</b>受检异常为什么强制你处理，以及 try-with-resources 怎么自动关文件。建议边读边敲，每节练习先自己做，再展开答案对照。</div>
+      <p>Java 把错误处理做成了语言机制：出了问题就抛异常，必须有地方接住。好处是错误不会被默默忽略，代价是要多写几行。</p>
+      <h3>抛出与捕获</h3>
+      <div class="code-label">抛出、捕获与 finally</div><pre><code class="language-java">public class Main {
+    static int divide(int a, int b) {
+        if (b == 0) {
+            throw new IllegalArgumentException("divide by zero");   // 主动抛
+        }
+        return a / b;
+    }
+
+    public static void main(String[] args) {
+        try {
+            System.out.println(divide(10, 2));
+            System.out.println(divide(1, 0));      // 这里抛出，跳到 catch
+        } catch (IllegalArgumentException e) {     // 按类型捕获
+            System.out.println("caught: " + e.getMessage());
+        } finally {
+            System.out.println("done");            // 无论是否异常都会执行
+        }
+    }
+}</code></pre><div class="code-label">运行结果</div><pre><code class="language-text">5
+caught: divide by zero
+done</code></pre>
+      <table><thead><tr><th>类型</th><th>是否强制处理</th><th>例子</th></tr></thead><tbody><tr><td>受检异常 Exception</td><td>必须 try-catch 或 throws 声明</td><td>IOException、FileNotFoundException</td></tr><tr><td>非受检 RuntimeException</td><td>不强制，但可能运行时爆炸</td><td>NullPointerException、ArrayIndexOutOfBounds</td></tr><tr><td>Error</td><td>不处理（JVM 层问题）</td><td>OutOfMemoryError</td></tr></tbody></table>
+      <h3>读写文件：try-with-resources</h3>
+      <div class="code-label">用 Files 读写文件</div><pre><code class="language-java">import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) throws IOException {   // 也可以声明抛出
+        Path path = Path.of("numbers.txt");
+        Files.write(path, List.of("10", "20", "30"));             // 写文件
+
+        int sum = 0;
+        for (String line : Files.readAllLines(path)) {            // 读全部行
+            sum += Integer.parseInt(line.trim());
+        }
+        System.out.println("sum=" + sum);
+    }
+}</code></pre><div class="code-label">运行结果</div><pre><code class="language-text">sum=60</code></pre>
+      <p>现代 Java 推荐用 <code>java.nio.file.Files</code>，一行读写，不用手动 <code>close()</code>。如果要处理大文件按行读，用 <code>try (BufferedReader in = Files.newBufferedReader(path))</code> —— try-with-resources 会在退出时自动关闭资源。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　空的 <code>catch</code> 块（吞异常）是最糟的写法：出了问题你什么都不知道。至少要打印日志或重新抛出。</div>
+      <div class="warn"><b>⚠️ 易错点</b>　<code>catch (Exception e)</code> 放在前面会把所有异常都截住，让后面的具体捕获失效——具体异常写在前面，宽泛的写在后面。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-7-1">
+      <div class="ex-head"><span class="ex-id">7.1</span><span class="badge easy">必做</span><span class="ex-title">安全的除法</span></div>
+      <p>读入两个整数，输出它们的商；如果除数为 0，输出 <code>error</code>（用异常处理而不是 if 判断）。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　一行两个整数 a b。</p><p class="io-line"><b>输出</b>　一行：商，或 <code>error</code>。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>10 0</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>error</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　用 <code>try { ... } catch (ArithmeticException e) { ... }</code> 捕获整数除零。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary><pre><code class="language-java">import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int a = sc.nextInt();
+        int b = sc.nextInt();
+        try {
+            System.out.println(a / b);
+        } catch (ArithmeticException e) {
+            System.out.println("error");
+        }
+    }
+}</code></pre><p class="note"><b>解析</b>　整数除以 0 会抛 <code>ArithmeticException</code>（浮点除零不会，会得到 Infinity/NaN）。</p></details>
+      </section>
+      <section class="ex" id="ex-7-2">
+      <div class="ex-head"><span class="ex-id">7.2</span><span class="badge hard">挑战</span><span class="ex-title">过滤非法输入</span></div>
+      <p>读入 n 行内容，能解析成整数的累加，不能解析的计数。最后输出合法数字之和与非法行数。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　第一行 n；接下来 n 行内容。</p><p class="io-line"><b>输出</b>　两行：<code>sum=和</code>、<code>invalid=非法行数</code>。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>4
+10
+abc
+20
+30</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>sum=60
+invalid=1</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　<code>Integer.parseInt(line)</code> 失败会抛 <code>NumberFormatException</code>，用 try-catch 包住每一行。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary><pre><code class="language-java">import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = Integer.parseInt(sc.nextLine().trim());
+        long sum = 0;
+        int invalid = 0;
+        for (int i = 0; i &lt; n; i++) {
+            String line = sc.nextLine().trim();
+            try {
+                sum += Integer.parseInt(line);
+            } catch (NumberFormatException e) {
+                invalid++;
+            }
+        }
+        System.out.println("sum=" + sum);
+        System.out.println("invalid=" + invalid);
+    }
+}</code></pre><p class="note"><b>解析</b>　先 <code>nextLine()</code> 读掉第一行的 n（<code>nextInt()</code> 会把换行留在缓冲区），再逐行处理——这正是 Java 里 <code>nextInt</code> 与 <code>nextLine</code> 混用的经典坑。</p></details>
+      </section>
+      <div class="tip"><b>📚 本文概念都在知识大全：</b><p style="margin-top:6px"><a href="../../knowledge/index.html#jvm">JVM 与字节码</a> · <a href="../../knowledge/index.html#jdk">JDK</a> · <a href="../../knowledge/index.html#java-string">String 与 StringBuilder</a> · <a href="../../knowledge/index.html#java-collections">集合框架</a> · <a href="../../knowledge/index.html#java-generics">泛型</a> · <a href="../../knowledge/index.html#java-exception">受检异常</a> · <a href="../../knowledge/index.html#java-inheritance">继承与接口</a> · <a href="../../knowledge/index.html#java-record">record</a> · <a href="../../knowledge/index.html#java-stream">Stream API</a></p></div>
+      <div class="lesson-nav"><a href="06-collections.html">← 上一章：6. 集合框架</a><a href="08-streams-project.html">下一章：8. Lambda、Stream 与综合实战 →</a></div>
+    </article>
+
+  <script src="../../assets/highlight.min.js"></script>
+  <script src="../../assets/article.js"></script>
+  <script src="../../assets/interact.js"></script>
+  <script src="../../assets/search.js"></script>
+  <script src="../../assets/giscus-config.js"></script>
+  <script src="../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

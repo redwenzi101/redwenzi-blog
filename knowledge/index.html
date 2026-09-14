@@ -153,6 +153,33 @@
         <li><a href="#greedy">贪心</a></li>
         <li><a href="#dynamic-programming">动态规划（DP）</a></li>
       </ul>
+      <h2>编程语言（C / Java / Python）（24 条）</h2>
+      <ul>
+        <li><a href="#c-language">C 语言</a></li>
+        <li><a href="#gcc">GCC 编译器</a></li>
+        <li><a href="#malloc-free">动态内存（malloc / free）</a></li>
+        <li><a href="#c-string">C 字符串</a></li>
+        <li><a href="#struct">结构体</a></li>
+        <li><a href="#preprocessor">预处理</a></li>
+        <li><a href="#jvm">JVM 与字节码</a></li>
+        <li><a href="#jdk">JDK</a></li>
+        <li><a href="#java-string">String 与 StringBuilder</a></li>
+        <li><a href="#java-collections">集合框架</a></li>
+        <li><a href="#java-generics">泛型</a></li>
+        <li><a href="#java-exception">受检异常</a></li>
+        <li><a href="#java-inheritance">继承与接口</a></li>
+        <li><a href="#java-record">record</a></li>
+        <li><a href="#java-stream">Stream API</a></li>
+        <li><a href="#python">Python</a></li>
+        <li><a href="#pip-venv">pip 与虚拟环境</a></li>
+        <li><a href="#python-container">列表 / 字典 / 集合</a></li>
+        <li><a href="#python-comprehension">推导式</a></li>
+        <li><a href="#python-fstring">f-string</a></li>
+        <li><a href="#python-exception">Python 异常处理</a></li>
+        <li><a href="#python-dataclass">dataclass</a></li>
+        <li><a href="#pandas">pandas</a></li>
+        <li><a href="#python-module">模块与包</a></li>
+      </ul>
     </div>
 
     <h2 class="cat">一、网络与建站</h2>
@@ -1127,6 +1154,272 @@
       </div>
       <div class="meta-links"><span>相关词条：</span><a href="#greedy">greedy</a><a href="#backtracking">backtracking</a><a href="#complexity">complexity</a></div>
       <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/11-algorithm-patterns.html">第 11 章</a></div>
+    </section>
+
+    <h2 class="cat">四、编程语言（C / Java / Python）</h2>
+
+    <section class="entry" id="c-language">
+      <h3>C 语言 <span class="en">C</span></h3>
+      <p class="what"><b>是什么：</b>面向过程、贴近硬件的通用语言：不隐藏内存细节，也不替你管理内存。</p>
+      <p class="when"><b>什么时候用：</b>想搞懂指针、内存布局、编译链接这些底层概念时；也是学 C++ 与数据结构的前置。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>标准版本用 <code>-std=c17</code>；编译命令 <code>gcc -std=c17 -Wall -Wextra -o app app.c</code>。</li><li>程序入口是 <code>int main(void)</code>；没有类、没有异常、没有垃圾回收。</li><li>字符串是“以 <code>'\0'</code> 结尾的字符数组”，不是一种独立类型。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#gcc">gcc</a><a href="#pointer">pointer</a><a href="#malloc-free">malloc-free</a><a href="#cpp-compile-link">cpp-compile-link</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/c/index.html">C 语言学习路线（8 章）</a></div>
+    </section>
+
+    <section class="entry" id="gcc">
+      <h3>GCC 编译器 <span class="en">GNU Compiler Collection</span></h3>
+      <p class="what"><b>是什么：</b>把 C/C++ 源码编译成可执行文件的工具链；<code>gcc</code> 编 C，<code>g++</code> 编 C++。</p>
+      <p class="when"><b>什么时候用：</b>本地写 C/C++ 程序、写在线评测题目时每天都在用。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>gcc -std=c17 -Wall -Wextra -o hello hello.c</code> 编译并指定输出名。</li><li><code>-c</code> 只编译成目标文件（.o），<code>-g</code> 保留调试信息，<code>-O2</code> 开优化。</li><li><code>-fsanitize=address,undefined</code> 打开内存与未定义行为检测。</li><li>多个源文件一起编译：<code>gcc -o app main.c util.c</code>。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#c-language">c-language</a><a href="#gpp-flags">gpp-flags</a><a href="#sanitizer">sanitizer</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/c/index.html">C 语言学习路线</a><a href="../programming/python/index.html">Python 学习路线</a></div>
+    </section>
+
+    <section class="entry" id="malloc-free">
+      <h3>动态内存（malloc / free） <span class="en">malloc / free</span></h3>
+      <p class="what"><b>是什么：</b>C 里在堆上申请和释放内存的一对函数：<code>malloc</code> 只要空间不清零，<code>free</code> 归还给系统。</p>
+      <p class="when"><b>什么时候用：</b>数组大小要到运行时才知道、或对象的生命周期要超出函数时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>int *a = malloc(n * sizeof(int));</code> 申请后必须检查是否为 <code>NULL</code>。</li><li>用完 <code>free(a)</code>，并把指针置空，避免悬垂指针与重复释放。</li><li><code>calloc</code> 会清零，<code>realloc</code> 用来扩容。</li><li>现代 C++ 里这一步交给 <code>std::vector</code> / 智能指针（见 RAII）。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#pointer">pointer</a><a href="#raii">raii</a><a href="#stack-heap">stack-heap</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/c/index.html">C 语言学习路线</a></div>
+    </section>
+
+    <section class="entry" id="c-string">
+      <h3>C 字符串 <span class="en">C string</span></h3>
+      <p class="what"><b>是什么：</b>以 <code>\0</code> 结尾的字符数组：长度靠遍历统计，容量与内容都要你自己维护。</p>
+      <p class="when"><b>什么时候用：</b>用 C 处理文本时必须面对它；<code>%s</code>、<code>fgets</code>、<code>strlen</code> 都围绕它工作。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>char buf[64];</code> 留出放 <code>\0</code> 的位置；用 <code>%63s</code> 限制读入长度。</li><li><code>strlen</code> 求长度（O(n)）、<code>strcpy</code> 复制、<code>strcmp</code> 比较（不能写 <code>==</code>）。</li><li>读整行用 <code>fgets</code>，注意它会保留行尾换行符。</li><li>C++ 里直接用 <code>std::string</code>，不必再操心这些。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#c-language">c-language</a><a href="#pointer">pointer</a><a href="#io-stream">io-stream</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/c/index.html">C 语言学习路线</a></div>
+    </section>
+
+    <section class="entry" id="struct">
+      <h3>结构体 <span class="en">struct</span></h3>
+      <p class="what"><b>是什么：</b>把多个字段打包成一个自定义类型的语法；结构体数组、结构体指针是链表和树的起点。</p>
+      <p class="when"><b>什么时候用：</b>表示“一个学生的姓名和分数”“一个区间的左右端点”这类成组数据时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>struct Point { double x, y; };</code> 定义；<code>typedef</code> 之后可以只写 <code>Point</code>。</li><li>变量用 <code>p.x</code>，指针用 <code>p-&gt;x</code>（等价于 <code>(*p).x</code>）。</li><li>结构体按值传参会整体拷贝，大结构体要传指针并加 const。</li><li>C++ 里 struct 与 class 只差默认访问权限。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#c-language">c-language</a><a href="#pointer">pointer</a><a href="#linked-list">linked-list</a><a href="#class-object">class-object</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/c/index.html">C 语言学习路线</a></div>
+    </section>
+
+    <section class="entry" id="preprocessor">
+      <h3>预处理 <span class="en">#include / #define</span></h3>
+      <p class="what"><b>是什么：</b>编译之前对源码做的纯文本处理：展开 include、替换宏、处理条件编译。</p>
+      <p class="when"><b>什么时候用：</b>所有 C/C++ 程序都在用；排查重复定义、宏展开问题时要知道它的存在。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>#include &lt;stdio.h&gt;</code> 引入系统头文件，<code>#include "util.h"</code> 引入自己的头文件。</li><li>头文件用 include guard（<code>#ifndef / #define / #endif</code> 或 <code>#pragma once</code>）防重复包含。</li><li>宏是纯文本替换、没有类型与作用域，能用 <code>constexpr</code> / inline 函数就别用宏。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#c-language">c-language</a><a href="#header-include">header-include</a><a href="#odr">odr</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/c/index.html">C 语言学习路线</a></div>
+    </section>
+
+    <section class="entry" id="jvm">
+      <h3>JVM 与字节码 <span class="en">Java Virtual Machine</span></h3>
+      <p class="what"><b>是什么：</b>Java 源码编译成字节码（.class），再由 JVM 加载执行；正是这一层让 Java 跨平台。</p>
+      <p class="when"><b>什么时候用：</b>理解“为什么 Java 能一次编写到处运行”“为什么需要装 JDK”时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>javac Main.java</code> 生成 <code>Main.class</code>，<code>java Main</code> 启动 JVM 运行。</li><li>JVM 负责垃圾回收：对象不再被引用后自动回收，不需要（也不能）手动释放。</li><li>性能热点由 JIT 编译成机器码，所以长时间运行的程序会越来越快。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#jdk">jdk</a><a href="#java-collections">java-collections</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/java/index.html">Java 学习路线（8 章）</a></div>
+    </section>
+
+    <section class="entry" id="jdk">
+      <h3>JDK <span class="en">Java Development Kit</span></h3>
+      <p class="what"><b>是什么：</b>写 Java 需要的开发包：包含编译器 javac、运行时 java、以及标准库。只装 JRE 只能运行、不能编译。</p>
+      <p class="when"><b>什么时候用：</b>准备开发环境的第一步。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>安装 JDK 17 或 21（LTS 版本），验证 <code>javac -version</code> 与 <code>java -version</code> 一致。</li><li>编译带中文的源码建议加编码参数：<code>javac -encoding UTF-8 Main.java</code>。</li><li>文件名必须与 <code>public</code> 类名一致。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#jvm">jvm</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/java/index.html">Java 学习路线</a></div>
+    </section>
+
+    <section class="entry" id="java-string">
+      <h3>String 与 StringBuilder <span class="en">String / StringBuilder</span></h3>
+      <p class="what"><b>是什么：</b>Java 的 String 是不可变对象；频繁拼接要用可变的 StringBuilder。</p>
+      <p class="when"><b>什么时候用：</b>处理文本、循环拼接字符串时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>比较内容用 <code>a.equals(b)</code>，<code>a == b</code> 比较的是引用。</li><li>循环里不要写 <code>s += x</code>（每次都新建对象），改用 <code>sb.append(x)</code>。</li><li>常用方法：<code>length()</code>、<code>substring</code>、<code>split</code>、<code>join</code>、<code>strip()</code>。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#jvm">jvm</a><a href="#java-collections">java-collections</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/java/index.html">Java 学习路线</a></div>
+    </section>
+
+    <section class="entry" id="java-collections">
+      <h3>集合框架 <span class="en">Collections Framework</span></h3>
+      <p class="what"><b>是什么：</b>Java 标准库的容器体系：List（有序）、Set（去重）、Map（键值）、Queue（队列），接口统一、实现可替换。</p>
+      <p class="when"><b>什么时候用：</b>几乎所有需要存一组数据的地方；选错容器往往就是性能问题的根源。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>ArrayList</code> 随机访问快；<code>HashMap</code> 平均 O(1) 查找；<code>TreeMap</code> 有序 O(log n)。</li><li>统计频率的写法：<code>map.merge(key, 1, Integer::sum)</code>。</li><li>遍历时不要直接 <code>list.remove(...)</code>，用 <code>removeIf</code> 或迭代器。</li><li>自定义对象做 key 必须同时实现 <code>equals</code> 与 <code>hashCode</code>。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#java-generics">java-generics</a><a href="#hash-table">hash-table</a><a href="#map-set">map-set</a><a href="#iterator">iterator</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/java/index.html">Java 学习路线</a></div>
+    </section>
+
+    <section class="entry" id="java-generics">
+      <h3>泛型 <span class="en">Generics</span></h3>
+      <p class="what"><b>是什么：</b>让容器与算法带上类型参数（<code>List&lt;String&gt;</code>），把类型错误从运行期提前到编译期。</p>
+      <p class="when"><b>什么时候用：</b>使用集合、写通用工具方法时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>List&lt;String&gt; list = new ArrayList&lt;&gt;();</code> 声明时写类型，创建时可省略。</li><li>类型擦除：运行期看不到泛型参数，所以不能 <code>new T[]</code>、也不能对泛型做 <code>instanceof</code>。</li><li>通配符：<code>List&lt;? extends Number&gt;</code> 只读、<code>List&lt;? super Integer&gt;</code> 可写。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#java-collections">java-collections</a><a href="#template">template</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/java/index.html">Java 学习路线</a></div>
+    </section>
+
+    <section class="entry" id="java-exception">
+      <h3>受检异常 <span class="en">Checked exception</span></h3>
+      <p class="what"><b>是什么：</b>Java 把异常分成受检（必须处理或声明 throws）与非受检（RuntimeException）两类。</p>
+      <p class="when"><b>什么时候用：</b>做 IO、网络、解析这些“可能失败”的操作时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>受检异常必须 <code>try-catch</code> 或在方法签名上 <code>throws</code>。</li><li>捕获要具体：先 <code>catch (IOException e)</code>，最后才用宽泛类型兜底。</li><li>不要写空 catch 吞掉异常；至少打印日志或重新抛出。</li><li>资源用 try-with-resources 自动关闭。<code>finally</code> 用于必须执行的收尾。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#exception">exception</a><a href="#unit-test">unit-test</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/java/index.html">Java 学习路线</a></div>
+    </section>
+
+    <section class="entry" id="java-inheritance">
+      <h3>继承与接口 <span class="en">extends / implements</span></h3>
+      <p class="what"><b>是什么：</b>Java 的方法默认动态绑定：父类引用指向子类对象时，调用的是子类实现（多态）。</p>
+      <p class="when"><b>什么时候用：</b>需要“同一段代码处理不同具体类型”时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>类单继承（<code>extends</code>），接口可以多实现（<code>implements</code>）。</li><li>重写方法建议加 <code>@Override</code>，让编译器检查签名。</li><li>接口只描述能力，抽象类可以带字段与部分实现。</li><li>只装数据的不可变类可以直接用 <code>record</code>。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#virtual-inheritance">virtual-inheritance</a><a href="#java-record">java-record</a><a href="#class-object">class-object</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/java/index.html">Java 学习路线</a></div>
+    </section>
+
+    <section class="entry" id="java-record">
+      <h3>record <span class="en">record</span></h3>
+      <p class="what"><b>是什么：</b>Java 16 起的不可变数据类语法：一行声明，自动生成构造器、访问器、equals、hashCode、toString。</p>
+      <p class="when"><b>什么时候用：</b>只想装一组数据、不需要继承时（DTO、坐标、区间、返回值）。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>record Point(int x, int y) { }</code>；访问用 <code>p.x()</code>（方法，不是字段）。</li><li>可以给 record 加方法、实现接口。</li><li>字段不可变：想“修改”就创建一个新对象。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#java-inheritance">java-inheritance</a><a href="#class-object">class-object</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/java/index.html">Java 学习路线</a></div>
+    </section>
+
+    <section class="entry" id="java-stream">
+      <h3>Stream API <span class="en">Stream</span></h3>
+      <p class="what"><b>是什么：</b>用链式写法对集合做过滤、映射、排序、统计：<code>list.stream().filter(...).map(...).count()</code>。</p>
+      <p class="when"><b>什么时候用：</b>处理数据集合、做统计与转换时；比手写循环更短也更易读。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>中间操作 <code>filter / map / sorted</code> 是惰性的，终止操作 <code>count / sum / collect / forEach</code> 才真正执行。</li><li>分组统计：<code>collect(Collectors.groupingBy(f, Collectors.counting()))</code>。</li><li>流只能消费一次，重复使用会抛 IllegalStateException。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#lambda">lambda</a><a href="#java-collections">java-collections</a><a href="#dynamic-programming">dynamic-programming</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/java/index.html">Java 学习路线</a></div>
+    </section>
+
+    <section class="entry" id="python">
+      <h3>Python <span class="en">Python</span></h3>
+      <p class="what"><b>是什么：</b>动态类型、解释执行、语法极简的通用语言，标准库与第三方生态非常丰富。</p>
+      <p class="when"><b>什么时候用：</b>写脚本、处理数据、做实验、搭原型时首选；也是数据科学方向的主力语言。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>运行脚本 <code>python hello.py</code>；快速试验直接敲 <code>python</code> 进 REPL。</li><li>缩进就是语法（惯用 4 个空格）；语句末尾不写分号。</li><li>动态类型不等于弱类型：<code>1 + "2"</code> 会报错，不会隐式转换。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#pip-venv">pip-venv</a><a href="#python-container">python-container</a><a href="#python-module">python-module</a><a href="#pandas">pandas</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/python/index.html">Python 学习路线（8 章）</a></div>
+    </section>
+
+    <section class="entry" id="pip-venv">
+      <h3>pip 与虚拟环境 <span class="en">pip / venv</span></h3>
+      <p class="what"><b>是什么：</b>pip 是 Python 的包管理器；venv 用来给每个项目建一套独立的依赖环境。</p>
+      <p class="when"><b>什么时候用：</b>安装第三方库（如 pandas）、或不同项目需要不同版本依赖时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>python -m venv .venv</code> 创建虚拟环境；激活后 <code>pip install pandas</code>。</li><li>Windows 激活：<code>.venv\Scripts\activate</code>；macOS / Linux：<code>source .venv/bin/activate</code>。</li><li>把依赖写进 <code>requirements.txt</code>：<code>pip freeze &gt; requirements.txt</code>。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#python">python</a><a href="#pandas">pandas</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/python/index.html">Python 学习路线</a></div>
+    </section>
+
+    <section class="entry" id="python-container">
+      <h3>列表 / 字典 / 集合 <span class="en">list / dict / set</span></h3>
+      <p class="what"><b>是什么：</b>Python 内置的四种容器：list（有序可变）、tuple（有序不可变）、dict（键值）、set（去重）。</p>
+      <p class="when"><b>什么时候用：</b>几乎所有 Python 程序都在用；选对容器代码能短一半。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>list 常用：<code>append</code>、<code>extend</code>、切片、<code>sorted</code>、<code>sum/max/min</code>。</li><li>dict 计数：<code>freq[w] = freq.get(w, 0) + 1</code> 或 <code>collections.Counter</code>。</li><li>set 去重：<code>set(nums)</code>，判断存在 O(1)。</li><li>字典的键必须可哈希（列表不行）。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#python">python</a><a href="#python-comprehension">python-comprehension</a><a href="#hash-table">hash-table</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/python/index.html">Python 学习路线</a></div>
+    </section>
+
+    <section class="entry" id="python-comprehension">
+      <h3>推导式 <span class="en">Comprehension</span></h3>
+      <p class="what"><b>是什么：</b>用一行生成列表 / 字典 / 集合：<code>[x * x for x in range(5) if x % 2 == 0]</code>。</p>
+      <p class="when"><b>什么时候用：</b>从已有数据构造新容器时，比 for + append 更短也更快。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>列表推导：<code>[f(x) for x in seq if 条件]</code>。</li><li>字典推导：<code>{name: i for i, name in enumerate(names)}</code>。</li><li>嵌套超过两层就该拆成普通循环，可读性优先。</li><li>生成器表达式 <code>(x for x in seq)</code> 是惰性的，适合流式处理大文件。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#python-container">python-container</a><a href="#python">python</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/python/index.html">Python 学习路线</a></div>
+    </section>
+
+    <section class="entry" id="python-fstring">
+      <h3>f-string <span class="en">f-string</span></h3>
+      <p class="what"><b>是什么：</b>Python 3.6 起的字符串格式化语法：<code>f"{name} 得分 {score:.2f}"</code>。</p>
+      <p class="when"><b>什么时候用：</b>拼接字符串与数值时，比 <code>%</code> 和 <code>format()</code> 更直观。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>格式控制：<code>{x:.2f}</code> 两位小数、<code>{x:&gt;8}</code> 右对齐、<code>{x:,}</code> 千分位。</li><li>可以直接写表达式：<code>f"合计 {a + b}"</code>。</li><li>调试小技巧：<code>f"{value=}"</code> 会同时打印变量名和值。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#python">python</a><a href="#python-container">python-container</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/python/index.html">Python 学习路线</a></div>
+    </section>
+
+    <section class="entry" id="python-exception">
+      <h3>Python 异常处理 <span class="en">try / except</span></h3>
+      <p class="what"><b>是什么：</b>用 try/except 捕获运行时错误；Python 强制你写明要捕获哪种异常类型。</p>
+      <p class="when"><b>什么时候用：</b>处理外部输入、文件读写、类型转换等可能失败的操怍时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>try: ... except ValueError as e: ...</code> 捕获具体异常。</li><li><code>finally</code> 一定会执行；<code>with</code> 用来保证资源释放（比 try/finally 更简洁）。</li><li>不要写裸的 <code>except:</code>，它会连键盘中断和真 bug 一起吞掉。</li><li>没有捕获的异常会打印完整调用栈，这是定位问题的第一手信息。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#exception">exception</a><a href="#python">python</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/python/index.html">Python 学习路线</a></div>
+    </section>
+
+    <section class="entry" id="python-dataclass">
+      <h3>dataclass <span class="en">dataclass</span></h3>
+      <p class="what"><b>是什么：</b>用装饰器自动生成数据类的构造器、打印与相等判断：<code>@dataclass class Student: name: str; score: int = 0</code>。</p>
+      <p class="when"><b>什么时候用：</b>只装数据、需要清晰的 <code>__init__</code> 与 <code>__repr__</code> 时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>字段带默认值时，后面的字段也要给默认值（和函数参数规则一致）。</li><li>加 <code>frozen=True</code> 可以得到不可变对象（可哈希、可做字典键）。</li><li>可以和方法混用；比手写 <code>__init__</code> 少写一大堆样板。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#python">python</a><a href="#class-object">class-object</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/python/index.html">Python 学习路线</a></div>
+    </section>
+
+    <section class="entry" id="pandas">
+      <h3>pandas <span class="en">pandas</span></h3>
+      <p class="what"><b>是什么：</b>Python 的数据分析主力库：用 DataFrame（表格）做读取、筛选、分组、统计与导出。</p>
+      <p class="when"><b>什么时候用：</b>处理 CSV / Excel 数据、做数据清洗与统计时；博客的数据科学线也围绕它展开。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>装：<code>pip install pandas</code>；读：<code>df = pd.read_csv("a.csv")</code>。</li><li>统计：<code>df["score"].mean()</code>；筛选：<code>df[df["score"] &gt;= 60]</code>；排序：<code>df.sort_values("score")</code>。</li><li>分组：<code>df.groupby("name")["score"].sum()</code>。</li><li>中文乱码多半是编码问题，试 <code>encoding="utf-8"</code> 或 <code>"gbk"</code>。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#python">python</a><a href="#python-container">python-container</a><a href="#complexity">complexity</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/python/index.html">Python 学习路线</a></div>
+    </section>
+
+    <section class="entry" id="python-module">
+      <h3>模块与包 <span class="en">module / package</span></h3>
+      <p class="what"><b>是什么：</b>一个 .py 文件就是一个模块；用 import 引用；带 __init__.py 的目录是包。</p>
+      <p class="when"><b>什么时候用：</b>把代码拆成多个文件、复用别人写的库时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>import json</code> / <code>from collections import Counter</code> / <code>import numpy as np</code> 三种写法。</li><li><code>if __name__ == "__main__":</code> 让文件既能当脚本跑、又能被 import。</li><li>自己写的文件名不要叫 <code>random.py</code>、<code>json.py</code>，会遮蔽标准库。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#python">python</a><a href="#pip-venv">pip-venv</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/python/index.html">Python 学习路线</a></div>
     </section>
 
     <button class="backbtn" onclick="history.back()">← 返回刚才的文章</button>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Java 第 8 章 Lambda、Stream 与综合实战 · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../assets/article.css">
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="index.html">← Java 学习路线（共 8 章）</a>
+      <h1>第 8 章　Lambda、Stream 与综合实战</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · Java · 📖 预计阅读 15 分钟 · 共 2 道练习</div>
+    </header>
+
+    <article>
+<div class="tip">🎯 <b>本章你会学到：</b>用 Stream 把“过滤/映射/排序/统计”写成一条链，并完成词频 Top-N。建议边读边敲，每节练习先自己做，再展开答案对照。</div>
+      <p>Stream 是 Java 8 之后处理集合的推荐方式：把“对一堆数据做什么”写成一条链，读起来跟描述需求一样。写数据结构作业时未必用得上，但处理数据、写脚本时非常好用。</p>
+      <h3>filter / map / sum / count</h3>
+      <div class="code-label">Stream 三件套：过滤、映射、排序</div><pre><code class="language-java">import java.util.List;
+
+public class Main {
+    record Student(String name, int score) { }
+
+    public static void main(String[] args) {
+        List&lt;Student&gt; list = List.of(
+                new Student("Ann", 90),
+                new Student("Bob", 59),
+                new Student("Cid", 88));
+
+        long pass = list.stream()
+                .filter(s -&gt; s.score() &gt;= 60)      // 过滤：及格
+                .count();
+        int total = list.stream()
+                .mapToInt(Student::score)          // 映射成 int 流
+                .sum();
+
+        System.out.println("pass=" + pass);
+        System.out.printf("avg=%.1f%n", total / (double) list.size());
+
+        list.stream()
+                .sorted((a, b) -&gt; Integer.compare(b.score(), a.score()))
+                .forEach(s -&gt; System.out.println(s.name() + " " + s.score()));
+    }
+}</code></pre><div class="code-label">运行结果</div><pre><code class="language-text">pass=2
+avg=79.0
+Ann 90
+Cid 88
+Bob 59</code></pre>
+      <h3>groupingBy：一行做词频</h3>
+      <div class="code-label">词频 Top-N</div><pre><code class="language-java">import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+public class Main {
+    public static void main(String[] args) {
+        List&lt;String&gt; words = Arrays.asList("apple", "banana", "apple", "cherry", "banana", "apple");
+
+        Map&lt;String, Long&gt; freq = words.stream()
+                .collect(Collectors.groupingBy(w -&gt; w, Collectors.counting()));
+
+        freq.entrySet().stream()
+                .sorted((a, b) -&gt; {
+                    int c = Long.compare(b.getValue(), a.getValue());   // 次数降序
+                    return c != 0 ? c : a.getKey().compareTo(b.getKey()); // 同次数按字典序
+                })
+                .limit(2)
+                .forEach(e -&gt; System.out.println(e.getKey() + " " + e.getValue()));
+    }
+}</code></pre><div class="code-label">运行结果</div><pre><code class="language-text">apple 3
+banana 2</code></pre>
+      <table><thead><tr><th>操作</th><th>写法</th><th>说明</th></tr></thead><tbody><tr><td>过滤</td><td>.filter(x -&gt; 条件)</td><td>保留满足条件的元素</td></tr><tr><td>映射</td><td>.map(x -&gt; 新值) / .mapToInt(...)</td><td>把元素变成另一种形式</td></tr><tr><td>排序</td><td>.sorted(comparator)</td><td>默认升序</td></tr><tr><td>统计</td><td>.count() / .sum() / .average()</td><td>count 返回 long</td></tr><tr><td>收集</td><td>.collect(Collectors.toList())</td><td>把流变回集合</td></tr><tr><td>分组</td><td>.collect(Collectors.groupingBy(f))</td><td>返回 Map</td></tr></tbody></table>
+      <div class="warn"><b>⚠️ 易错点</b>　Stream 是“一次性的”：同一个流只能消费一次，重复使用会抛 <code>IllegalStateException</code>。要复用就用集合本身。</div>
+      <div class="warn"><b>⚠️ 易错点</b>　Stream 适合表达“做什么”，不适合塞复杂逻辑；有副作用（改外部变量、写文件）时用普通循环更清楚。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-8-1">
+      <div class="ex-head"><span class="ex-id">8.1</span><span class="badge easy">必做</span><span class="ex-title">用 Stream 统计</span></div>
+      <p>读入 n 个整数，输出其中 ≥ 60 的个数与总和（用 Stream 完成）。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　第一行 n；第二行 n 个整数。</p><p class="io-line"><b>输出</b>　两行：<code>pass=</code>、<code>sum=</code>。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>5
+90 59 88 60 30</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>pass=3
+sum=238</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　把数组转成流：<code>Arrays.stream(a).filter(v -&gt; v &gt;= 60)</code>。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary><pre><code class="language-java">import java.util.Arrays;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        int[] a = new int[n];
+        for (int i = 0; i &lt; n; i++) {
+            a[i] = sc.nextInt();
+        }
+        long pass = Arrays.stream(a).filter(v -&gt; v &gt;= 60).count();
+        int sum = Arrays.stream(a).filter(v -&gt; v &gt;= 60).sum();
+        System.out.println("pass=" + pass);
+        System.out.println("sum=" + sum);
+    }
+}</code></pre><p class="note"><b>解析</b>　数组没有 stream() 方法，要用 <code>Arrays.stream(a)</code>；集合才有 <code>.stream()</code>。</p></details>
+      </section>
+      <section class="ex" id="ex-8-2">
+      <div class="ex-head"><span class="ex-id">8.2</span><span class="badge hard">挑战</span><span class="ex-title">成绩榜（综合练习）</span></div>
+      <p>读入若干行「姓名 分数」直到输入结束，输出人数、平均分（2 位小数）和按分数降序的前 3 名（格式 <code>name score</code>，用逗号分隔）。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　若干行「姓名 分数」，读到输入结束。</p><p class="io-line"><b>输出</b>　三行：<code>count=</code>、<code>avg=</code>、<code>top3=...</code>。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>Ann 90
+Bob 59
+Cid 88
+Dan 95
+Eve 72</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>count=5
+avg=80.80
+top3=Dan 95,Ann 90,Cid 88</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　用 <code>List&lt;Student&gt;</code> 收集后 <code>stream().sorted(...)</code>，取前 3 个再 <code>Collectors.joining(",")</code>。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary><pre><code class="language-java">import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.stream.Collectors;
+
+public class Main {
+    record Student(String name, int score) { }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        List&lt;Student&gt; list = new ArrayList&lt;&gt;();
+        while (sc.hasNext()) {
+            String name = sc.next();
+            if (!sc.hasNextInt()) {
+                break;
+            }
+            list.add(new Student(name, sc.nextInt()));
+        }
+        if (list.isEmpty()) {
+            return;
+        }
+
+        double avg = list.stream().mapToInt(Student::score).average().orElse(0);
+        String top3 = list.stream()
+                .sorted((a, b) -&gt; Integer.compare(b.score(), a.score()))
+                .limit(3)
+                .map(s -&gt; s.name() + " " + s.score())
+                .collect(Collectors.joining(","));
+
+        System.out.println("count=" + list.size());
+        System.out.printf("avg=%.2f%n", avg);
+        System.out.println("top3=" + top3);
+    }
+}</code></pre><p class="note"><b>解析</b>　<code>average()</code> 返回 <code>OptionalDouble</code>（可能没有元素），用 <code>orElse(0)</code> 兜底；<code>Collectors.joining</code> 负责拼接。这道题把集合、Stream、异常安全的输入处理串在一起。</p></details>
+      </section>
+      <div class="tip"><b>📚 本文概念都在知识大全：</b><p style="margin-top:6px"><a href="../../knowledge/index.html#jvm">JVM 与字节码</a> · <a href="../../knowledge/index.html#jdk">JDK</a> · <a href="../../knowledge/index.html#java-string">String 与 StringBuilder</a> · <a href="../../knowledge/index.html#java-collections">集合框架</a> · <a href="../../knowledge/index.html#java-generics">泛型</a> · <a href="../../knowledge/index.html#java-exception">受检异常</a> · <a href="../../knowledge/index.html#java-inheritance">继承与接口</a> · <a href="../../knowledge/index.html#java-record">record</a> · <a href="../../knowledge/index.html#java-stream">Stream API</a></p></div>
+      <div class="lesson-nav"><a href="07-exceptions-io.html">← 上一章：7. 异常与文件读写</a><a href="index.html">回到本语言目录 →</a></div>
+    </article>
+
+  <script src="../../assets/highlight.min.js"></script>
+  <script src="../../assets/article.js"></script>
+  <script src="../../assets/interact.js"></script>
+  <script src="../../assets/search.js"></script>
+  <script src="../../assets/giscus-config.js"></script>
+  <script src="../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

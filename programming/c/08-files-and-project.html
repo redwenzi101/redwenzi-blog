@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C 语言 第 8 章 文件、命令行参数与综合实战 · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../assets/article.css">
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="index.html">← C 语言 学习路线（共 8 章）</a>
+      <h1>第 8 章　文件、命令行参数与综合实战</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · C 语言 · 📖 预计阅读 11 分钟 · 共 2 道练习</div>
+    </header>
+
+    <article>
+<div class="tip">🎯 <b>本章你会学到：</b>把输入输出从屏幕扩展到文件和命令行，并完成一个统计小项目。建议边读边敲，每节练习先自己做，再展开答案对照。</div>
+      <p>程序真正的用武之地是处理文件和数据。这一章把前面所有内容串起来：函数、数组、指针、结构体，最后落到读写文件与命令行参数。</p>
+      <h3>命令行参数</h3>
+      <div class="code-label">把命令行参数当数字相加</div><pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(int argc, char **argv) {     /* argc 是参数个数，argv 是参数字符串数组 */
+    long long sum = 0;
+    for (int i = 1; i &lt; argc; ++i) {   /* argv[0] 是程序名，从 1 开始 */
+        sum += strtoll(argv[i], NULL, 10);
+    }
+    printf("argc=%d sum=%lld\n", argc, sum);
+    return 0;
+}</code></pre><div class="code-label">运行结果</div><pre><code class="language-text">argc=4 sum=6</code></pre>
+      <div class="code-label">运行示例</div><pre><code class="language-bash">./add 1 2 3        # 输出 argc=4 sum=6</code></pre>
+      <h3>读写文件</h3>
+      <div class="code-label">写文件再读回来</div><pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int main(void) {
+    const char *path = "numbers.txt";
+
+    FILE *out = fopen(path, "w");      /* "w" 写模式，会清空原文件 */
+    if (out == NULL) {
+        return 1;
+    }
+    for (int i = 1; i &lt;= 3; ++i) {
+        fprintf(out, "%d\n", i * 10);
+    }
+    fclose(out);                       /* 必须关，否则内容可能还没落盘 */
+
+    FILE *in = fopen(path, "r");
+    if (in == NULL) {
+        return 1;
+    }
+    int value = 0;
+    long long sum = 0;
+    while (fscanf(in, "%d", &amp;value) == 1) {   /* 读到读不动为止 */
+        sum += value;
+    }
+    fclose(in);
+
+    printf("sum=%lld\n", sum);
+    return 0;
+}</code></pre><div class="code-label">运行结果</div><pre><code class="language-text">sum=60</code></pre>
+      <p>运行后输出 <code>sum=60</code>（10+20+30）。文件的打开模式：<code>r</code> 只读、<code>w</code> 覆盖写、<code>a</code> 追加、<code>rb/wb</code> 二进制。</p>
+      <table><thead><tr><th>函数</th><th>用途</th><th>注意</th></tr></thead><tbody><tr><td>fopen / fclose</td><td>打开 / 关闭文件</td><td>打开失败返回 NULL，一定要判断</td></tr><tr><td>fprintf / fscanf</td><td>格式化读写</td><td>用法跟 printf/scanf 一样，多一个 FILE*</td></tr><tr><td>fgets</td><td>读一行</td><td>保留换行符，适合逐行处理文本</td></tr><tr><td>fread / fwrite</td><td>二进制读写</td><td>需要给出元素大小与个数</td></tr><tr><td>feof</td><td>是否到文件末尾</td><td>要在读失败之后判断，不要用它当循环条件</td></tr></tbody></table>
+      <div class="warn"><b>⚠️ 易错点</b>　<code>fopen</code> 之后忘了 <code>fclose</code>：写文件时数据可能还在缓冲区，程序非正常结束时内容会丢。</div>
+      <div class="warn"><b>⚠️ 易错点</b>　不要用 <code>while (!feof(f))</code> 当循环条件——它会在读到末尾后再多循环一次，导致最后一条数据被重复处理。用 <code>fscanf(...) == 1</code> 或 <code>fgets(...) != NULL</code> 作条件。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-8-1">
+      <div class="ex-head"><span class="ex-id">8.1</span><span class="badge easy">必做</span><span class="ex-title">统计行数与单词数</span></div>
+      <p>从标准输入读到文件结束，统计总行数和单词数（单词以空格、制表符或换行分隔）。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　若干行文字，读完会自动结束（Windows 下 Ctrl+Z 回车）。</p><p class="io-line"><b>输出</b>　两行：<code>lines=行数</code>、<code>words=单词数</code>。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>hello world
+foo</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>lines=2
+words=3</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　用 <code>getchar()</code> 一个字符一个字符读，遇到空白就把 in_word 置 0。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary><pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int main(void) {
+    int lines = 0, words = 0;
+    int c = 0, in_word = 0;
+    while ((c = getchar()) != EOF) {
+        if (c == '\n') {
+            ++lines;
+        }
+        if (c == ' ' || c == '\n' || c == '\t' || c == '\r') {
+            in_word = 0;
+        } else if (!in_word) {
+            ++words;
+            in_word = 1;
+        }
+    }
+    printf("lines=%d\n", lines);
+    printf("words=%d\n", words);
+    return 0;
+}</code></pre><p class="note"><b>解析</b>　<code>getchar</code> 返回 int 而不是 char：这样才能同时容纳 0-255 的字符和 EOF（-1）。这是 C 里一个经典细节。</p></details>
+      </section>
+      <section class="ex" id="ex-8-2">
+      <div class="ex-head"><span class="ex-id">8.2</span><span class="badge hard">挑战</span><span class="ex-title">成绩汇总（综合练习）</span></div>
+      <p>读入若干行「名字 分数」，直到输入结束。输出人数、平均分（2 位小数）和最高分学生的名字。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　若干行「名字 分数」，读到输入结束。</p><p class="io-line"><b>输出</b>　三行：<code>count=</code>、<code>avg=</code>、<code>top=</code>。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>Ann 90
+Bob 95
+Cid 88</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>count=3
+avg=91.00
+top=Bob</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　先读名字、再读分数（<code>scanf("%31s %d", ...) == 2</code>），读到读不动为止。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary><pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+int main(void) {
+    char name[32];
+    char best_name[32] = "";
+    int score = 0;
+    int best = -1;
+    int count = 0;
+    long long sum = 0;
+
+    while (scanf("%31s %d", name, &amp;score) == 2) {
+        ++count;
+        sum += score;
+        if (score &gt; best) {
+            best = score;
+            strcpy(best_name, name);
+        }
+    }
+
+    if (count == 0) {
+        return 0;
+    }
+    printf("count=%d\n", count);
+    printf("avg=%.2f\n", (double)sum / count);
+    printf("top=%s\n", best_name);
+    return 0;
+}</code></pre><p class="note"><b>解析</b>　这道题把整条 C 线串起来了：字符串数组、循环、函数、<code>strcpy</code>、格式化输出。写完它，C 的基础部分就算过关。</p></details>
+      </section>
+      <div class="tip"><b>📚 本文概念都在知识大全：</b><p style="margin-top:6px"><a href="../../knowledge/index.html#c-language">C 语言</a> · <a href="../../knowledge/index.html#gcc">GCC 编译器</a> · <a href="../../knowledge/index.html#pointer">指针</a> · <a href="../../knowledge/index.html#malloc-free">动态内存 malloc/free</a> · <a href="../../knowledge/index.html#c-string">C 字符串</a> · <a href="../../knowledge/index.html#struct">结构体</a> · <a href="../../knowledge/index.html#preprocessor">预处理</a> · <a href="../../knowledge/index.html#cpp-compile-link">编译与链接</a></p></div>
+      <div class="lesson-nav"><a href="07-structs-enums.html">← 上一章：7. 结构体、枚举与 typedef</a><a href="index.html">回到本语言目录 →</a></div>
+    </article>
+
+  <script src="../../assets/highlight.min.js"></script>
+  <script src="../../assets/article.js"></script>
+  <script src="../../assets/interact.js"></script>
+  <script src="../../assets/search.js"></script>
+  <script src="../../assets/giscus-config.js"></script>
+  <script src="../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

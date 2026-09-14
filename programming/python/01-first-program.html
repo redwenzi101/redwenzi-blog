@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python 第 1 章 第一个 Python 程序与运行环境 · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../assets/article.css">
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="index.html">← Python 学习路线（共 8 章）</a>
+      <h1>第 1 章　第一个 Python 程序与运行环境</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · Python · 📖 预计阅读 5 分钟 · 共 2 道练习</div>
+    </header>
+
+    <article>
+<div class="tip">🎯 <b>本章你会学到：</b>脚本、REPL、缩进语法，以及 pip / venv 初体验。建议边读边敲，每节练习先自己做，再展开答案对照。</div>
+      <p>Python 没有编译步骤：写一个 <code>.py</code> 文件，直接用解释器运行；也可以在 REPL 里一行一行试。这种立刻看到结果的循环，是它提高效率的核心。</p>
+      <div class="code-label">hello.py</div><pre><code class="language-python">import sys
+
+def main():
+    print("Hello, Python")
+    print("major version:", sys.version_info.major)
+
+if __name__ == "__main__":      # 直接运行本文件时才执行
+    main()</code></pre><div class="code-label">运行结果</div><pre><code class="language-text">Hello, Python
+major version: 3</code></pre>
+      <div class="code-label">三种常用命令</div><pre><code class="language-bash">python hello.py            # 运行脚本
+python                     # 进入 REPL（逐行试）
+python -m pip install pandas   # 安装第三方库</code></pre>
+      <ul class="pick"><li>缩进就是语法：同一层代码必须缩进一致（惯例 4 个空格），缩进错了逻辑就错了。</li><li>语句末尾不写分号；声明变量不需要类型，直接 <code>x = 1</code>。</li><li><code>if __name__ == "__main__":</code> 用来区分直接运行和被 import——写脚本时养成习惯。</li></ul>
+      <div class="warn"><b>⚠️ 易错点</b>　不要混用 Tab 和空格缩进。编辑器看着对齐，解释器会直接报 <code>IndentationError</code>。</div>
+      <div class="warn"><b>⚠️ 易错点</b>　Python 2 和 Python 3 不是一回事：本线所有代码都要求 Python 3.8 以上。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-1-1">
+      <div class="ex-head"><span class="ex-id">1.1</span><span class="badge easy">必做</span><span class="ex-title">读一行并回显</span></div>
+      <p>读入一行文字，输出 <code>hello, </code> 加上这行文字。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　一行文字。</p><p class="io-line"><b>输出</b>　一行 <code>hello, 原内容</code>。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>world</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>hello, world</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　<code>input()</code> 读一行并以字符串返回。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary><pre><code class="language-python">line = input()
+print("hello, " + line)</code></pre><p class="note"><b>解析</b>　<code>input()</code> 永远返回字符串；要当数字用必须 <code>int(...)</code> 或 <code>float(...)</code> 转换。</p></details>
+      </section>
+      <section class="ex" id="ex-1-2">
+      <div class="ex-head"><span class="ex-id">1.2</span><span class="badge hard">挑战</span><span class="ex-title">两数之和</span></div>
+      <p>读入两个整数（空格分隔），输出它们的和。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　一行两个整数 a b。</p><p class="io-line"><b>输出</b>　一行 <code>sum=结果</code>。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>3 5</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>sum=8</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　<code>input().split()</code> 按空白切分，<code>map(int, ...)</code> 批量转整数。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary><pre><code class="language-python">a, b = map(int, input().split())
+print(f"sum={a + b}")</code></pre><p class="note"><b>解析</b>　<code>a, b = map(int, ...)</code> 是 Python 处理一行多个数的标准写法，比循环读入更短。</p></details>
+      </section>
+      <div class="tip"><b>📚 本文概念都在知识大全：</b><p style="margin-top:6px"><a href="../../knowledge/index.html#python">Python</a> · <a href="../../knowledge/index.html#pip-venv">pip 与虚拟环境</a> · <a href="../../knowledge/index.html#python-container">列表/字典/集合</a> · <a href="../../knowledge/index.html#python-comprehension">推导式</a> · <a href="../../knowledge/index.html#python-fstring">f-string</a> · <a href="../../knowledge/index.html#python-exception">异常处理</a> · <a href="../../knowledge/index.html#python-dataclass">dataclass</a> · <a href="../../knowledge/index.html#pandas">pandas</a> · <a href="../../knowledge/index.html#python-module">模块与包</a></p></div>
+      <div class="lesson-nav"><a href="index.html">← 返回本语言目录</a><a href="02-types-and-strings.html">下一章：2. 变量、类型与字符串 →</a></div>
+    </article>
+
+  <script src="../../assets/highlight.min.js"></script>
+  <script src="../../assets/article.js"></script>
+  <script src="../../assets/interact.js"></script>
+  <script src="../../assets/search.js"></script>
+  <script src="../../assets/giscus-config.js"></script>
+  <script src="../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Java 学习路线（8 章 · 16 题） · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../assets/article.css">
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="../index.html">← 编程语言分享</a>
+      <h1>Java 学习路线</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · Java · 8 章 · 16 道练习</div>
+    </header>
+
+    <article>
+<p>Java 和 C/C++ 是两种不同的取舍：它用**虚拟机 + 垃圾回收**换来了内存安全，用**强类型 + 明确的语言规范**换来了跨平台和工程可维护性。代价是类型大小固定、没有指针、性能调度权交给 JVM。</p>
+      <p>如果你已经学过 C 或 C++，学 Java 的捷径是抓住差异点：类型大小固定、引用不是指针、对象一定在堆上、字符串不可变、数组带长度检查、异常是强制的。这条线按这个思路组织：程序怎么跑起来 → 类型与字符串 → 流程与数组 → 类与对象 → 继承与接口 → 集合框架 → 异常与文件 → Stream 与实战。</p>
+      <div class="tip">💡 本线代码用 JDK 21 实测（含 record、switch 表达式、Stream 等现代用法）。命令示例里的 <code>javac</code>、<code>java</code> 请确保来自同一套 JDK。</div>
+      <h2>🗂️ 章节导航（8 章 · 16 道练习）</h2>
+      <div class="chapters"><a href="01-first-program.html"><b>第 1 章　第一个 Java 程序与运行环境</b><span>JDK / JRE / JVM 的关系、javac 与 java 两条命令、类名与文件名的规则</span><span style="display:block;margin-top:6px;color:#1f3a5f">2 道练习 · 点开阅读 →</span></a><a href="02-types-and-strings.html"><b>第 2 章　类型、变量与字符串</b><span>基本类型大小固定、包装类与装箱、String 为什么不可变</span><span style="display:block;margin-top:6px;color:#1f3a5f">2 道练习 · 点开阅读 →</span></a><a href="03-control-and-arrays.html"><b>第 3 章　流程控制与数组</b><span>for / for-each / switch 表达式，以及带边界检查的数组</span><span style="display:block;margin-top:6px;color:#1f3a5f">2 道练习 · 点开阅读 →</span></a><a href="04-classes-objects.html"><b>第 4 章　类与对象</b><span>字段、构造器、this、封装，以及 static 与实例成员的区别</span><span style="display:block;margin-top:6px;color:#1f3a5f">2 道练习 · 点开阅读 →</span></a><a href="05-inheritance-interfaces.html"><b>第 5 章　继承、抽象类与接口</b><span>extends / implements、@Override 与运行时多态：同一段代码处理不同对象</span><span style="display:block;margin-top:6px;color:#1f3a5f">2 道练习 · 点开阅读 →</span></a><a href="06-collections.html"><b>第 6 章　集合框架</b><span>List / Map / Set 的选择、泛型与遍历时删除元素</span><span style="display:block;margin-top:6px;color:#1f3a5f">2 道练习 · 点开阅读 →</span></a><a href="07-exceptions-io.html"><b>第 7 章　异常与文件读写</b><span>受检异常为什么强制你处理，以及 try-with-resources 怎么自动关文件</span><span style="display:block;margin-top:6px;color:#1f3a5f">2 道练习 · 点开阅读 →</span></a><a href="08-streams-project.html"><b>第 8 章　Lambda、Stream 与综合实战</b><span>用 Stream 把“过滤/映射/排序/统计”写成一条链，并完成词频 Top-N</span><span style="display:block;margin-top:6px;color:#1f3a5f">2 道练习 · 点开阅读 →</span></a></div>
+      <h2>🛠️ 环境准备</h2>
+      <ul class="pick"><li>装 JDK 17 或 21（推荐 Adoptium Temurin、Oracle JDK、或系统包管理器）。</li><li>验证：`javac -version` 与 `java -version` 都能输出且版本一致。</li><li>编译运行：`javac -encoding UTF-8 Main.java` 然后 `java Main`。</li><li>写代码建议用 VS Code + Extension Pack for Java，或 IntelliJ IDEA。</li></ul>
+      <div class="tip"><b>📚 本文概念都在知识大全：</b><p style="margin-top:6px"><a href="../../knowledge/index.html#jvm">JVM 与字节码</a> · <a href="../../knowledge/index.html#jdk">JDK</a> · <a href="../../knowledge/index.html#java-string">String 与 StringBuilder</a> · <a href="../../knowledge/index.html#java-collections">集合框架</a> · <a href="../../knowledge/index.html#java-generics">泛型</a> · <a href="../../knowledge/index.html#java-exception">受检异常</a> · <a href="../../knowledge/index.html#java-inheritance">继承与接口</a> · <a href="../../knowledge/index.html#java-record">record</a> · <a href="../../knowledge/index.html#java-stream">Stream API</a></p></div>
+      <div class="tip">➡️ <b>回到总目录：</b><a href="../index.html">编程语言分享（C / C++ / Java / Python）</a></div>
+    </article>
+
+  <script src="../../assets/highlight.min.js"></script>
+  <script src="../../assets/article.js"></script>
+  <script src="../../assets/interact.js"></script>
+  <script src="../../assets/search.js"></script>
+  <script src="../../assets/giscus-config.js"></script>
+  <script src="../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

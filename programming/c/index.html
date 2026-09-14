@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C 语言 学习路线（8 章 · 16 题） · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../assets/article.css">
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="../index.html">← 编程语言分享</a>
+      <h1>C 语言 学习路线</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · C 语言 · 8 章 · 16 道练习</div>
+    </header>
+
+    <article>
+<p>C 是这条学习路线的第一站。它不替你管理内存，也不隐藏任何细节——正因如此，学完 C 再学 C++ 和数据结构，你会知道每一行代码背后机器在做什么。</p>
+      <p>这门语言可以压成一句话：用指针和结构体，自己组织内存。整条线围绕这一点展开：先把程序跑起来，再搞清楚变量和类型，然后是流程控制、函数、数组与字符串，最后落到指针、动态内存、结构体，用一个统计小项目收尾。</p>
+      <div class="tip">💡 学 C 的正确姿势：每个例子都亲手敲、亲手编译。C 的报错往往比 C++ 更难读，但正因如此，你在这里练出的读报错能力，后面所有语言都用得上。</div>
+      <h2>🗂️ 章节导航（8 章 · 16 道练习）</h2>
+      <div class="chapters"><a href="01-first-program.html"><b>第 1 章　第一个 C 程序与编译过程</b><span>写下第一个程序、看懂 gcc 命令、知道 .c 文件是怎么变成可执行文件的</span><span style="display:block;margin-top:6px;color:#1f3a5f">2 道练习 · 点开阅读 →</span></a><a href="02-types-and-io.html"><b>第 2 章　变量、类型与输入输出</b><span>搞清基本类型的大小、printf/scanf 的格式符，以及为什么类型选错会出错</span><span style="display:block;margin-top:6px;color:#1f3a5f">2 道练习 · 点开阅读 →</span></a><a href="03-operators-control.html"><b>第 3 章　运算符与流程控制</b><span>if / switch / 三种循环，以及 C 里最容易踩的运算符坑</span><span style="display:block;margin-top:6px;color:#1f3a5f">2 道练习 · 点开阅读 →</span></a><a href="04-functions-files.html"><b>第 4 章　函数与多文件组织</b><span>函数原型、值传递的本质、static 与头文件，以及怎么把代码拆成多个文件</span><span style="display:block;margin-top:6px;color:#1f3a5f">2 道练习 · 点开阅读 →</span></a><a href="05-arrays-strings.html"><b>第 5 章　数组与字符串</b><span>数组的内存布局、越界为什么危险、C 的字符串为什么要靠 '\0' 收尾</span><span style="display:block;margin-top:6px;color:#1f3a5f">2 道练习 · 点开阅读 →</span></a><a href="06-pointers-memory.html"><b>第 6 章　指针与动态内存</b><span>指针的本质、指针与数组的关系、malloc/free 的正确用法与常见错误</span><span style="display:block;margin-top:6px;color:#1f3a5f">2 道练习 · 点开阅读 →</span></a><a href="07-structs-enums.html"><b>第 7 章　结构体、枚举与 typedef</b><span>把相关数据打包成一个类型，并用 qsort 排序结构体数组</span><span style="display:block;margin-top:6px;color:#1f3a5f">2 道练习 · 点开阅读 →</span></a><a href="08-files-and-project.html"><b>第 8 章　文件、命令行参数与综合实战</b><span>把输入输出从屏幕扩展到文件和命令行，并完成一个统计小项目</span><span style="display:block;margin-top:6px;color:#1f3a5f">2 道练习 · 点开阅读 →</span></a></div>
+      <h2>🛠️ 环境准备</h2>
+      <ul class="pick"><li>Windows：装 MSYS2 或 MinGW-w64，装好后终端里能跑 `gcc --version`。</li><li>macOS：装 Xcode Command Line Tools（`xcode-select --install`）。</li><li>Linux：`sudo apt install build-essential`（Debian/Ubuntu 系）。</li><li>编译命令统一用：`gcc -std=c17 -Wall -Wextra -o app app.c`。</li></ul>
+      <div class="tip"><b>📚 本文概念都在知识大全：</b><p style="margin-top:6px"><a href="../../knowledge/index.html#c-language">C 语言</a> · <a href="../../knowledge/index.html#gcc">GCC 编译器</a> · <a href="../../knowledge/index.html#pointer">指针</a> · <a href="../../knowledge/index.html#malloc-free">动态内存 malloc/free</a> · <a href="../../knowledge/index.html#c-string">C 字符串</a> · <a href="../../knowledge/index.html#struct">结构体</a> · <a href="../../knowledge/index.html#preprocessor">预处理</a> · <a href="../../knowledge/index.html#cpp-compile-link">编译与链接</a></p></div>
+      <div class="tip">➡️ <b>回到总目录：</b><a href="../index.html">编程语言分享（C / C++ / Java / Python）</a></div>
+    </article>
+
+  <script src="../../assets/highlight.min.js"></script>
+  <script src="../../assets/article.js"></script>
+  <script src="../../assets/interact.js"></script>
+  <script src="../../assets/search.js"></script>
+  <script src="../../assets/giscus-config.js"></script>
+  <script src="../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

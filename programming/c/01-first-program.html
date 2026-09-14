@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C 语言 第 1 章 第一个 C 程序与编译过程 · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../assets/article.css">
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="index.html">← C 语言 学习路线（共 8 章）</a>
+      <h1>第 1 章　第一个 C 程序与编译过程</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · C 语言 · 📖 预计阅读 6 分钟 · 共 2 道练习</div>
+    </header>
+
+    <article>
+<div class="tip">🎯 <b>本章你会学到：</b>写下第一个程序、看懂 gcc 命令、知道 .c 文件是怎么变成可执行文件的。建议边读边敲，每节练习先自己做，再展开答案对照。</div>
+      <p>先别管理论，把下面这段代码敲进 <code>hello.c</code>，编译，运行。这是后面所有内容的起点。</p>
+      <h3>程序长什么样</h3>
+      <div class="code-label">hello.c</div><pre><code class="language-c">#include &lt;stdio.h&gt;      /* 引入标准输入输出，printf 就来自这里 */
+
+int main(void) {        /* 程序入口，返回 int；void 表示不接受命令行参数 */
+    printf("Hello, C\n");
+    return 0;           /* 返回 0 表示正常结束 */
+}</code></pre><div class="code-label">运行结果</div><pre><code class="language-text">Hello, C</code></pre>
+      <p>三行信息量很大：<code>#include</code> 是预处理指令，把标准库的声明复制进来；<code>main</code> 是入口函数，操作系统从这里开始执行；<code>printf</code> 负责往屏幕打印，<code>\n</code> 是换行。</p>
+      <div class="code-label">编译并运行</div><pre><code class="language-bash">gcc -std=c17 -Wall -Wextra -o hello hello.c
+./hello          # Windows PowerShell 上运行 .\hello.exe</code></pre>
+      <p><code>gcc</code> 是编译器命令；<code>-std=c17</code> 指定标准版本；<code>-Wall -Wextra</code> 打开警告（C 的很多危险写法只会给警告）；<code>-o hello</code> 指定输出文件名。</p>
+      <h3>从 .c 到可执行文件</h3>
+      <p><code>gcc</code> 一条命令其实做了四件事：预处理（展开 <code>#include</code>、<code>#define</code>）→ 编译（生成汇编）→ 汇编（生成目标文件 <code>.o</code>）→ 链接（把目标文件和 libc 拼成可执行文件）。拆开看更清楚：</p>
+      <div class="code-label">分步编译</div><pre><code class="language-bash">gcc -std=c17 -c hello.c -o hello.o    # 只编译不链接，得到目标文件
+gcc hello.o -o hello                   # 把目标文件链接成可执行文件</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　不要写 <code>void main()</code>。C 标准要求 <code>main</code> 返回 <code>int</code>；写 <code>void main</code> 在 gcc 上可能侥幸通过，换编译器或换严格模式就报错。</div>
+      <div class="warn"><b>⚠️ 易错点</b>　源文件扩展名用 <code>.c</code>。命名成 <code>.cpp</code> 交给 gcc 时会被当 C++ 处理，同一个写法的行为可能不同。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-1-1">
+      <div class="ex-head"><span class="ex-id">1.1</span><span class="badge easy">必做</span><span class="ex-title">打印一张名片</span></div>
+      <p>用三条 <code>printf</code> 输出三行：第一行你的名字，第二行你的方向，第三行一句学习目标。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无。</p><p class="io-line"><b>输出</b>　三行文字，逐行输出。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>小明
+数据科学
+把 C 学到能读懂内存</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　每条 printf 末尾都要写 <code>\n</code>，否则三行会挤在一行。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary><pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int main(void) {
+    printf("小明\n");
+    printf("数据科学\n");
+    printf("把 C 学到能读懂内存\n");
+    return 0;
+}</code></pre><p class="note"><b>解析</b>　每个 <code>\n</code> 是一次换行；漏掉它，多次 <code>printf</code> 的输出会连成一行。</p></details>
+      </section>
+      <section class="ex" id="ex-1-2">
+      <div class="ex-head"><span class="ex-id">1.2</span><span class="badge hard">挑战</span><span class="ex-title">用一次 printf 输出三行</span></div>
+      <p>只调用一次 <code>printf</code>，输出三行内容。改完用 <code>gcc -std=c17 -Wall -Wextra</code> 编译，要求零警告。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无。</p><p class="io-line"><b>输出</b>　三行，例如 A、B、C。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>A
+B
+C</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　一个格式串里可以连写多个 <code>\n</code>。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary><pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int main(void) {
+    printf("A\nB\nC\n");
+    return 0;
+}</code></pre><p class="note"><b>解析</b>　把要一起输出的几行写在一个 <code>printf</code> 里，意思更清楚，也少一次函数调用。</p></details>
+      </section>
+      <div class="tip"><b>📚 本文概念都在知识大全：</b><p style="margin-top:6px"><a href="../../knowledge/index.html#c-language">C 语言</a> · <a href="../../knowledge/index.html#gcc">GCC 编译器</a> · <a href="../../knowledge/index.html#pointer">指针</a> · <a href="../../knowledge/index.html#malloc-free">动态内存 malloc/free</a> · <a href="../../knowledge/index.html#c-string">C 字符串</a> · <a href="../../knowledge/index.html#struct">结构体</a> · <a href="../../knowledge/index.html#preprocessor">预处理</a> · <a href="../../knowledge/index.html#cpp-compile-link">编译与链接</a></p></div>
+      <div class="lesson-nav"><a href="index.html">← 返回本语言目录</a><a href="02-types-and-io.html">下一章：2. 变量、类型与输入输出 →</a></div>
+    </article>
+
+  <script src="../../assets/highlight.min.js"></script>
+  <script src="../../assets/article.js"></script>
+  <script src="../../assets/interact.js"></script>
+  <script src="../../assets/search.js"></script>
+  <script src="../../assets/giscus-config.js"></script>
+  <script src="../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

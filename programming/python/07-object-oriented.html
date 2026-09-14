@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python 第 7 章 面向对象 · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../assets/article.css">
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="index.html">← Python 学习路线（共 8 章）</a>
+      <h1>第 7 章　面向对象</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · Python · 📖 预计阅读 10 分钟 · 共 2 道练习</div>
+    </header>
+
+    <article>
+<div class="tip">🎯 <b>本章你会学到：</b>class、self、继承、dataclass：够用就好的面向对象。建议边读边敲，每节练习先自己做，再展开答案对照。</div>
+      <p>Python 的面向对象比 Java 轻：没有接口关键字、没有访问修饰符（靠下划线约定）、方法第一个参数永远是 <code>self</code>。写小东西时，一个 <code>dataclass</code> 往往就够了。</p>
+      <h3>类、属性与方法</h3>
+      <div class="code-label">dataclass</div><pre><code class="language-python">from dataclasses import dataclass
+
+@dataclass
+class Student:
+    name: str
+    score: int = 0
+
+    def passed(self):
+        return self.score &gt;= 60
+
+s = Student("Ann", 90)
+print(s)
+print(s.passed(), Student("Bob").passed())</code></pre><div class="code-label">运行结果</div><pre><code class="language-text">Student(name='Ann', score=90)
+True False</code></pre>
+      <ul class="pick"><li><code>self</code> 必须在每个实例方法里显式写在第一个参数位置。</li><li><code>@dataclass</code> 自动生成 <code>__init__</code>、<code>__repr__</code>、<code>__eq__</code>，装数据的类首选。</li><li><code>_name</code> 表示“内部使用”（约定，不是强制）；<code>__name</code> 会触发名称改写。</li><li><code>@property</code> 可以把方法变成属性访问，用于计算字段与校验。</li></ul>
+      <h3>继承与方法重写</h3>
+      <div class="code-label">继承与多态</div><pre><code class="language-python">class Shape:
+    def area(self):
+        raise NotImplementedError
+
+class Circle(Shape):
+    def __init__(self, r):
+        self.r = r
+
+    def area(self):
+        return 3.14159265 * self.r ** 2
+
+class Square(Shape):
+    def __init__(self, side):
+        self.side = float(side)
+
+    def area(self):
+        return self.side ** 2
+
+shapes = [Circle(1), Square(2)]
+print(f"{sum(s.area() for s in shapes):.2f}")
+print([round(s.area(), 2) for s in shapes])</code></pre><div class="code-label">运行结果</div><pre><code class="language-text">7.14
+[3.14, 4.0]</code></pre>
+      <p>父类 <code>Shape</code> 的 <code>area</code> 抛 <code>NotImplementedError</code>，子类各自实现。遍历 <code>shapes</code> 时调用 <code>s.area()</code> 会自动选到对应实现——这就是多态，和 Java 的写法几乎一样，只是不需要接口声明。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　类属性是所有实例共享的；把可变对象写成类属性（如 <code>items = []</code>）会导致所有实例互相污染，应该放在 <code>__init__</code> 里。</div>
+      <div class="warn"><b>⚠️ 易错点</b>　<code>__init__</code> 不是“构造函数”而是初始化方法；真正的构造由 <code>__new__</code> 完成——日常只需要关注 <code>__init__</code>。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-7-1">
+      <div class="ex-head"><span class="ex-id">7.1</span><span class="badge easy">必做</span><span class="ex-title">矩形类</span></div>
+      <p>写一个 <code>Rectangle</code> 类（宽、高），提供 <code>area()</code> 和 <code>perimeter()</code> 方法；读入宽高输出面积与周长（2 位小数）。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　一行两个实数：宽 高。</p><p class="io-line"><b>输出</b>　两行：<code>area=</code>、<code>perimeter=</code>（2 位小数）。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>3 4</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>area=12.00
+perimeter=14.00</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　构造器里存 <code>self.width</code>、<code>self.height</code>，两个方法返回计算值。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary><pre><code class="language-python">class Rectangle:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+
+    def area(self):
+        return self.width * self.height
+
+    def perimeter(self):
+        return 2 * (self.width + self.height)
+
+w, h = map(float, input().split())
+r = Rectangle(w, h)
+print(f"area={r.area():.2f}")
+print(f"perimeter={r.perimeter():.2f}")</code></pre><p class="note"><b>解析</b>　用 <code>map(float, input().split())</code> 一次读入两个浮点数，然后直接构造对象。</p></details>
+      </section>
+      <section class="ex" id="ex-7-2">
+      <div class="ex-head"><span class="ex-id">7.2</span><span class="badge hard">挑战</span><span class="ex-title">银行账户（异常驱动）</span></div>
+      <p>写 <code>BankAccount</code> 类（余额、deposit、withdraw）。取款超过余额时抛 <code>ValueError</code>。读入初始余额和若干操作，越界取款输出 <code>error: insufficient funds</code>，最后输出余额（2 位小数）。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　第一行初始余额；第二行操作数 n；接下来 n 行 <code>+ 金额</code> 或 <code>- 金额</code>。</p><p class="io-line"><b>输出</b>　越界时输出错误行；最后一行 <code>balance=余额</code>。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>100
+3
++ 50
+- 30
+- 500</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>error: insufficient funds
+balance=120.00</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　在类里判断并 <code>raise ValueError("insufficient funds")</code>，调用处 try/except 打印。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary><pre><code class="language-python">class BankAccount:
+    def __init__(self, balance=0.0):
+        self.balance = balance
+
+    def deposit(self, amount):
+        self.balance += amount
+
+    def withdraw(self, amount):
+        if amount &gt; self.balance:
+            raise ValueError("insufficient funds")
+        self.balance -= amount
+
+account = BankAccount(float(input()))
+for _ in range(int(input())):
+    op, amount = input().split()
+    try:
+        if op == "+":
+            account.deposit(float(amount))
+        else:
+            account.withdraw(float(amount))
+    except ValueError as e:
+        print(f"error: {e}")
+
+print(f"balance={account.balance:.2f}")</code></pre><p class="note"><b>解析</b>　把“能不能取”这条规则放进类里，调用方只负责捕获——这就是把业务规则封装在对象内部的写法。</p></details>
+      </section>
+      <div class="tip"><b>📚 本文概念都在知识大全：</b><p style="margin-top:6px"><a href="../../knowledge/index.html#python">Python</a> · <a href="../../knowledge/index.html#pip-venv">pip 与虚拟环境</a> · <a href="../../knowledge/index.html#python-container">列表/字典/集合</a> · <a href="../../knowledge/index.html#python-comprehension">推导式</a> · <a href="../../knowledge/index.html#python-fstring">f-string</a> · <a href="../../knowledge/index.html#python-exception">异常处理</a> · <a href="../../knowledge/index.html#python-dataclass">dataclass</a> · <a href="../../knowledge/index.html#pandas">pandas</a> · <a href="../../knowledge/index.html#python-module">模块与包</a></p></div>
+      <div class="lesson-nav"><a href="06-files-exceptions.html">← 上一章：6. 文件与异常处理</a><a href="08-data-and-project.html">下一章：8. 数据处理与综合实战 →</a></div>
+    </article>
+
+  <script src="../../assets/highlight.min.js"></script>
+  <script src="../../assets/article.js"></script>
+  <script src="../../assets/interact.js"></script>
+  <script src="../../assets/search.js"></script>
+  <script src="../../assets/giscus-config.js"></script>
+  <script src="../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>
