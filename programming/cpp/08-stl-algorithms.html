@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第 8 章 STL 算法与常用编程范式 · C++ 新手进阶教材（8/13） · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../assets/article.css">
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="index.html">← C++ 教材目录（共 13 章）</a>
+      <h1>第 8 章　STL 算法与常用编程范式</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · C++ · 📖 预计阅读 22 分钟 · 共 5 道练习</div>
+    </header>
+
+    <article>
+<div class="tip">🎯 <b>本章你会学到：</b>sort 与 lambda、erase-remove、二分函数。建议边读边敲代码，每节的练习先自己做，再展开答案对照。</div>
+      <p>算法库统一以“迭代器区间 [first, last)”为参数——左闭右开，last 指向最后一个元素的下一个位置。理解了这一点，所有算法的参数形式就都好记了。</p>
+      <h2 id="s-8-1">8.1 排序与 lambda</h2>
+      <p>std::sort 是你在算法题里用得最多的函数。配合 lambda，任何排序规则都能写。</p>
+      <h3>sort + lambda：多条件排序</h3>
+      <p>lambda 的语法是 [捕获](参数) { 函数体 }，就地写一个匿名函数。排序规则里先比分数降序、相同再比名字升序，一个 lambda 搞定。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">std::sort(v.begin(), v.end(), [](const Student&amp; a, const Student&amp; b) {
+    if (a.score != b.score) { return a.score &gt; b.score; }
+    return a.name &lt; b.name;
+});</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　比较器必须是严格弱序：相等时返回 false。写 return a.score &gt;= b.score; 会让 sort 走进未定义行为，典型症状是段错误或元素丢失。</div>
+      <h3>lambda 的捕获</h3>
+      <p>[capture] 控制 lambda 怎么访问外部变量：[x] 按值捕获、[&amp;x] 按引用捕获、[&amp;] 全部按引用、[=] 全部按值。std::count_if(v.begin(), v.end(), [lowest](int x){ return x &gt;= lowest; }) 能就近读取上下文变量。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　按引用捕获的变量在 lambda 存活期间必须还在（别捕获局部变量的引用然后带出去用）。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-8-1-1">
+      <div class="ex-head"><span class="ex-id">8.1.1</span><span class="badge easy">必做</span><span class="ex-title">分数排序</span></div>
+      <p>读入 n 个学生（名字、分数），用 std::sort + lambda 按分数从高到低排序，分数相同按名字字典序升序，输出排序结果。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　第一行 n；接下来 n 行“名字 分数”。</p><p class="io-line"><b>输出</b>　排序后每行“名字 分数”。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>3
+Ann 90
+Bob 95
+Cid 90</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>Bob 95
+Ann 90
+Cid 90</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　lambda 里先比 score 降序，相等再比 name 升序。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+struct Student { std::string name; int score; };
+int main() {
+    int n;
+    std::cin &gt;&gt; n;
+    std::vector&lt;Student&gt; v(n);
+    for (int i = 0; i &lt; n; ++i) { std::cin &gt;&gt; v[i].name &gt;&gt; v[i].score; }
+    std::sort(v.begin(), v.end(), [](const Student&amp; a, const Student&amp; b) {
+        if (a.score != b.score) { return a.score &gt; b.score; }
+        return a.name &lt; b.name;
+    });
+    for (const auto&amp; s : v) { std::cout &lt;&lt; s.name &lt;&lt; ' ' &lt;&lt; s.score &lt;&lt; '\n'; }
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　比较器必须是严格弱序：相等返回 false。lambda 就近定义规则，最省事。</p></details>
+      </section>
+      <section class="ex" id="ex-8-1-2">
+      <div class="ex-head"><span class="ex-id">8.1.2</span><span class="badge hard">挑战</span><span class="ex-title">按绝对值排序</span></div>
+      <p>读入 n 个整数（可正可负），按绝对值从小到大排序；绝对值相同则负数在前。输出排序结果。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　第一行 n；第二行 n 个整数。</p><p class="io-line"><b>输出</b>　排序后的序列。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>5
+-2 3 -1 2 1</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>-1 1 -2 2 3</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　std::abs 在 &lt;cstdlib&gt;；lambda 里比 abs(a) 和 abs(b)，相等时负数优先（a &lt; b）。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;cstdlib&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+int main() {
+    int n;
+    std::cin &gt;&gt; n;
+    std::vector&lt;int&gt; v(n);
+    for (int i = 0; i &lt; n; ++i) { std::cin &gt;&gt; v[i]; }
+    std::sort(v.begin(), v.end(), [](int a, int b) {
+        if (std::abs(a) != std::abs(b)) { return std::abs(a) &lt; std::abs(b); }
+        return a &lt; b;   // 绝对值相同，负数在前
+    });
+    for (size_t i = 0; i &lt; v.size(); ++i) {
+        std::cout &lt;&lt; v[i] &lt;&lt; (i + 1 == v.size() ? '\n' : ' ');
+    }
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　自定义比较器可以随意定义规则，只要满足严格弱序。</p></details>
+      </section>
+      <h2 id="s-8-2">8.2 erase-remove 与二分查找</h2>
+      <p>std::remove 这个名字有误导性：它不删除元素，只是把要保留的元素往前挪并返回新的逻辑结尾。真正删除要靠容器的 erase。</p>
+      <h3>erase-remove 惯用法</h3>
+      <p>v.erase(std::remove(v.begin(), v.end(), 2), v.end()); 删除所有等于 2 的元素。为什么拆两步？因为算法只拿到迭代器，不知道背后是 vector 还是数组，无法真正改变容器大小。按条件删用 remove_if + lambda。去重用 sort + unique + erase。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">v.erase(std::remove(v.begin(), v.end(), 2), v.end());
+v.erase(std::remove_if(v.begin(), v.end(),
+                       [](int x) { return x % 2 == 0; }), v.end());</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　忘记 v.erase(...) 只写 std::remove(...) 的话，元素其实没被删除（只是被移到后面）。</div>
+      <h3>三个二分函数的明确分工</h3>
+      <p>lower_bound 找第一个 &gt;= x（左边界）；upper_bound 找第一个 &gt; x（右边界之后）；两者相减 = x 出现的次数。binary_search 只回答“在不在”，需要位置信息时别用它。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">auto lo = std::lower_bound(v.begin(), v.end(), 3);  // 第一个 &gt;= 3
+auto up = std::upper_bound(v.begin(), v.end(), 3);  // 第一个 &gt; 3
+std::cout &lt;&lt; (up - lo);   // 3 的个数</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　对 set/map 用成员函数 s.lower_bound(x)（沿树走 O(log n)）；用 std::lower_bound 会退化成 O(n)。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-8-2-1">
+      <div class="ex-head"><span class="ex-id">8.2.1</span><span class="badge easy">必做</span><span class="ex-title">删除所有 2</span></div>
+      <p>读入 n 个整数存入 vector，用 erase-remove 惯用法删除所有等于 2 的元素，输出剩余元素。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　第一行 n；第二行 n 个整数。</p><p class="io-line"><b>输出</b>　删除 2 后剩下的数，空格分隔。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>7
+1 2 3 2 4 2 5</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>1 3 4 5</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　v.erase(std::remove(v.begin(), v.end(), 2), v.end());</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+int main() {
+    int n;
+    std::cin &gt;&gt; n;
+    std::vector&lt;int&gt; v(n);
+    for (int i = 0; i &lt; n; ++i) { std::cin &gt;&gt; v[i]; }
+    v.erase(std::remove(v.begin(), v.end(), 2), v.end());
+    for (size_t i = 0; i &lt; v.size(); ++i) {
+        std::cout &lt;&lt; v[i] &lt;&lt; (i + 1 == v.size() ? '\n' : ' ');
+    }
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　std::remove 只把保留的元素前移，返回新逻辑结尾；erase 负责真正改变 size。</p></details>
+      </section>
+      <section class="ex" id="ex-8-2-2">
+      <div class="ex-head"><span class="ex-id">8.2.2</span><span class="badge hard">挑战</span><span class="ex-title">统计 &gt;= x 的个数</span></div>
+      <p>读入 n 个整数排序，再读入一个 x，用 lower_bound 统计有多少个数 &gt;= x。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　第一行 n；第二行 n 个整数；第三行 x。</p><p class="io-line"><b>输出</b>　&gt;= x 的个数。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>6
+1 3 3 5 7 9
+3</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>5</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　lower_bound 找第一个 &gt;= x 的位置 it，个数 = v.end() - it。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+int main() {
+    int n;
+    std::cin &gt;&gt; n;
+    std::vector&lt;int&gt; v(n);
+    for (int i = 0; i &lt; n; ++i) { std::cin &gt;&gt; v[i]; }
+    std::sort(v.begin(), v.end());
+    int x;
+    std::cin &gt;&gt; x;
+    auto it = std::lower_bound(v.begin(), v.end(), x);
+    std::cout &lt;&lt; (v.end() - it) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　lower_bound 返回第一个 &gt;= x 的位置；它到末尾的距离就是 &gt;= x 的个数。</p></details>
+      </section>
+      <h2 id="summary">本章小结</h2>
+      <ul class="recap"><li>算法以 [first, last) 区间为参数，左闭右开。</li><li>比较器必须严格弱序；lambda 就近定规则最省事。</li><li>remove 只搬移不删除，必须配 erase；去重 = sort + unique + erase。</li><li>lower_bound/upper_bound 相减得到出现次数；set/map 用成员版二分。</li></ul>
+      <h2 id="combo">🧩 本章综合练习</h2>
+      <p>这几道题把本章多个知识点串起来，建议合上资料独立完成，再展开答案对照。</p>
+      <section class="ex" id="ex-8-A">
+      <div class="ex-head"><span class="ex-id">8.A</span><span class="badge hard">综合</span><span class="ex-title">成绩表：sort + lambda + count_if + lower_bound</span></div>
+      <p>读入 n 个学生（名字 分数），按分数降序、同分按名字升序输出；用 std::count_if 统计及格人数；把分数单独排序后用 std::lower_bound 统计 90 分及以上人数。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　第一行整数 n；接下来 n 行，每行「名字 分数」。</p><p class="io-line"><b>输出</b>　先输出排序后的 n 行「名字 分数」；再输出 <code>pass=</code>、<code>ge90=</code>。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>5
+Ann 90
+Bob 59
+Cid 90
+Dan 72
+Eve 100</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>Eve 100
+Ann 90
+Cid 90
+Dan 72
+Bob 59
+pass=4
+ge90=3</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　比较器必须严格弱序：相等时返回 false；lower_bound 要求区间已升序。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;cstddef&gt;
+#include &lt;iostream&gt;
+#include &lt;iterator&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+struct Student {
+    std::string name;
+    int score{};
+};
+
+int main() {
+    int n{};
+    std::cin &gt;&gt; n;
+    std::vector&lt;Student&gt; v(n);
+    std::vector&lt;int&gt; scores;
+    scores.reserve(static_cast&lt;std::size_t&gt;(n));
+    for (int i = 0; i &lt; n; ++i) {
+        std::cin &gt;&gt; v[i].name &gt;&gt; v[i].score;
+        scores.push_back(v[i].score);
+    }
+
+    std::sort(v.begin(), v.end(), [](const Student&amp; a, const Student&amp; b) {
+        if (a.score != b.score) { return a.score &gt; b.score; }   // 分数降序
+        return a.name &lt; b.name;                                 // 同分名字升序
+    });
+    for (const auto&amp; s : v) { std::cout &lt;&lt; s.name &lt;&lt; ' ' &lt;&lt; s.score &lt;&lt; '\n'; }
+
+    int pass = static_cast&lt;int&gt;(std::count_if(
+        v.begin(), v.end(), [](const Student&amp; s) { return s.score &gt;= 60; }));
+    std::cout &lt;&lt; "pass=" &lt;&lt; pass &lt;&lt; '\n';
+
+    std::sort(scores.begin(), scores.end());                    // 升序才能二分
+    auto first90 = std::lower_bound(scores.begin(), scores.end(), 90);
+    std::cout &lt;&lt; "ge90=" &lt;&lt; std::distance(first90, scores.end()) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　count_if 用一个返回 bool 的 lambda 统计；lower_bound 返回第一个不小于 90 的位置，用 distance 算数量。</p></details>
+      </section>
+      <div class="tip"><b>📚 本文概念都在知识大全：</b><p style="margin-top:6px"><a href="../../knowledge/index.html#algorithm-stl">STL 算法</a> · <a href="../../knowledge/index.html#lambda">lambda 表达式</a> · <a href="../../knowledge/index.html#binary-search">二分查找</a></p></div>
+      <div class="lesson-nav"><a href="07-stl-containers.html">← 上一章：第 7 章 STL 容器与迭代器</a><a href="09-modern-cpp.html">下一章：第 9 章 现代 C++ 特性 →</a></div>
+    </article>
+
+  <script src="../../assets/highlight.min.js"></script>
+  <script src="../../assets/article.js"></script>
+  <script src="../../assets/interact.js"></script>
+  <script src="../../assets/search.js"></script>
+  <script src="../../assets/giscus-config.js"></script>
+  <script src="../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

@@ -94,6 +94,65 @@
         <li><a href="#vllm">vLLM</a></li>
         <li><a href="#openai-compat">OpenAI 兼容 API</a></li>
       </ul>
+      <h2>编程语言（C / C++）（56 条）</h2>
+      <ul>
+        <li><a href="#cpp-compile-link">编译与链接</a></li>
+        <li><a href="#gpp-flags">编译选项</a></li>
+        <li><a href="#header-include">头文件与 #include</a></li>
+        <li><a href="#namespace">命名空间</a></li>
+        <li><a href="#odr">单一定义规则（ODR）</a></li>
+        <li><a href="#io-stream">输入输出流</a></li>
+        <li><a href="#variable-init">变量初始化</a></li>
+        <li><a href="#integer-overflow">整数溢出</a></li>
+        <li><a href="#type-cast">类型转换</a></li>
+        <li><a href="#reference">引用</a></li>
+        <li><a href="#pointer">指针</a></li>
+        <li><a href="#const">const 正确性</a></li>
+        <li><a href="#stack-heap">栈与堆</a></li>
+        <li><a href="#object-lifetime">对象生存期</a></li>
+        <li><a href="#raii">RAII</a></li>
+        <li><a href="#smart-pointer">智能指针</a></li>
+        <li><a href="#class-object">类与对象</a></li>
+        <li><a href="#constructor-destructor">构造与析构</a></li>
+        <li><a href="#copy-move">拷贝控制（零法则与五法则）</a></li>
+        <li><a href="#operator-overload">运算符重载</a></li>
+        <li><a href="#virtual-inheritance">继承与多态</a></li>
+        <li><a href="#template">模板</a></li>
+        <li><a href="#stl">STL</a></li>
+        <li><a href="#vector">vector</a></li>
+        <li><a href="#map-set">map / set</a></li>
+        <li><a href="#iterator">迭代器</a></li>
+        <li><a href="#iterator-invalidation">迭代器失效</a></li>
+        <li><a href="#priority-queue">优先队列</a></li>
+        <li><a href="#stack-queue">栈与队列</a></li>
+        <li><a href="#linked-list">链表</a></li>
+        <li><a href="#algorithm-stl">STL 算法</a></li>
+        <li><a href="#lambda">lambda 表达式</a></li>
+        <li><a href="#auto">auto</a></li>
+        <li><a href="#structured-binding">结构化绑定</a></li>
+        <li><a href="#constexpr">constexpr</a></li>
+        <li><a href="#modern-cpp">现代 C++</a></li>
+        <li><a href="#exception">异常处理</a></li>
+        <li><a href="#complexity">时间复杂度</a></li>
+        <li><a href="#sanitizer">Sanitizer（内存检测）</a></li>
+        <li><a href="#gdb">调试器（GDB）</a></li>
+        <li><a href="#cmake">CMake</a></li>
+        <li><a href="#unit-test">单元测试</a></li>
+        <li><a href="#binary-tree">二叉树与二叉搜索树</a></li>
+        <li><a href="#graph">图的存储与遍历</a></li>
+        <li><a href="#dsu">并查集</a></li>
+        <li><a href="#sorting">排序算法</a></li>
+        <li><a href="#two-pointers">双指针</a></li>
+        <li><a href="#sliding-window">滑动窗口</a></li>
+        <li><a href="#hash-table">哈希表</a></li>
+        <li><a href="#prefix-sum">前缀和</a></li>
+        <li><a href="#binary-search">二分查找</a></li>
+        <li><a href="#dfs">深度优先搜索（DFS）</a></li>
+        <li><a href="#bfs">广度优先搜索（BFS）</a></li>
+        <li><a href="#backtracking">回溯</a></li>
+        <li><a href="#greedy">贪心</a></li>
+        <li><a href="#dynamic-programming">动态规划（DP）</a></li>
+      </ul>
     </div>
 
     <h2 class="cat">一、网络与建站</h2>
@@ -450,6 +509,624 @@
       </div>
       <div class="meta-links"><span>相关词条：</span><a href="#api">API</a><a href="#ollama">Ollama</a><a href="#vllm">vLLM</a></div>
       <div class="meta-links"><span>相关文章：</span><a href="../posts/ai-agent-guide.html">AI Agent 入门指南</a></div>
+    </section>
+
+    <h2 class="cat">三、编程语言（C / C++）</h2>
+
+    <section class="entry" id="cpp-compile-link">
+      <h3>编译与链接 <span class="en">Compile & Link</span></h3>
+      <p class="what"><b>是什么：</b>源代码变成可执行文件的两个阶段：编译把每个 .cpp 单独翻译成目标文件，链接把所有目标文件和库拼成可执行文件。</p>
+      <p class="when"><b>什么时候用：</b>报错时先分清是编译错误还是链接错误——两类错误的排查方向完全不同。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>g++ -std=c++17 -o app main.cpp</code> 一条命令里其实自动做了编译 + 链接。</li><li>编译期只检查“声明”是否可见；链接期才检查“定义”是否存在。</li><li>看到 <code>undefined reference</code> 就是链接错误：函数声明了但没实现，或源文件没参与编译。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#gpp-flags">gpp-flags</a><a href="#header-include">header-include</a><a href="#odr">odr</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/01-first-program.html">第 1 章 先让程序跑起来</a></div>
+    </section>
+
+    <section class="entry" id="gpp-flags">
+      <h3>编译选项 <span class="en">Compiler flags</span></h3>
+      <p class="what"><b>是什么：</b>给编译器的开关，最常用的是 C++ 标准版本和警告等级。</p>
+      <p class="when"><b>什么时候用：</b>每天都在用；写代码时把警告全开，能提前发现一半的低级错误。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>-std=c++17</code> 指定标准版本；课本里用到结构化绑定、if 初始化就必须 C++17。</li><li><code>-Wall -Wextra</code> 打开大部分警告；<code>-Wpedantic</code> 拒绝非标准写法。</li><li><code>-g</code> 保留调试信息，<code>-O0</code> 关优化，配合调试器使用。</li><li><code>-fsanitize=address,undefined</code> 打开内存与未定义行为检测（见 Sanitizer）。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#cpp-compile-link">cpp-compile-link</a><a href="#sanitizer">sanitizer</a><a href="#gdb">gdb</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/01-first-program.html">第 1 章</a><a href="../programming/cpp/12-debugging-build-test.html">第 12 章 调试、构建与测试</a></div>
+    </section>
+
+    <section class="entry" id="header-include">
+      <h3>头文件与 #include <span class="en">Header</span></h3>
+      <p class="what"><b>是什么：</b>存放声明（函数原型、类定义、模板）的文件，用 <code>#include</code> 在编译前原样展开。</p>
+      <p class="when"><b>什么时候用：</b>多文件工程里区分“对外暴露的声明”和“内部实现”时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>头文件放声明 + <code>#pragma once</code>（或 include guard）防止重复包含。</li><li>模板、inline 函数、constexpr 函数的定义要放头文件，否则链接不到。</li><li><code>#include &lt;vector&gt;</code> 用尖括号找系统目录；<code>#include "util.h"</code> 用引号先找当前目录。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#cpp-compile-link">cpp-compile-link</a><a href="#odr">odr</a><a href="#template">template</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/03-functions-and-references.html">第 3 章 函数与引用</a></div>
+    </section>
+
+    <section class="entry" id="namespace">
+      <h3>命名空间 <span class="en">Namespace</span></h3>
+      <p class="what"><b>是什么：</b>给名字划分地盘，避免不同库里的同名函数/类撞车。</p>
+      <p class="when"><b>什么时候用：</b>自己写库、或把代码拆成多个模块时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>namespace math { int add(int, int); }</code> 定义，<code>math::add(1, 2)</code> 调用。</li><li>不要在头文件里写 <code>using namespace std;</code>——会把污染带给所有引用者。</li><li>匿名命名空间可以用来把函数限制在本文件内。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#header-include">header-include</a><a href="#odr">odr</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/03-functions-and-references.html">第 3 章</a></div>
+    </section>
+
+    <section class="entry" id="odr">
+      <h3>单一定义规则（ODR） <span class="en">One Definition Rule</span></h3>
+      <p class="what"><b>是什么：</b>同一个实体在整个程序里只能有一份定义；inline 函数、模板、类定义属于例外（可以多份但必须完全一致）。</p>
+      <p class="when"><b>什么时候用：</b>遇到“重复定义 / 符号重定义”链接错误时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>函数定义放 .cpp：放头文件会被多个 .cpp 各定义一次，直接链接错误。</li><li>想放头文件就加 <code>inline</code>（模板和类内成员函数天然满足）。</li><li>全局变量定义放 .cpp，头文件里用 <code>extern</code> 声明。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#header-include">header-include</a><a href="#cpp-compile-link">cpp-compile-link</a><a href="#template">template</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/03-functions-and-references.html">第 3 章</a><a href="../programming/cpp/06-templates.html">第 6 章 模板</a></div>
+    </section>
+
+    <section class="entry" id="io-stream">
+      <h3>输入输出流 <span class="en">iostream</span></h3>
+      <p class="what"><b>是什么：</b>C++ 的输入输出机制：<code>std::cin</code> 读、<code>std::cout</code> 写，用 <code>&lt;&lt;</code> 和 <code>&gt;&gt;</code> 连接数据。</p>
+      <p class="when"><b>什么时候用：</b>所有需要读入数据、输出结果的程序。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>std::cout &lt;&lt; a &lt;&lt; '\n';</code> 不会自动加空格或换行，分隔符要自己写。</li><li><code>std::cin &gt;&gt; x</code> 跳过空白；读整行用 <code>std::getline</code>，两者混用前先 <code>std::cin.ignore()</code>。</li><li>算法题开头加 <code>std::ios::sync_with_stdio(false); std::cin.tie(nullptr);</code> 提速。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#gpp-flags">gpp-flags</a><a href="#variable-init">variable-init</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/01-first-program.html">第 1 章 先让程序跑起来</a></div>
+    </section>
+
+    <section class="entry" id="variable-init">
+      <h3>变量初始化 <span class="en">Initialization</span></h3>
+      <p class="what"><b>是什么：</b>变量在诞生时有没有被赋值。C++ 不初始化就是“里面是垃圾值”，读它是未定义行为。</p>
+      <p class="when"><b>什么时候用：</b>每次声明变量时——默认用花括号 <code>{}</code> 最省心。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>int a;</code> 未初始化，读它是 UB；<code>int a{};</code> 一定是 0。</li><li><code>int n{3.14};</code> 会编译报错（禁止窄化），<code>int n = 3.14;</code> 会静默丢小数。</li><li><code>std::vector&lt;int&gt; v(5)</code> 是 5 个 0，<code>v{5}</code> 是 1 个 5。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#integer-overflow">integer-overflow</a><a href="#type-cast">type-cast</a><a href="#constexpr">constexpr</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/02-types-and-control.html">第 2 章 变量、类型与流程控制</a></div>
+    </section>
+
+    <section class="entry" id="integer-overflow">
+      <h3>整数溢出 <span class="en">Integer overflow</span></h3>
+      <p class="what"><b>是什么：</b>数值超出类型能表示的范围。C++ 里有符号整数溢出是未定义行为（不是“回绕”），无符号才回绕。</p>
+      <p class="when"><b>什么时候用：</b>做累加、乘法、下标计算时，只要可能超过 21 亿就要警觉。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>不确定就用 <code>long long</code>（64 位，约 9×10^18）。</li><li>判断是否溢出要用更宽的类型先算再比：<code>long long s = a + b;</code> 再和 int 边界比。</li><li>字面量也参与运算：<code>1 &lt;&lt; 31</code> 是 UB，写 <code>1LL &lt;&lt; 31</code>。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#variable-init">variable-init</a><a href="#type-cast">type-cast</a><a href="#complexity">complexity</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/02-types-and-control.html">第 2 章</a></div>
+    </section>
+
+    <section class="entry" id="type-cast">
+      <h3>类型转换 <span class="en">Type casting</span></h3>
+      <p class="what"><b>是什么：</b>把一种类型转成另一种。C++ 提供四种具名转换，比 C 风格 <code>(int)x</code> 更明确。</p>
+      <p class="when"><b>什么时候用：</b>整数除法想得到小数、指针类型互转、去掉 const 等场景。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>static_cast&lt;double&gt;(a) / b</code>：最常见，编译期检查。</li><li><code>dynamic_cast</code> 用于多态向下转换（运行期检查）；<code>const_cast</code> 只改 const；<code>reinterpret_cast</code> 最危险。</li><li>整数相除先转双精度，否则 <code>5 / 2</code> 得 2。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#integer-overflow">integer-overflow</a><a href="#const">const</a><a href="#virtual-inheritance">virtual-inheritance</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/02-types-and-control.html">第 2 章</a></div>
+    </section>
+
+    <section class="entry" id="reference">
+      <h3>引用 <span class="en">Reference</span></h3>
+      <p class="what"><b>是什么：</b>变量的别名，必须在定义时绑定，之后不能改绑；不存在空引用。</p>
+      <p class="when"><b>什么时候用：</b>函数参数想“零拷贝又只读”用 <code>const T&amp;</code>；要写回调用方的变量用 <code>T&amp;</code>。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>const std::vector&lt;int&gt;&amp; v</code> 是最高频的参数写法：不拷贝、不会改。</li><li>不要返回局部变量的引用（悬垂引用 = 未定义行为）。</li><li>引用 vs 指针：指针是“存地址的变量”（可为空、可改指向、可做算术），引用只是别名。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#pointer">pointer</a><a href="#const">const</a><a href="#stack-heap">stack-heap</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/03-functions-and-references.html">第 3 章</a></div>
+    </section>
+
+    <section class="entry" id="pointer">
+      <h3>指针 <span class="en">Pointer</span></h3>
+      <p class="what"><b>是什么：</b>存放内存地址的变量，解引用（<code>*p</code>）就能读写那块内存。</p>
+      <p class="when"><b>什么时候用：</b>需要表示“可能没有”、需要指针运算、需要和 C 接口打交道时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>int* p = &amp;a;</code> 取地址，<code>*p = 5;</code> 改写；<code>p-&gt;member</code> 访问成员。</li><li>空指针统一用 <code>nullptr</code>，不要用 <code>NULL</code> 或 0。</li><li>现代 C++ 里裸指针只用来“观察”，所有权交给智能指针（见 RAII）。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#reference">reference</a><a href="#const">const</a><a href="#stack-heap">stack-heap</a><a href="#smart-pointer">smart-pointer</a><a href="#raii">raii</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/04-pointers-and-memory.html">第 4 章 指针、数组与内存模型</a></div>
+    </section>
+
+    <section class="entry" id="const">
+      <h3>const 正确性 <span class="en">const correctness</span></h3>
+      <p class="what"><b>是什么：</b>用 const 表达“这里不该改”。它既是给编译器的约束，也是给调用方的承诺。</p>
+      <p class="when"><b>什么时候用：</b>参数、成员函数、指针/引用组合时都要想一遍。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>四种组合：<code>const int* p</code>（不能改值）、<code>int* const p</code>（不能改指向）、<code>const int* const p</code>（都不能）、<code>int* p</code>（都能）。</li><li>成员函数加 const（<code>int size() const</code>）表示不修改对象，const 对象只能调用这类函数。</li><li>看到 <code>const T&amp;</code> 立刻理解为“只读且不拷贝”。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#pointer">pointer</a><a href="#reference">reference</a><a href="#class-object">class-object</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/04-pointers-and-memory.html">第 4 章</a></div>
+    </section>
+
+    <section class="entry" id="stack-heap">
+      <h3>栈与堆 <span class="en">Stack & Heap</span></h3>
+      <p class="what"><b>是什么：</b>栈上对象随作用域自动创建和销毁；堆上对象要手动 new/delete（或用智能指针接管）。</p>
+      <p class="when"><b>什么时候用：</b>决定“这个对象该放栈还是堆”是 C++ 的基本判断。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>默认放栈：<code>Point p{1, 2};</code> 离开作用域自动析构，零额外开销。</li><li>生命周期要超出作用域、或对象很大、或需要多态时，才放堆：<code>auto p = std::make_unique&lt;Shape&gt;();</code></li><li>栈空间有限（通常几 MB）：大数组和深递归要留意栈溢出。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#raii">raii</a><a href="#smart-pointer">smart-pointer</a><a href="#pointer">pointer</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/04-pointers-and-memory.html">第 4 章</a></div>
+    </section>
+
+    <section class="entry" id="object-lifetime">
+      <h3>对象生存期 <span class="en">Object lifetime</span></h3>
+      <p class="what"><b>是什么：</b>对象从构造完成到析构开始之间的时间；离开作用域、delete、容器清空都会结束生存期。</p>
+      <p class="when"><b>什么时候用：</b>排查“用了已经销毁的对象”（悬垂引用/指针）时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>栈对象：离开花括号自动销毁。</li><li>堆对象：<code>delete</code> 或智能指针释放时销毁。</li><li>临时对象：所在表达式结束就销毁——不要返回局部变量的引用或指针。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#stack-heap">stack-heap</a><a href="#constructor-destructor">constructor-destructor</a><a href="#raii">raii</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/05-classes-and-objects.html">第 5 章 类与对象</a></div>
+    </section>
+
+    <section class="entry" id="raii">
+      <h3>RAII <span class="en">Resource Acquisition Is Initialization</span></h3>
+      <p class="what"><b>是什么：</b>把资源的申请放在构造函数、释放放在析构函数：对象活着资源就在，对象销毁资源就还。</p>
+      <p class="when"><b>什么时候用：</b>管理内存、文件、锁、socket 等任何“用完要还”的东西。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>用 <code>std::vector</code>/<code>std::string</code> 代替裸数组/char*。</li><li>用 <code>std::unique_ptr</code> 接管 new 出来的对象。</li><li>异常抛出时析构函数照样被调用，所以 RAII 天然异常安全。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#smart-pointer">smart-pointer</a><a href="#stack-heap">stack-heap</a><a href="#exception">exception</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/04-pointers-and-memory.html">第 4 章</a><a href="../programming/cpp/05-classes-and-objects.html">第 5 章</a></div>
+    </section>
+
+    <section class="entry" id="smart-pointer">
+      <h3>智能指针 <span class="en">Smart pointer</span></h3>
+      <p class="what"><b>是什么：</b>用对象封装裸指针，离开作用域自动 <code>delete</code>：<code>unique_ptr</code> 独占、<code>shared_ptr</code> 共享计数、<code>weak_ptr</code> 不增加计数。</p>
+      <p class="when"><b>什么时候用：</b>需要堆对象时的默认选择；只有“观察”用途才用裸指针。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>auto p = std::make_unique&lt;T&gt;(args);</code> 创建，独占所有权，不能拷贝。</li><li><code>auto p = std::make_shared&lt;T&gt;();</code> 共享，<code>use_count()</code> 查看引用计数。</li><li><code>std::move(p)</code> 转移 unique_ptr 的所有权；用完记得置空或离开作用域。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#raii">raii</a><a href="#pointer">pointer</a><a href="#stack-heap">stack-heap</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/04-pointers-and-memory.html">第 4 章</a></div>
+    </section>
+
+    <section class="entry" id="class-object">
+      <h3>类与对象 <span class="en">Class & Object</span></h3>
+      <p class="what"><b>是什么：</b>类是“数据 + 操作数据的方法”打包成的类型；对象是它的实例。C++ 里 struct 和 class 只差默认访问权限。</p>
+      <p class="when"><b>什么时候用：</b>把一组相关的数据和函数组织在一起时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>成员访问：对象用 <code>.</code>，指针用 <code>-&gt;</code>。</li><li>类内可以给成员默认值：<code>double x = 0.0;</code>。</li><li>成员函数加 const 表示不修改对象：<code>double dist() const;</code></li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#constructor-destructor">constructor-destructor</a><a href="#copy-move">copy-move</a><a href="#const">const</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/05-classes-and-objects.html">第 5 章</a></div>
+    </section>
+
+    <section class="entry" id="constructor-destructor">
+      <h3>构造与析构 <span class="en">Constructor & Destructor</span></h3>
+      <p class="what"><b>是什么：</b>构造函数把对象初始化到位；析构函数在对象销毁时收尾（释放资源）。</p>
+      <p class="when"><b>什么时候用：</b>类里需要初始化成员、申请/释放资源时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>初始化列表才是真初始化：<code>Buffer(std::size_t n) : data_(n, 0), size_(n) {}()</code>。</li><li>单参数构造函数加 <code>explicit</code>，防止隐式转换。</li><li>多态基类的析构函数必须是 <code>virtual</code>，否则 delete 基类指针不会调用派生类析构。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#class-object">class-object</a><a href="#object-lifetime">object-lifetime</a><a href="#virtual-inheritance">virtual-inheritance</a><a href="#copy-move">copy-move</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/05-classes-and-objects.html">第 5 章</a></div>
+    </section>
+
+    <section class="entry" id="copy-move">
+      <h3>拷贝控制（零法则与五法则） <span class="en">Rule of Zero / Five</span></h3>
+      <p class="what"><b>是什么：</b>编译器会自动生成拷贝构造、拷贝赋值、析构等；一旦类里自己管理了裸资源，就得自己写全套。</p>
+      <p class="when"><b>什么时候用：</b>类里有裸指针/裸数组时；其它情况优先用零法则。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>零法则：成员都是 vector/string/智能指针这类“自己管好自己”的类型，什么都不用写。</li><li>五法则：析构、拷贝构造、拷贝赋值、移动构造、移动赋值——需要写一个通常就要写五个。</li><li>拷贝赋值三件事：处理自赋值、先分配后释放、返回 <code>*this</code>。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#class-object">class-object</a><a href="#object-lifetime">object-lifetime</a><a href="#raii">raii</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/05-classes-and-objects.html">第 5 章</a></div>
+    </section>
+
+    <section class="entry" id="operator-overload">
+      <h3>运算符重载 <span class="en">Operator overloading</span></h3>
+      <p class="what"><b>是什么：</b>让自定义类型支持 <code>+</code>、<code>&lt;</code>、<code>[]</code>、<code>&lt;&lt;</code> 等运算符。</p>
+      <p class="when"><b>什么时候用：</b>希望自己的类型能直接排序、能像容器一样用下标、能直接打印时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>bool operator&lt;(const T&amp; o) const</code> 之后就能直接 <code>std::sort</code> 和放进 set/map。</li><li>比较器必须是严格弱序：相等时返回 false，写成 <code>&lt;=</code> 会让 sort 行为未定义。</li><li><code>= [] () -&gt;</code> 必须是成员函数；<code>&lt;&lt;</code> 输出运算符写成自由函数（左操作数是 ostream）。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#algorithm-stl">algorithm-stl</a><a href="#map-set">map-set</a><a href="#class-object">class-object</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/05-classes-and-objects.html">第 5 章</a></div>
+    </section>
+
+    <section class="entry" id="virtual-inheritance">
+      <h3>继承与多态 <span class="en">Inheritance & Polymorphism</span></h3>
+      <p class="what"><b>是什么：</b>派生类继承基类接口；只有虚函数才是运行期动态绑定（按实际对象类型调用）。</p>
+      <p class="when"><b>什么时候用：</b>需要通过基类指针/引用统一处理多种派生类型时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>基类写 <code>virtual double area() const = 0;</code>（纯虚），派生类写 <code>override</code> 让编译器检查签名。</li><li>多态必须通过指针或引用使用；按值传基类会发生“对象切片”，多态信息全丢。</li><li>多态基类必须有虚析构，否则 delete 基类指针时派生类资源泄漏。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#constructor-destructor">constructor-destructor</a><a href="#class-object">class-object</a><a href="#smart-pointer">smart-pointer</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/05-classes-and-objects.html">第 5 章</a></div>
+    </section>
+
+    <section class="entry" id="template">
+      <h3>模板 <span class="en">Template</span></h3>
+      <p class="what"><b>是什么：</b>把类型当参数：一份代码，编译器按调用处的类型生成多份具体实现。</p>
+      <p class="when"><b>什么时候用：</b>需要写“对所有类型都成立”的函数或容器时（顺序表、栈、最大值……）。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>template &lt;typename T&gt; T maxOf(T a, T b);</code> 调用 <code>maxOf(3, 5)</code> 自动生成 int 版本。</li><li>模板的定义要放头文件（或调用点之前），否则链接不到实例化结果。</li><li>模板不是运行时多态：它在编译期展开，所以没有虚函数开销。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#header-include">header-include</a><a href="#odr">odr</a><a href="#stl">stl</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/06-templates.html">第 6 章 模板与泛型编程</a></div>
+    </section>
+
+    <section class="entry" id="stl">
+      <h3>STL <span class="en">Standard Template Library</span></h3>
+      <p class="what"><b>是什么：</b>C++ 标准库的核心部分：容器 + 迭代器 + 算法，三者通过迭代器解耦。</p>
+      <p class="when"><b>什么时候用：</b>几乎所有 C++ 程序。选对容器往往直接决定程序快不快。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>容器：vector（动态数组）、map/set（有序关联）、unordered_map（哈希）、priority_queue（堆）。</li><li>算法：<code>std::sort</code>、<code>find</code>、<code>count_if</code>、<code>lower_bound</code> 都接收迭代器区间（左闭右开）。</li><li>范围 for 是迭代器循环的语法糖：<code>for (const auto&amp; x : v)</code>。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#vector">vector</a><a href="#map-set">map-set</a><a href="#iterator">iterator</a><a href="#algorithm-stl">algorithm-stl</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/07-stl-containers.html">第 7 章 STL 容器与迭代器</a></div>
+    </section>
+
+    <section class="entry" id="vector">
+      <h3>vector <span class="en">std::vector</span></h3>
+      <p class="what"><b>是什么：</b>动态数组：连续内存、可自动扩容、支持随机访问 O(1)。</p>
+      <p class="when"><b>什么时候用：</b>顺序存储的首选容器；读多写少、需要按下标访问时最合适。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>v.push_back(x)</code> 追加；<code>v.size()</code> 元素个数；<code>v.capacity()</code> 当前容量。</li><li>已知规模先 <code>v.reserve(n)</code>，避免反复扩容搬元素。</li><li>扩容会让所有迭代器、指针、引用失效（见迭代器失效）。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#iterator">iterator</a><a href="#iterator-invalidation">iterator-invalidation</a><a href="#stl">stl</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/07-stl-containers.html">第 7 章</a></div>
+    </section>
+
+    <section class="entry" id="map-set">
+      <h3>map / set <span class="en">Associative containers</span></h3>
+      <p class="what"><b>是什么：</b>有序关联容器，底层红黑树：set 是“只有键的集合”，map 是“键→值”的字典，都自动排序、去重。</p>
+      <p class="when"><b>什么时候用：</b>需要按键有序遍历、需要 O(log n) 查找时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>m[key]</code> 在键不存在时会插入默认值——只想查询用 <code>count()</code> 或 <code>find()</code>。</li><li>统计频率的经典写法：<code>while (std::cin &gt;&gt; w) { ++freq[w]; }</code>。</li><li>需要平均 O(1) 且不要求顺序时换 <code>unordered_map</code> / <code>unordered_set</code>。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#hash-table">hash-table</a><a href="#iterator">iterator</a><a href="#algorithm-stl">algorithm-stl</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/07-stl-containers.html">第 7 章</a></div>
+    </section>
+
+    <section class="entry" id="iterator">
+      <h3>迭代器 <span class="en">Iterator</span></h3>
+      <p class="what"><b>是什么：</b>容器元素的“通用指针”：<code>begin()</code> 指向第一个元素，<code>end()</code> 指向最后一个元素的下一位（左闭右开）。</p>
+      <p class="when"><b>什么时候用：</b>遍历容器、把区间交给算法时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>*it</code> 取元素、<code>++it</code> 前进、<code>it-&gt;成员</code> 访问成员。</li><li><code>end()</code> 不指向元素，不能解引用。</li><li>习惯写前置 <code>++it</code>：对自定义类型少一次临时对象。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#iterator-invalidation">iterator-invalidation</a><a href="#stl">stl</a><a href="#algorithm-stl">algorithm-stl</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/07-stl-containers.html">第 7 章</a></div>
+    </section>
+
+    <section class="entry" id="iterator-invalidation">
+      <h3>迭代器失效 <span class="en">Iterator invalidation</span></h3>
+      <p class="what"><b>是什么：</b>容器结构改变（扩容、插入、删除）后，原来的迭代器/指针/引用可能指向已释放的内存。</p>
+      <p class="when"><b>什么时候用：</b>在循环里删除或插入元素时——这是最经典的未定义行为来源。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>vector 扩容后所有迭代器失效；erase 之后的迭代器失效。</li><li>正确写法：<code>it = v.erase(it);</code> 接住返回值，只有没删除时才 <code>++it</code>。</li><li>循环体要改容器结构就不要用范围 for，改用显式迭代器循环。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#iterator">iterator</a><a href="#vector">vector</a><a href="#algorithm-stl">algorithm-stl</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/07-stl-containers.html">第 7 章</a></div>
+    </section>
+
+    <section class="entry" id="priority-queue">
+      <h3>优先队列 <span class="en">std::priority_queue</span></h3>
+      <p class="what"><b>是什么：</b>堆结构的适配器：<code>top()</code> 取最值 O(1)，插入/删除 O(log n)。默认是<b>大顶堆</b>（和 Java 默认相反）。</p>
+      <p class="when"><b>什么时候用：</b>需要反复取最大值/最小值时，比如 Top K、Dijkstra。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>std::priority_queue&lt;int&gt; pq;</code> 大顶堆，<code>pq.top()</code> 是最大值。</li><li>小顶堆要写全：<code>std::priority_queue&lt;int, std::vector&lt;int&gt;, std::greater&lt;int&gt;&gt;</code>。</li><li>没有 clear() 也没有迭代器，清空只能逐个 pop 或重新赋值。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#stack-queue">stack-queue</a><a href="#sorting">sorting</a><a href="#complexity">complexity</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/07-stl-containers.html">第 7 章</a></div>
+    </section>
+
+    <section class="entry" id="stack-queue">
+      <h3>栈与队列 <span class="en">Stack & Queue</span></h3>
+      <p class="what"><b>是什么：</b>两种受限的线性结构：栈后进先出（LIFO），队列先进先出（FIFO）。</p>
+      <p class="when"><b>什么时候用：</b>表达式求值、括号匹配、DFS（栈）、BFS（队列）、任务排队。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>std::stack&lt;int&gt;</code>：push / pop / top。</li><li><code>std::queue&lt;int&gt;</code>：push / pop / front / back。</li><li>底层默认用 deque，接口被裁剪成只能在一端操作。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#priority-queue">priority-queue</a><a href="#linked-list">linked-list</a><a href="#bfs">bfs</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/07-stl-containers.html">第 7 章</a><a href="../programming/cpp/13-more-data-structures.html">第 13 章</a></div>
+    </section>
+
+    <section class="entry" id="linked-list">
+      <h3>链表 <span class="en">Linked list</span></h3>
+      <p class="what"><b>是什么：</b>节点通过指针串起来的线性结构：插入删除 O(1)（已知位置），随机访问 O(n)。</p>
+      <p class="when"><b>什么时候用：</b>频繁在已知位置增删，且不想搬移元素时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>裸指针版要注意三件事：删除维护 prev、表头是特例、析构必须遍历释放全部节点。</li><li>现代写法用 <code>std::unique_ptr&lt;Node&gt; next</code>，析构自动递归释放，不用手写 delete。</li><li>默认拷贝会复制头指针导致双重释放：禁止拷贝或自己写深拷贝。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#pointer">pointer</a><a href="#smart-pointer">smart-pointer</a><a href="#stack-queue">stack-queue</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/10-data-structures.html">第 10 章 动手写数据结构</a></div>
+    </section>
+
+    <section class="entry" id="algorithm-stl">
+      <h3>STL 算法 <span class="en">STL algorithms</span></h3>
+      <p class="what"><b>是什么：</b>一组以迭代器区间为参数的通用算法：排序、查找、计数、去重、变换……</p>
+      <p class="when"><b>什么时候用：</b>能用算法库就别手写循环：短、快、不易错。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>std::sort(v.begin(), v.end(), cmp);</code></li><li><code>std::count_if(v.begin(), v.end(), pred);</code> 统计满足条件的个数。</li><li>删除元素用 erase-remove 惯用法或 erase 返回值；二分用 lower_bound / upper_bound。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#lambda">lambda</a><a href="#binary-search">binary-search</a><a href="#iterator">iterator</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/08-stl-algorithms.html">第 8 章 STL 算法与常用编程范式</a></div>
+    </section>
+
+    <section class="entry" id="lambda">
+      <h3>lambda 表达式 <span class="en">Lambda</span></h3>
+      <p class="what"><b>是什么：</b>就地定义的匿名函数：<code>[](int x) { return x &gt; 0; }</code>，可以捕获外部变量。</p>
+      <p class="when"><b>什么时候用：</b>给算法传比较器/判断条件，或写一次性的小函数时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>[&amp;]</code> 按引用捕获、<code>[=]</code> 按值捕获、<code>[x]</code> 只捕获 x。</li><li>排序比较器：<code>[](const auto&amp; a, const auto&amp; b) { return a.score &gt; b.score; }</code>。</li><li>递归 lambda 需要把自己当参数传进去（<code>auto&amp;&amp; self</code>）。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#algorithm-stl">algorithm-stl</a><a href="#sorting">sorting</a><a href="#template">template</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/08-stl-algorithms.html">第 8 章</a></div>
+    </section>
+
+    <section class="entry" id="auto">
+      <h3>auto <span class="en">Type inference</span></h3>
+      <p class="what"><b>是什么：</b>让编译器从初始化表达式推导类型。不是弱类型：推导结果在编译期就确定了。</p>
+      <p class="when"><b>什么时候用：</b>类型名又长又啰嗦时（迭代器、结构化绑定）。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>auto it = m.begin();</code> 比手写 <code>std::map&lt;std::string,int&gt;::iterator</code> 清爽。</li><li>想改元素用 <code>auto&amp;</code>，只读用 <code>const auto&amp;</code>，别漏 &amp;。</li><li>类型不明显时别用 auto——<code>auto x = compute();</code> 会让人读不懂。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#structured-binding">structured-binding</a><a href="#modern-cpp">modern-cpp</a><a href="#iterator">iterator</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/09-modern-cpp.html">第 9 章 现代 C++ 特性</a></div>
+    </section>
+
+    <section class="entry" id="structured-binding">
+      <h3>结构化绑定 <span class="en">Structured bindings</span></h3>
+      <p class="what"><b>是什么：</b>把 pair/tuple/结构体一次解包成多个变量：<code>auto [a, b] = p;</code>（C++17）。</p>
+      <p class="when"><b>什么时候用：</b>遍历 map、返回多个值的函数结果时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>for (const auto&amp; [key, value] : m) { ... }</code> 是遍历 map 的最舒服写法。</li><li>配合 if 初始化：<code>if (auto it = m.find(k); it != m.end()) { ... }</code>。</li><li>需要 C++17：<code>g++ -std=c++17</code>。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#auto">auto</a><a href="#map-set">map-set</a><a href="#modern-cpp">modern-cpp</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/09-modern-cpp.html">第 9 章</a></div>
+    </section>
+
+    <section class="entry" id="constexpr">
+      <h3>constexpr <span class="en">Compile-time constant</span></h3>
+      <p class="what"><b>是什么：</b>要求“编译期就能算出来”的常量与函数：能用在数组长度、模板参数、static_assert 里。</p>
+      <p class="when"><b>什么时候用：</b>希望把计算提前到编译期、或需要真正的常量表达式时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>constexpr int square(int x) { return x * x; }</code> 输入是编译期常量就编译期算完。</li><li><code>static_assert(square(5) == 25);</code> 编译期断言，不满足直接编译失败。</li><li>和 const 的区别：const 只保证“运行期不许改”，constexpr 保证“编译期已知”。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#variable-init">variable-init</a><a href="#modern-cpp">modern-cpp</a><a href="#template">template</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/02-types-and-control.html">第 2 章</a><a href="../programming/cpp/09-modern-cpp.html">第 9 章</a></div>
+    </section>
+
+    <section class="entry" id="modern-cpp">
+      <h3>现代 C++ <span class="en">Modern C++</span></h3>
+      <p class="what"><b>是什么：</b>C++11 之后的一系列改进：auto、范围 for、智能指针、lambda、constexpr、结构化绑定、移动语义……</p>
+      <p class="when"><b>什么时候用：</b>新写代码都应该用现代写法，别停留在“带类的 C”。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>优先用标准库容器和智能指针，少写裸数组和裸 new。</li><li>用 <code>nullptr</code> 代替 NULL，用 <code>enum class</code> 代替裸枚举，用 <code>using</code> 代替 typedef。</li><li>编译加 <code>-std=c++17</code>（或更高），别用十几年前的默认标准。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#auto">auto</a><a href="#structured-binding">structured-binding</a><a href="#constexpr">constexpr</a><a href="#smart-pointer">smart-pointer</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/09-modern-cpp.html">第 9 章</a></div>
+    </section>
+
+    <section class="entry" id="exception">
+      <h3>异常处理 <span class="en">Exception</span></h3>
+      <p class="what"><b>是什么：</b>用 throw 抛错、try/catch 捕获，把错误从发生的地方传到能处理的地方。</p>
+      <p class="when"><b>什么时候用：</b>函数无法完成承诺（除零、越界、文件打不开）时；而不是用来控制正常流程。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>throw std::invalid_argument("divide by zero");</code></li><li>按 const 引用捕获：<code>catch (const std::exception&amp; e) { std::cout &lt;&lt; e.what(); }</code>。</li><li>抛异常时栈展开会调用局部对象析构——RAII 写对就不会泄漏。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#raii">raii</a><a href="#sanitizer">sanitizer</a><a href="#modern-cpp">modern-cpp</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/09-modern-cpp.html">第 9 章</a></div>
+    </section>
+
+    <section class="entry" id="complexity">
+      <h3>时间复杂度 <span class="en">Time complexity</span></h3>
+      <p class="what"><b>是什么：</b>用 O(...) 描述数据量增大时运行时间的增长量级，是选算法和选容器的第一依据。</p>
+      <p class="when"><b>什么时候用：</b>看数据范围选算法、判断会不会超时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>数据规模对照：n≤20 可以 O(2ⁿ)；n≤500 可以 O(n³)；n≤5000 可以 O(n²)；n≤10⁶ 只能 O(n log n) 或 O(n)。</li><li>vector 随机访问 O(1)、map 查找 O(log n)、unordered_map 平均 O(1)、priority_queue 取堆顶 O(1)。</li><li>排序都是 O(n log n) 起步；二分、哈希、双指针常能把 O(n²) 降到 O(n log n) 或 O(n)。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#sorting">sorting</a><a href="#binary-search">binary-search</a><a href="#hash-table">hash-table</a><a href="#stl">stl</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/13-more-data-structures.html">第 13 章 数据结构与算法补遗</a></div>
+    </section>
+
+    <section class="entry" id="sanitizer">
+      <h3>Sanitizer（内存检测） <span class="en">AddressSanitizer / UBSan</span></h3>
+      <p class="what"><b>是什么：</b>编译期插入检查的运行时工具，能直接报出越界、释放后使用、双重释放、整数溢出等问题。</p>
+      <p class="when"><b>什么时候用：</b>调试阶段必开；写数据结构、指针相关的代码尤其重要。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>编译：<code>g++ -std=c++17 -g -fsanitize=address,undefined -o app app.cpp</code>。</li><li>运行程序时若触发问题，会打印错误类型和具体行号后中止。</li><li>只在调试期用；发布版本关掉（慢、占内存）。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#gdb">gdb</a><a href="#gpp-flags">gpp-flags</a><a href="#stack-heap">stack-heap</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/12-debugging-build-test.html">第 12 章 调试、构建与测试</a></div>
+    </section>
+
+    <section class="entry" id="gdb">
+      <h3>调试器（GDB） <span class="en">GNU Debugger</span></h3>
+      <p class="what"><b>是什么：</b>能下断点、单步执行、查看变量和调用栈的命令行调试器。</p>
+      <p class="when"><b>什么时候用：</b>程序崩溃（段错误）或结果不对，靠打印排查太慢时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>编译要带调试信息：<code>g++ -std=c++17 -g -O0 -o app app.cpp</code>。</li><li>常用命令：<code>break</code>（下断点）、<code>run</code>、<code>next</code>/<code>step</code>、<code>print</code>、<code>bt</code>（看调用栈）、<code>continue</code>、<code>quit</code>。</li><li>崩溃后先 <code>bt</code> 看调用栈，再 <code>print</code> 关键变量，比从头读代码快得多。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#sanitizer">sanitizer</a><a href="#gpp-flags">gpp-flags</a><a href="#pointer">pointer</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/12-debugging-build-test.html">第 12 章</a></div>
+    </section>
+
+    <section class="entry" id="cmake">
+      <h3>CMake <span class="en">Build system</span></h3>
+      <p class="what"><b>是什么：</b>用配置文件描述“源文件 + 编译选项 + 目标”，一条命令完成多文件工程的构建。</p>
+      <p class="when"><b>什么时候用：</b>工程超过一个源文件，或者想把编译选项、sanitizer 开关统一管理时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>写 <code>CMakeLists.txt</code>：<code>add_executable(app util.cpp main.cpp)</code> + <code>target_compile_options</code>。</li><li>构建三步：<code>cmake -S . -B build</code> → <code>cmake --build build</code> → 运行。</li><li><code>build/</code> 是生成物，记得写进 <code>.gitignore</code>。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#gpp-flags">gpp-flags</a><a href="#unit-test">unit-test</a><a href="#cpp-compile-link">cpp-compile-link</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/12-debugging-build-test.html">第 12 章</a></div>
+    </section>
+
+    <section class="entry" id="unit-test">
+      <h3>单元测试 <span class="en">Unit test</span></h3>
+      <p class="what"><b>是什么：</b>给代码写的自动检查：一条命令跑完所有用例，立刻知道有没有改坏。</p>
+      <p class="when"><b>什么时候用：</b>改了代码不敢确认没影响时；写数据结构时配合随机对拍尤其有效。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>最小骨架：注册用例 + 逐个运行 + 统计失败（失败返回非 0 退出码）。</li><li>断言用 assert 或测试库的 EXPECT_EQ / ASSERT_THROW。</li><li>随机对拍：固定随机种子，把同一批随机输入喂给自己的实现和标准库实现，逐项比较。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#sanitizer">sanitizer</a><a href="#cmake">cmake</a><a href="#linked-list">linked-list</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/10-data-structures.html">第 10 章</a><a href="../programming/cpp/12-debugging-build-test.html">第 12 章</a></div>
+    </section>
+
+    <section class="entry" id="binary-tree">
+      <h3>二叉树与二叉搜索树 <span class="en">Binary tree / BST</span></h3>
+      <p class="what"><b>是什么：</b>每个节点最多两个孩子的结构；BST 额外保证左子树全部小于根、右子树全部大于根，中序遍历即升序。</p>
+      <p class="when"><b>什么时候用：</b>需要有序且能快速查找/插入时（std::map、std::set 的底层就是平衡 BST）。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>节点用 <code>std::unique_ptr&lt;Node&gt;</code> 管理左右孩子，析构自动释放。</li><li>插入：小于往左、大于往右、相等忽略；中序遍历输出有序序列。</li><li>裸 BST 在插入有序数据时会退化成链表（O(n)），需要平衡结构才能保证 O(log n)。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#linked-list">linked-list</a><a href="#map-set">map-set</a><a href="#complexity">complexity</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/13-more-data-structures.html">第 13 章</a></div>
+    </section>
+
+    <section class="entry" id="graph">
+      <h3>图的存储与遍历 <span class="en">Graph</span></h3>
+      <p class="what"><b>是什么：</b>点和边组成的结构；最常用的存储是邻接表 <code>vector&lt;vector&lt;int&gt;&gt;</code>。</p>
+      <p class="when"><b>什么时候用：</b>连通性、最短路、拓扑序、成环判断等问题。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>建图：读一条边 <code>u v</code>，<code>g[u].push_back(v); g[v].push_back(u);</code>（有向图只存一边）。</li><li>DFS 回答连通性（连通块、判环）；BFS 回答无权图最短路。</li><li>两者复杂度都是 O(n + m)（点数 + 边数）。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#dfs">dfs</a><a href="#bfs">bfs</a><a href="#dsu">dsu</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/13-more-data-structures.html">第 13 章</a></div>
+    </section>
+
+    <section class="entry" id="dsu">
+      <h3>并查集 <span class="en">Disjoint Set Union</span></h3>
+      <p class="what"><b>是什么：</b>维护“谁和谁是一伙的”的结构：支持合并两个集合、查询是否同集合，接近 O(1)。</p>
+      <p class="when"><b>什么时候用：</b>动态连通性、朋友圈、Kruskal 最小生成树。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>find(x)</code> 带路径压缩，<code>unite(a, b)</code> 按集合大小合并。</li><li>统计集合个数：对每个 i 先 <code>find(i)</code> 压平路径，再数 <code>parent[i] == i</code> 的个数。</li><li>初始化时 <code>parent[i] = i</code>。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#graph">graph</a><a href="#complexity">complexity</a><a href="#bfs">bfs</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/13-more-data-structures.html">第 13 章</a></div>
+    </section>
+
+    <section class="entry" id="sorting">
+      <h3>排序算法 <span class="en">Sorting</span></h3>
+      <p class="what"><b>是什么：</b>把数据按顺序排好。常用四种：插入、归并、快速、堆排序，都是 O(n log n) 或更好于 O(n²)。</p>
+      <p class="when"><b>什么时候用：</b>需要自己实现（作业/面试）、或需要稳定排序时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>日常直接用 <code>std::sort</code>（O(n log n)）；想保持相等元素原顺序用 <code>std::stable_sort</code>。</li><li>要手写就记归并（稳定、需额外空间）和快排（平均最快、原地、不稳定）两种。</li><li>比较器必须是严格弱序，否则 sort 行为未定义。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#complexity">complexity</a><a href="#algorithm-stl">algorithm-stl</a><a href="#priority-queue">priority-queue</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/13-more-data-structures.html">第 13 章</a></div>
+    </section>
+
+    <section class="entry" id="two-pointers">
+      <h3>双指针 <span class="en">Two pointers</span></h3>
+      <p class="what"><b>是什么：</b>用两个下标在序列上移动，把原本 O(n²) 的暴力枚举降到 O(n)。</p>
+      <p class="when"><b>什么时候用：</b>有序数组求和、去重、原地删除、回文判断。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>相向双指针：一个从头、一个从尾，向中间靠拢（两数之和、回文）。</li><li>同向双指针（快慢指针）：慢指针维护结果区间，快指针扫一遍（原地删除、去重）。</li><li>前提是要有单调性，否则指针移动没有依据。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#sliding-window">sliding-window</a><a href="#binary-search">binary-search</a><a href="#prefix-sum">prefix-sum</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/11-algorithm-patterns.html">第 11 章 十个算法思想</a></div>
+    </section>
+
+    <section class="entry" id="sliding-window">
+      <h3>滑动窗口 <span class="en">Sliding window</span></h3>
+      <p class="what"><b>是什么：</b>维护一个连续区间 [l, r]，右端扩张、左端收缩，一路扫完。</p>
+      <p class="when"><b>什么时候用：</b>连续子数组/子串的最值或计数问题。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>右指针 for 循环扩张，窗口不满足条件时 while 收缩左指针。</li><li>典型题：最长无重复子串、和 ≥ target 的最短子数组。</li><li>只有“单调性”成立时才能用：扩大会更容易满足、收缩会更难满足。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#two-pointers">two-pointers</a><a href="#prefix-sum">prefix-sum</a><a href="#hash-table">hash-table</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/11-algorithm-patterns.html">第 11 章</a></div>
+    </section>
+
+    <section class="entry" id="hash-table">
+      <h3>哈希表 <span class="en">Hash table</span></h3>
+      <p class="what"><b>是什么：</b>用哈希函数把键映射到桶，实现平均 O(1) 的插入和查找。C++ 里是 <code>std::unordered_map</code> / <code>unordered_set</code>。</p>
+      <p class="when"><b>什么时候用：</b>只想快速判断“在不在”、统计频率、配对查找，不要求顺序时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li><code>std::unordered_map&lt;int, int&gt; cnt; ++cnt[x];</code> 统计频率。</li><li>查存在用 <code>count()</code> 或 <code>find()</code>；<code>m[key]</code> 会插入默认值。</li><li>需要按 key 有序遍历就换 map/set；哈希冲突严重时复杂度会退化。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#map-set">map-set</a><a href="#prefix-sum">prefix-sum</a><a href="#complexity">complexity</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/11-algorithm-patterns.html">第 11 章</a></div>
+    </section>
+
+    <section class="entry" id="prefix-sum">
+      <h3>前缀和 <span class="en">Prefix sum</span></h3>
+      <p class="what"><b>是什么：</b>预先算好前缀累加 <code>pre[i+1] = pre[i] + a[i]</code>，之后任意区间和 O(1) 得到。</p>
+      <p class="when"><b>什么时候用：</b>大量区间求和查询；配合哈希还能数“和为 k 的子数组”。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>区间和 a[l..r] = <code>pre[r+1] - pre[l]</code>。</li><li><code>pre[0] = 0</code>，长度开 n+1，空区间也自然成立。</li><li>累加要用 long long：10⁵ 个 10⁹ 相加会溢出 int。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#sliding-window">sliding-window</a><a href="#hash-table">hash-table</a><a href="#complexity">complexity</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/11-algorithm-patterns.html">第 11 章</a></div>
+    </section>
+
+    <section class="entry" id="binary-search">
+      <h3>二分查找 <span class="en">Binary search</span></h3>
+      <p class="what"><b>是什么：</b>在单调序列里每次砍掉一半，O(log n) 找到边界；本质是“找最小/最大满足条件的值”。</p>
+      <p class="when"><b>什么时候用：</b>有序数组查找、答案具有单调性的最优化问题（二分答案）。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>标准库：<code>std::lower_bound</code>（第一个 ≥ x）、<code>upper_bound</code>（第一个 &gt; x）、<code>binary_search</code>（是否存在）。</li><li>手写模板：区间左闭右开，<code>mid = left + (right - left) / 2</code> 防溢出，满足条件就 right = mid。</li><li>二分答案：先写 <code>ok(x)</code> 判断函数，再二分最小的可行解。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#algorithm-stl">algorithm-stl</a><a href="#complexity">complexity</a><a href="#two-pointers">two-pointers</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/11-algorithm-patterns.html">第 11 章</a></div>
+    </section>
+
+    <section class="entry" id="dfs">
+      <h3>深度优先搜索（DFS） <span class="en">Depth-first search</span></h3>
+      <p class="what"><b>是什么：</b>一条路走到黑，走不通就回退。递归实现，适合连通性、枚举所有路径。</p>
+      <p class="when"><b>什么时候用：</b>网格连通块、树的遍历、排列组合、判环。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>四步模板：边界检查 → 进入即标记 → 遍历邻居 → 递归。</li><li>访问标记一定要在进入函数时立刻置位，否则会重复访问导致死循环。</li><li>递归深度大时可能爆栈，必要时改成显式栈或 BFS。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#bfs">bfs</a><a href="#backtracking">backtracking</a><a href="#graph">graph</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/11-algorithm-patterns.html">第 11 章</a><a href="../programming/cpp/13-more-data-structures.html">第 13 章</a></div>
+    </section>
+
+    <section class="entry" id="bfs">
+      <h3>广度优先搜索（BFS） <span class="en">Breadth-first search</span></h3>
+      <p class="what"><b>是什么：</b>一层一层向外扩散，配队列实现；第一次到达某点的层数就是最短步数。</p>
+      <p class="when"><b>什么时候用：</b>无权图最短路、最少步数、层次遍历。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>队列初始化装起点，dist 数组记录步数（-1 表示未访问）。</li><li>入队即标记：出队才标记会让同一个点重复入队。</li><li>需要输出路径时再开一个 parent 数组记录来路。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#dfs">dfs</a><a href="#graph">graph</a><a href="#stack-queue">stack-queue</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/11-algorithm-patterns.html">第 11 章</a><a href="../programming/cpp/13-more-data-structures.html">第 13 章</a></div>
+    </section>
+
+    <section class="entry" id="backtracking">
+      <h3>回溯 <span class="en">Backtracking</span></h3>
+      <p class="what"><b>是什么：</b>DFS 的一种：每步尝试所有选择，走不通就撤销选择换下一个。</p>
+      <p class="when"><b>什么时候用：</b>全排列、组合、子集、八皇后、数独。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>模板三步：选（push + 标记）→ 递归 → 撤（pop + 取消标记）。</li><li>“撤销”是灵魂：不撤销，下一次尝试会带着上一次的残留。</li><li>剪枝决定速度：排序后跳过重复元素、提前判断可行性。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#dfs">dfs</a><a href="#dynamic-programming">dynamic-programming</a><a href="#complexity">complexity</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/11-algorithm-patterns.html">第 11 章</a></div>
+    </section>
+
+    <section class="entry" id="greedy">
+      <h3>贪心 <span class="en">Greedy</span></h3>
+      <p class="what"><b>是什么：</b>每步都选当前看起来最优的，并证明局部最优能推出全局最优。</p>
+      <p class="when"><b>什么时候用：</b>区间调度、找零钱、部分最优化问题。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>经典例子：按结束时间排序后依次选不重叠区间。</li><li>用之前先想反例；证明不了就换 DP 或枚举。</li><li>贪心是否正确取决于问题结构（例如找零钱只有面值成倍数关系时才成立）。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#dynamic-programming">dynamic-programming</a><a href="#sorting">sorting</a><a href="#complexity">complexity</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/11-algorithm-patterns.html">第 11 章</a></div>
+    </section>
+
+    <section class="entry" id="dynamic-programming">
+      <h3>动态规划（DP） <span class="en">Dynamic programming</span></h3>
+      <p class="what"><b>是什么：</b>把大问题拆成会重复出现的小问题，用数组把子问题答案存下来避免重复计算。</p>
+      <p class="when"><b>什么时候用：</b>最优值问题且子问题重叠时：爬楼梯、最大子段和、背包、编辑距离。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>三步走：定义状态 → 写转移方程 → 定初值与答案。</li><li>最大子段和：<code>cur = max(a[i], cur + a[i]); best = max(best, cur);</code></li><li>先想清楚“状态是什么、从哪些状态转移过来”，再动手写代码。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#greedy">greedy</a><a href="#backtracking">backtracking</a><a href="#complexity">complexity</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../programming/cpp/11-algorithm-patterns.html">第 11 章</a></div>
     </section>
 
     <button class="backbtn" onclick="history.back()">← 返回刚才的文章</button>

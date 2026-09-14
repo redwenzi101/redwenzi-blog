@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第 5 章 类与对象 · C++ 新手进阶教材（5/13） · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../assets/article.css">
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="index.html">← C++ 教材目录（共 13 章）</a>
+      <h1>第 5 章　类与对象</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · C++ · 📖 预计阅读 38 分钟 · 共 7 道练习</div>
+    </header>
+
+    <article>
+<div class="tip">🎯 <b>本章你会学到：</b>构造析构、拷贝控制、运算符重载与多态。建议边读边敲代码，每节的练习先自己做，再展开答案对照。</div>
+      <p>写数据结构，主要工作就是写类：Vector、LinkedList、Stack、Queue、BinaryTree……每一个都是类或结构体。本章讲清楚三件事：对象怎么创建和销毁、拷贝意味着什么、多态怎么工作。</p>
+      <h2 id="s-5-1">5.1 struct 与 class</h2>
+      <p>先说结论：struct 和 class 几乎是同一个东西，唯一的区别是默认访问权限（struct 默认 public，class 默认 private）和默认继承方式。</p>
+      <h3>不需要 new 才能创建对象</h3>
+      <p>Point p{1.0, 2.0}; 就在当前作用域的栈上创建了一个真实对象，离开作用域自动销毁，没有任何运行时代价。这是从 Java 过来必须立刻纠正的直觉：Java 的 Point p = new Point() 在 C++ 里对应堆上的 Point* p = new Point()（需要你负责释放）。默认写法应该是栈对象。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　成员访问：对象用 .（p.x），指针用 -&gt;（p-&gt;x）。Java 统一用 .，C++ 必须区分手上是对象还是指针。</div>
+      <h3>类内初始化 + const 成员函数</h3>
+      <p>成员可以直接给默认值：double x = 0.0;（类内初始化，C++11 起）。const 成员函数（double dist() const）承诺不修改对象，是最重要的接口约定：int size() const 告诉调用方“你放心调用，我不会动你的容器”。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">struct Point {
+    double x = 0.0;             // 类内初始化
+    double y = 0.0;
+    double dist() const { return std::sqrt(x * x + y * y); }
+};
+Point p{3.0, 4.0};              // 栈上创建，没有 new</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　private 成员变量名习惯加下划线后缀（owner_、balance_），区分参数。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-5-1-1">
+      <div class="ex-head"><span class="ex-id">5.1.1</span><span class="badge easy">必做</span><span class="ex-title">Point 类</span></div>
+      <p>定义 struct Point（double x, y，带类内初始化 0.0），写成员函数 double dist() const 返回到原点的距离。main 里创建 Point p{3.0, 4.0} 输出 dist()。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　5</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>5</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　需要 #include &lt;cmath&gt;，用 std::sqrt(x*x + y*y)。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;cmath&gt;
+#include &lt;iostream&gt;
+struct Point {
+    double x = 0.0;
+    double y = 0.0;
+    double dist() const { return std::sqrt(x * x + y * y); }
+};
+int main() {
+    Point p{3.0, 4.0};
+    std::cout &lt;&lt; p.dist() &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　C++ 里 Point p{...} 直接在栈上建对象，不需要 new；const 成员函数承诺不修改对象。</p></details>
+      </section>
+      <h2 id="s-5-2">5.2 构造函数与析构函数</h2>
+      <p>构造函数负责把对象“初始化到位”，析构函数负责“收尾”。Java 没有析构函数的概念（有 finalize 但基本不用），这里全靠编译器在确定时刻调用。</p>
+      <h3>初始化列表：真正的初始化</h3>
+      <p>成员写在初始化列表里才是初始化，写在函数体里是赋值。三类成员必须在初始化列表里初始化：const 成员、引用成员、没有默认构造函数的类类型成员。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">class Buffer {
+public:
+    explicit Buffer(std::size_t n)
+        : data_(n, 0), size_(n), name_("buf") { }   // 初始化列表
+private:
+    std::vector&lt;int&gt; data_;
+    std::size_t size_ = 0;
+    std::string name_;
+};</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　成员初始化顺序由声明顺序决定，和初始化列表书写顺序无关。把列表顺序写成和声明一致，否则有 -Wreorder 警告的隐患。</div>
+      <p>explicit、= default、= delete</p>
+      <p>explicit 修饰单参数构造函数，防止 Buffer b = 10; 这种隐式转换——Java 没有这个关键字，C++ 里几乎所有的单参数构造函数都应该加 explicit。= default 让编译器生成默认版本；= delete 明确禁止某个函数（例如禁止拷贝）。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　析构函数不能有参数、不能重载、不能抛异常。它在三个时刻被自动调用：栈对象离开作用域、delete 堆对象、临时对象所在表达式结束。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-5-2-1">
+      <div class="ex-head"><span class="ex-id">5.2.1</span><span class="badge hard">挑战</span><span class="ex-title">Counter 计数</span></div>
+      <p>写一个 Counter 类：构造函数 ++instances，析构函数 --instances，静态成员函数 count() 返回当前对象数。main 里建 3 个对象输出计数，再用一个花括号作用域建第 4 个并让它析构，再输出计数。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　两行：3、3。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>3
+3</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　静态成员变量要在类外定义一次：int Counter::instances = 0;</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+class Counter {
+public:
+    Counter() { ++instances; }
+    ~Counter() { --instances; }
+    static int count() { return instances; }
+private:
+    static int instances;
+};
+int Counter::instances = 0;
+int main() {
+    Counter a, b, c;
+    std::cout &lt;&lt; Counter::count() &lt;&lt; '\n';   // 3
+    { Counter d; }                            // d 在这里析构
+    std::cout &lt;&lt; Counter::count() &lt;&lt; '\n';   // 3
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　析构在对象离开作用域时自动调用——确定性销毁是 C++ 与 Java 最大的不同。</p></details>
+      </section>
+      <section class="ex" id="ex-5-2-2">
+      <div class="ex-head"><span class="ex-id">5.2.2</span><span class="badge easy">必做</span><span class="ex-title">拷贝的独立性</span></div>
+      <p>写一个含 std::vector&lt;int&gt; 成员的类 VecBox，默认拷贝即可。main 里创建 a 放入 {1,2,3}，用 VecBox b = a; 拷贝，然后修改 b 的元素，输出 a 的元素验证 a 没被影响。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　1 2 3</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>1 2 3</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　b = a 是逐成员拷贝，vector 拷贝是深拷贝，各自独立。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+class VecBox {
+public:
+    std::vector&lt;int&gt; data;
+};
+int main() {
+    VecBox a;
+    a.data = {1, 2, 3};
+    VecBox b = a;          // 拷贝：b 有自己的 vector
+    b.data[0] = 99;        // 改 b 不影响 a
+    for (int x : a.data) { std::cout &lt;&lt; x &lt;&lt; ' '; }
+    std::cout &lt;&lt; '\n';     // 1 2 3
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　成员都是自管理资源的类型（vector/string）时，默认拷贝就正确——这就是零法则。</p></details>
+      </section>
+      <h2 id="s-5-3">5.3 拷贝控制：深浅拷贝与五法则</h2>
+      <p>这是 C++ 相对 Java 差别最大、也最容易写出 bug 的地方。Java 里 Foo b = a; 是让 a、b 指向同一个对象；C++ 里 Foo b = a; 默认逐成员拷贝出一个新对象——这叫值语义。</p>
+      <h3>零法则 vs 五法则</h3>
+      <p>成员都是 int、std::string、std::vector 这类“自己管好自己资源”的类型时，默认拷贝就是正确的，你一个特殊函数都不用写（零法则）。问题出在类里含裸指针：默认拷贝只复制指针的值，两个对象指向同一块内存，析构时释放两次——浅拷贝问题。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　如果你的类需要自己写析构函数（管理了裸资源），那它通常也需要自己写拷贝构造、拷贝赋值、移动构造、移动赋值——这就是五法则。</div>
+      <h3>深拷贝怎么写</h3>
+      <p>拷贝构造：分配同样大的新内存并复制元素；拷贝赋值：处理自赋值 a = a、先分配新内存再释放旧的（异常安全）、返回 *this 支持链式 a = b = c。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">IntArray(const IntArray&amp; other)
+    : size_(other.size_), data_(new int[other.size_]) {
+    std::copy(other.data_, other.data_ + size_, data_);
+}</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　工程上更省事的做法：不写裸资源，直接用 vector/string 等成员，让零法则替你解决。</div>
+      <figure><svg viewBox="0 0 620 240" width="100%" role="img" aria-label="深拷贝与浅拷贝" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f3a5f"/></marker></defs><rect x="0" y="0" width="620" height="240" fill="#fbfaf7" rx="10"/><text x="150" y="26" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="13" font-weight="600" fill="#b3261e" text-anchor="middle">浅拷贝：两个对象指向同一块内存</text><rect x="40" y="46" width="90" height="34" rx="8" fill="#fff" stroke="#1f3a5f" stroke-width="1.5"/><text x="85.0" y="68.0" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="12" font-weight="400" fill="#2b2b2b" text-anchor="middle">a.data_</text><rect x="40" y="96" width="90" height="34" rx="8" fill="#fff" stroke="#1f3a5f" stroke-width="1.5"/><text x="85.0" y="118.0" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="12" font-weight="400" fill="#2b2b2b" text-anchor="middle">b = a</text><rect x="215" y="71" width="110" height="34" rx="8" fill="#fff" stroke="#b3261e" stroke-width="1.5"/><text x="270.0" y="93.0" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="12" font-weight="400" fill="#2b2b2b" text-anchor="middle">int[3]</text><line x1="135" y1="63" x2="210" y2="82" stroke="#b3261e" stroke-width="1.6" marker-end="url(#ah)"/><line x1="135" y1="113" x2="210" y2="94" stroke="#b3261e" stroke-width="1.6" marker-end="url(#ah)"/><text x="150" y="160" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="12" fill="#b3261e" text-anchor="middle">析构两次同一块内存 → double free</text><text x="470" y="26" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="13" font-weight="600" fill="#1f7a45" text-anchor="middle">深拷贝：各自一份</text><rect x="360" y="46" width="90" height="34" rx="8" fill="#fff" stroke="#1f3a5f" stroke-width="1.5"/><text x="405.0" y="68.0" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="12" font-weight="400" fill="#2b2b2b" text-anchor="middle">a.data_</text><rect x="360" y="96" width="90" height="34" rx="8" fill="#fff" stroke="#1f3a5f" stroke-width="1.5"/><text x="405.0" y="118.0" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="12" font-weight="400" fill="#2b2b2b" text-anchor="middle">b.data_</text><rect x="500" y="46" width="90" height="34" rx="8" fill="#fff" stroke="#1f7a45" stroke-width="1.5"/><text x="545.0" y="68.0" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="12" font-weight="400" fill="#2b2b2b" text-anchor="middle">int[3]</text><rect x="500" y="96" width="90" height="34" rx="8" fill="#fff" stroke="#1f7a45" stroke-width="1.5"/><text x="545.0" y="118.0" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="12" font-weight="400" fill="#2b2b2b" text-anchor="middle">int[3]</text><line x1="455" y1="63" x2="495" y2="63" stroke="#1f7a45" stroke-width="1.6" marker-end="url(#ah)"/><line x1="455" y1="113" x2="495" y2="113" stroke="#1f7a45" stroke-width="1.6" marker-end="url(#ah)"/><text x="470" y="160" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f7a45" text-anchor="middle">互不影响，析构各释放各的</text><text x="310" y="205" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#6a6a6a" text-anchor="middle">规则：类里有裸指针就要写五法则；用 vector/string 就等于白拿深拷贝（零法则）</text></svg><figcaption>图 3：浅拷贝为什么会 double free，深拷贝为什么安全</figcaption></figure>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-5-3-1">
+      <div class="ex-head"><span class="ex-id">5.3.1</span><span class="badge hard">挑战</span><span class="ex-title">浅拷贝的代价</span></div>
+      <p>写一个含裸指针的类 BadBox（构造函数 new 一个 int，析构 delete），main 里 BadBox b = a; 拷贝后再析构——程序会崩（双重释放）。要求：运行一次观察崩溃，然后把成员换成 std::vector&lt;int&gt; 或补上深拷贝拷贝构造，让程序正常。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　7</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>7</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　这是“观察未定义行为”的实验题：先写坏的版本跑一次，再写好的版本。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+// 好的版本：用 vector 代替裸指针（零法则）
+class GoodBox {
+public:
+    std::vector&lt;int&gt; data;
+};
+int main() {
+    GoodBox a;
+    a.data.push_back(7);
+    GoodBox b = a;      // 深拷贝，安全
+    std::cout &lt;&lt; b.data[0] &lt;&lt; '\n';
+    return 0;
+}
+// 坏的版本（自己敲一遍再删掉）：
+// class BadBox {
+// public:
+//     int* p;
+//     BadBox() : p(new int(0)) { }
+//     ~BadBox() { delete p; }   // 拷贝后两个对象共享 p，析构两次 = 崩溃
+// };</code></pre>
+<p class="note"><b>解析</b>　含裸指针的类默认拷贝是浅拷贝，两个对象析构时双重释放。解法：零法则（用 vector）或五法则（写深拷贝）。</p></details>
+      </section>
+      <h2 id="s-5-4">5.4 运算符重载：让结构体能排序</h2>
+      <p>在数据结构课里，运算符重载的实际用途主要是三个：让结构体能比较大小（用于排序和放进 set/map）、让容器能用 [] 访问、让自己写的类能直接输出。</p>
+      <h3>operator&lt;：排序的钥匙</h3>
+      <p>定义 operator&lt; 之后，std::sort 和 std::set/std::map 就能直接用你的类型。比较器必须是严格弱序：相等就返回 false。写成 return a.score &lt;= b.score; 会让 std::sort 的行为未定义，甚至越界崩溃。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">struct Student {
+    std::string name;
+    int score;
+    bool operator&lt;(const Student&amp; o) const {
+        if (score != o.score) { return score &gt; o.score; }  // 分数降序
+        return name &lt; o.name;                              // 同名按名字升序
+    }
+};</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　不能发明新运算符、不能改变优先级、至少一个操作数是你自己的类型；=、[]、()、-&gt; 必须是成员函数，&lt;&lt; 输出运算符必须是自由函数（左操作数是 std::ostream）。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-5-4-1">
+      <div class="ex-head"><span class="ex-id">5.4.1</span><span class="badge easy">必做</span><span class="ex-title">学生按分数排序</span></div>
+      <p>定义 struct Student（string name, int score），重载 operator&lt;（按分数降序），读入 3 个学生，排序后从高到低输出“名字 分数”。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　三行，每行“名字 分数”。</p><p class="io-line"><b>输出</b>　三行，按分数降序。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>Ann 90
+Bob 95
+Cid 88</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>Bob 95
+Ann 90
+Cid 88</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　operator&lt; 返回 score &gt; o.score 实现降序；std::sort 直接用。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+struct Student {
+    std::string name;
+    int score;
+    bool operator&lt;(const Student&amp; o) const { return score &gt; o.score; }
+};
+int main() {
+    std::vector&lt;Student&gt; v(3);
+    for (int i = 0; i &lt; 3; ++i) { std::cin &gt;&gt; v[i].name &gt;&gt; v[i].score; }
+    std::sort(v.begin(), v.end());
+    for (const auto&amp; s : v) { std::cout &lt;&lt; s.name &lt;&lt; ' ' &lt;&lt; s.score &lt;&lt; '\n'; }
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　有 operator&lt; 就能直接排序；注意比较器必须是严格弱序（相等返回 false）。</p></details>
+      </section>
+      <h2 id="s-5-5">5.5 继承与多态</h2>
+      <p>继承在数据结构课里用得不算多，但几个概念必须清楚，否则你会在“为什么析构函数要加 virtual”这类问题上卡住。</p>
+      <h3>virtual：C++ 默认静态绑定</h3>
+      <p>只有虚函数才是动态绑定。不写 virtual，p-&gt;area() 调用的是指针声明类型 Shape 的版本，而不是实际对象类型的版本——Java 实例方法默认动态绑定，从 Java 过来最容易忘的就是这个 virtual。派生类加 override 检查是否正确覆盖。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">class Shape {
+public:
+    virtual ~Shape() = default;            // 多态基类必须有虚析构
+    virtual double area() const = 0;       // 纯虚函数：子类必须实现
+};
+class Circle : public Shape {
+public:
+    double area() const override { return 3.14159265 * r_ * r_; }
+};</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　多态基类的析构函数必须是虚的。否则 Shape* p = new Circle(); delete p; 只调 Shape 的析构，Circle 的资源就泄漏了。</div>
+      <h3>对象切片与抽象类</h3>
+      <p>Shape s = Circle(1.0); 会把 Circle 切成 Shape，多态信息全部丢失。多态必须通过指针或引用使用，不能按值传递基类。含有纯虚函数的类是抽象类，不能实例化；C++ 没有 interface 关键字，“接口”就是“只有纯虚函数的抽象类”。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　漏写 override 又写错参数类型（比如忘记 const）时，程序能编译通过但行为完全不对——这是非常经典的坑。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-5-5-1">
+      <div class="ex-head"><span class="ex-id">5.5.1</span><span class="badge hard">挑战</span><span class="ex-title">形状多态</span></div>
+      <p>定义抽象基类 Shape（虚析构 + 纯虚函数 area()），派生 Circle（半径）和 Square（边长），main 里用 vector&lt;unique_ptr&lt;Shape&gt;&gt; 存两个对象，输出各自的面积（保留 2 位小数）。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　一行两个数：圆半径、正方形边长。</p><p class="io-line"><b>输出</b>　两行，圆面积、正方形面积（保留 2 位小数）。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>1 2</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>3.14
+4.00</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　纯虚函数 = 0 让类抽象化；派生类加 override。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;vector&gt;
+class Shape {
+public:
+    virtual ~Shape() = default;
+    virtual double area() const = 0;
+};
+class Circle : public Shape {
+public:
+    explicit Circle(double r) : r_(r) { }
+    double area() const override { return 3.14159265 * r_ * r_; }
+private:
+    double r_;
+};
+class Square : public Shape {
+public:
+    explicit Square(double side) : side_(side) { }
+    double area() const override { return side_ * side_; }
+private:
+    double side_;
+};
+int main() {
+    double r, side;
+    std::cin &gt;&gt; r &gt;&gt; side;
+    std::vector&lt;std::unique_ptr&lt;Shape&gt;&gt; shapes;
+    shapes.push_back(std::make_unique&lt;Circle&gt;(r));
+    shapes.push_back(std::make_unique&lt;Square&gt;(side));
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(2);
+    for (const auto&amp; s : shapes) { std::cout &lt;&lt; s-&gt;area() &lt;&lt; '\n'; }
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　多态基类必须有虚析构；多态必须通过指针/引用使用，不能按值。</p></details>
+      </section>
+      <h2 id="summary">本章小结</h2>
+      <ul class="recap"><li>栈上直接建对象，不需要 new；对象用 .、指针用 -&gt;。</li><li>初始化列表是真初始化；explicit 防止隐式转换；析构确定时刻自动调用。</li><li>成员都是自管理类型时用零法则；含裸指针用五法则。</li><li>operator&lt; 必须是严格弱序；多态基类必须有虚析构；多态必须用指针/引用。</li></ul>
+      <h2 id="combo">🧩 本章综合练习</h2>
+      <p>这几道题把本章多个知识点串起来，建议合上资料独立完成，再展开答案对照。</p>
+      <section class="ex" id="ex-5-A">
+      <div class="ex-head"><span class="ex-id">5.A</span><span class="badge hard">综合</span><span class="ex-title">五法则实战：写一个能安全拷贝的 IntArray</span></div>
+      <p>实现 IntArray：裸指针 + 元素个数。构造函数分配、析构释放、拷贝构造深拷贝、拷贝赋值处理自赋值并返回 *this、at() 越界抛 std::out_of_range。main 里验证拷贝独立性和链式赋值 c = b = a。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　第一行整数 n；第二行 n 个整数。</p><p class="io-line"><b>输出</b>　先输出改过 b 之后的 a、b、c 内容，再输出捕获到的异常信息。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>3
+7 8 9</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>a: 7 8 9
+b: 100 8 9
+c: 7 8 9
+caught: IntArray::at</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　拷贝赋值：先分配新内存再释放旧内存（异常安全）；用 if (this == &amp;other) 处理自赋值。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;cstddef&gt;
+#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+
+class IntArray {
+public:
+    explicit IntArray(std::size_t n)
+        : size_(n), data_(n &gt; 0 ? new int[n]{} : nullptr) { }
+
+    IntArray(const IntArray&amp; other)                  // 拷贝构造：深拷贝
+        : size_(other.size_), data_(other.size_ &gt; 0 ? new int[other.size_]{} : nullptr) {
+        for (std::size_t i = 0; i &lt; size_; ++i) { data_[i] = other.data_[i]; }
+    }
+
+    IntArray&amp; operator=(const IntArray&amp; other) {     // 拷贝赋值
+        if (this == &amp;other) { return *this; }         // 自赋值
+        int* fresh = other.size_ &gt; 0 ? new int[other.size_]{} : nullptr;
+        for (std::size_t i = 0; i &lt; other.size_; ++i) { fresh[i] = other.data_[i]; }
+        delete[] data_;                               // 新内存准备好再释放旧的
+        data_ = fresh;
+        size_ = other.size_;
+        return *this;                                 // 支持 c = b = a
+    }
+
+    ~IntArray() { delete[] data_; }
+
+    std::size_t size() const { return size_; }
+
+    int&amp; at(std::size_t i) {
+        if (i &gt;= size_) { throw std::out_of_range("IntArray::at"); }
+        return data_[i];
+    }
+    int at(std::size_t i) const {
+        if (i &gt;= size_) { throw std::out_of_range("IntArray::at"); }
+        return data_[i];
+    }
+
+private:
+    std::size_t size_ = 0;
+    int* data_ = nullptr;
+};
+
+int main() {
+    int n{};
+    std::cin &gt;&gt; n;
+    IntArray a(static_cast&lt;std::size_t&gt;(n));
+    for (int i = 0; i &lt; n; ++i) { std::cin &gt;&gt; a.at(static_cast&lt;std::size_t&gt;(i)); }
+
+    IntArray b = a;          // 拷贝构造
+    IntArray c(1);
+    c = b = a;               // 链式赋值
+    b.at(0) = 100;           // 改 b 不影响 a、c
+
+    auto print = [](const char* tag, const IntArray&amp; v) {
+        std::cout &lt;&lt; tag &lt;&lt; ':';
+        for (std::size_t i = 0; i &lt; v.size(); ++i) { std::cout &lt;&lt; ' ' &lt;&lt; v.at(i); }
+        std::cout &lt;&lt; '\n';
+    };
+    print("a", a);
+    print("b", b);
+    print("c", c);
+
+    try { a.at(99); }
+    catch (const std::out_of_range&amp; e) { std::cout &lt;&lt; "caught: " &lt;&lt; e.what() &lt;&lt; '\n'; }
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　拷贝赋值三条纪律：处理自赋值、先分配后释放、返回 *this。写完用 -fsanitize=address,undefined 跑一遍，确认没有 double free。</p></details>
+      </section>
+      <div class="tip"><b>📚 本文概念都在知识大全：</b><p style="margin-top:6px"><a href="../../knowledge/index.html#class-object">类与对象</a> · <a href="../../knowledge/index.html#constructor-destructor">构造与析构</a> · <a href="../../knowledge/index.html#copy-move">拷贝控制与五法则</a> · <a href="../../knowledge/index.html#operator-overload">运算符重载</a> · <a href="../../knowledge/index.html#virtual-inheritance">继承与多态</a> · <a href="../../knowledge/index.html#object-lifetime">对象生存期</a></p></div>
+      <div class="lesson-nav"><a href="04-pointers-and-memory.html">← 上一章：第 4 章 指针、数组与内存模型</a><a href="06-templates.html">下一章：第 6 章 模板与泛型编程 →</a></div>
+    </article>
+
+  <script src="../../assets/highlight.min.js"></script>
+  <script src="../../assets/article.js"></script>
+  <script src="../../assets/interact.js"></script>
+  <script src="../../assets/search.js"></script>
+  <script src="../../assets/giscus-config.js"></script>
+  <script src="../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第 3 章 函数与引用 · C++ 新手进阶教材（3/13） · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../assets/article.css">
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="index.html">← C++ 教材目录（共 13 章）</a>
+      <h1>第 3 章　函数与引用</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · C++ · 📖 预计阅读 26 分钟 · 共 7 道练习</div>
+    </header>
+
+    <article>
+<div class="tip">🎯 <b>本章你会学到：</b>把程序拆成函数，搞懂值/引用/指针三种传参。建议边读边敲代码，每节的练习先自己做，再展开答案对照。</div>
+      <p>本章目标：把程序拆成函数；搞懂值/引用/指针三种传参；会组织多文件工程。引用是 C++ 相对 C 最大的语法增量，也是“避免拷贝”的技术基础。</p>
+      <h2 id="s-3-1">3.1 函数：声明、定义与重载</h2>
+      <p>先学会把一段逻辑装进函数，再学会把函数摆到正确的文件里。</p>
+      <h3>声明 vs 定义</h3>
+      <p>声明（原型）告诉编译器“有这么个函数”，可以放在头文件里；定义是函数体，放在 .cpp 里。int add(int a, int b); 是声明，int add(int a, int b) { return a + b; } 是定义。调用函数时只需要声明可见；链接时必须有定义。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　函数必须保证所有路径都有返回值，否则是未定义行为。</div>
+      <h3>重载：同名不同参数</h3>
+      <p>int maxOf(int, int) 和 double maxOf(double, double) 可以同时存在，编译器根据实参类型选择版本，和 Java 的重载一样。注意两点：返回类型不能区分重载；默认参数只能从右往左连续写（int f(int a = 1, int b); 是错的）。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">#include &lt;iostream&gt;
+int maxOf(int a, int b) { return a &gt; b ? a : b; }
+double maxOf(double a, double b) { return a &gt; b ? a : b; }
+int main() { std::cout &lt;&lt; maxOf(3, 5) &lt;&lt; ' ' &lt;&lt; maxOf(1.5, 2.5); }</code></pre>
+      <div class="code-label">运行结果</div><pre><code class="language-text">5 2.5</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　重载（overload）是编译期决定；覆写（override）是运行期决定，两个词别混。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-3-1-1">
+      <div class="ex-head"><span class="ex-id">3.1.1</span><span class="badge easy">必做</span><span class="ex-title">我的第一个函数</span></div>
+      <p>写一个函数 int maxOf(int a, int b) 返回较大值，再写一个重载 double maxOf(double a, double b)。main 里读两个整数和一个浮点数对，分别调用并输出结果。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　一行两个整数；一行两个小数。</p><p class="io-line"><b>输出</b>　两行，每行一个最大值。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>3 5
+2.5 1.5</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>5
+2.5</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　重载靠参数类型区分，返回类型不能区分重载。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+int maxOf(int a, int b) { return a &gt; b ? a : b; }
+double maxOf(double a, double b) { return a &gt; b ? a : b; }
+int main() {
+    int x, y;
+    double p, q;
+    std::cin &gt;&gt; x &gt;&gt; y;
+    std::cin &gt;&gt; p &gt;&gt; q;
+    std::cout &lt;&lt; maxOf(x, y) &lt;&lt; '\n';
+    std::cout &lt;&lt; maxOf(p, q) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　同名函数靠参数类型不同区分，编译器自动选对版本。</p></details>
+      </section>
+      <h2 id="s-3-2">3.2 参数传递：值、引用、指针</h2>
+      <p>这是全书最需要想清楚的一节。Java 只有值传递一种；C++ 有四种选择，你必须自己决定用哪种。</p>
+      <h3>四种传参方式</h3>
+      <p>byValue(int x)：改的是副本，原变量不变；byRef(int&amp; x)：改的是原变量（引用=原变量的别名）；byPointer(int* p)：可能为空，用前先判空；byConstRef(const string&amp; s)：不拷贝也不能改——这是 C++ 里出现频率最高的参数写法。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+void byValue(int x)    { x = 100; (void)x; }           // 改副本
+void byRef(int&amp; x)     { x = 100; }           // 改原变量
+void byConstRef(const std::string&amp; s) { (void)s; }     // 零拷贝、只读
+int main() {
+    int a = 1;
+    byValue(a);   std::cout &lt;&lt; a &lt;&lt; '\n';     // 1
+    byRef(a);     std::cout &lt;&lt; a &lt;&lt; '\n';     // 100
+}</code></pre>
+      <div class="code-label">运行结果</div><pre><code class="language-text">1
+100</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　const T&amp; 既避免拷贝（性能）又承诺不改（安全），还能绑定临时对象。看到函数签名 const std::vector&lt;int&gt;&amp; 要立刻明白为什么这么写。</div>
+      <h3>不要返回局部变量的引用或指针</h3>
+      <p>局部变量在函数返回时就被销毁，返回它的地址得到一个悬垂引用，用它=未定义行为。编译器通常会给 -Wreturn-local-addr 警告。这是 C++ 独有的风险（Java 的 GC 没有这个问题）。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　按值返回对象不用担心拷贝开销——编译器会做返回值优化（RVO），通常零拷贝。</div>
+      <h3>引用的三条铁律</h3>
+      <p>int&amp; r = a; 引用必须初始化（int&amp; r; 编译不过）；一旦绑定就不能改绑（r = b 是把 b 的值赋给 a，不是让 r 改指 b）；不存在空引用（所以用引用的函数不需要判空）。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　心智模型：指针是“存放地址的变量”（可以改指向、做算术）；引用是“另一个名字”（只是别名，没有自己的身份）。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-3-2-1">
+      <div class="ex-head"><span class="ex-id">3.2.1</span><span class="badge hard">挑战</span><span class="ex-title">偶数求和</span></div>
+      <p>写一个函数 bool isEven(int n)，然后读入 n，输出 1 到 n 之间所有偶数的和。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　一个整数 n（1 ≤ n ≤ 100000）。</p><p class="io-line"><b>输出</b>　1 到 n 的偶数和。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>10</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>30</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　函数只负责判断，求和写在 main 的循环里。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+bool isEven(int n) { return n % 2 == 0; }
+int main() {
+    int n;
+    std::cin &gt;&gt; n;
+    long long sum = 0;
+    for (int i = 1; i &lt;= n; ++i) {
+        if (isEven(i)) { sum += i; }
+    }
+    std::cout &lt;&lt; sum &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　小函数让 main 更清晰；累加可能超 int，用 long long。</p></details>
+      </section>
+      <section class="ex" id="ex-3-2-2">
+      <div class="ex-head"><span class="ex-id">3.2.2</span><span class="badge easy">必做</span><span class="ex-title">引用版交换</span></div>
+      <p>写一个函数 void swapRef(int&amp; a, int&amp; b) 交换两个整数，main 里读两个数调用它并输出交换后的结果。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　一行两个整数 a b。</p><p class="io-line"><b>输出</b>　交换后的 a b（空格分隔）。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>3 5</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>5 3</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　int t = a; a = b; b = t;</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+void swapRef(int&amp; a, int&amp; b) {
+    int t = a;
+    a = b;
+    b = t;
+}
+int main() {
+    int x, y;
+    std::cin &gt;&gt; x &gt;&gt; y;
+    swapRef(x, y);
+    std::cout &lt;&lt; x &lt;&lt; ' ' &lt;&lt; y &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　引用就是原变量的别名，函数里改的就是调用方的变量。</p></details>
+      </section>
+      <section class="ex" id="ex-3-2-3">
+      <div class="ex-head"><span class="ex-id">3.2.3</span><span class="badge hard">挑战</span><span class="ex-title">值传递 vs 引用</span></div>
+      <p>写两个函数：void byValue(int x) 把参数改成 100；void byRef(int&amp; x) 把参数改成 100。main 里把 a=1 分别传进去，输出 a 两次，观察区别。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　两行，第一行 byValue 后 a 的值，第二行 byRef 后 a 的值。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>1
+100</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　值传递改的是副本，引用传递改的是原变量。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+void byValue(int x) { x = 100; (void)x; }
+void byRef(int&amp; x)  { x = 100; }
+int main() {
+    int a = 1;
+    byValue(a);
+    std::cout &lt;&lt; a &lt;&lt; '\n';   // 1：副本被改，a 没变
+    byRef(a);
+    std::cout &lt;&lt; a &lt;&lt; '\n';   // 100：引用改的是原变量
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　这个实验值得亲手跑一遍，是理解引用意义的最小例子。</p></details>
+      </section>
+      <h2 id="s-3-3">3.3 命名空间与多文件组织</h2>
+      <p>为什么别人的 C++ 工程有 .h 和 .cpp 两种文件？什么时候放哪边？这一节解决这两个实际问题。</p>
+      <h3>命名空间：给名字划分地盘</h3>
+      <p>namespace math { ... } 包起来，外面用 math::square 访问（完全限定名，最安全）。using math::PI 只引入一个名字；using namespace std 引入整个命名空间，写在 .cpp 顶部可以接受，但绝不要写进头文件——头文件会被复制到很多源文件，等于强迫所有人接受 std 的全部名字。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　匿名命名空间 namespace { ... } 里的名字只在当前文件可见，是现代 C++ 的“私有工具函数”写法。</div>
+      <h3>头文件放什么、源文件放什么</h3>
+      <p>规则：头文件放声明、类定义、constexpr 常量、inline 函数、模板（后面讲）；源文件放普通函数的定义。头文件用 #pragma once 防止重复包含。编译时把 .cpp 一起交给 g++。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">// ---------- util.h ----------
+#pragma once
+double square(double x);          // 声明放头文件
+
+// ---------- util.cpp ----------
+#include "util.h"
+double square(double x) { return x * x; }   // 定义放源文件
+
+// ---------- main.cpp ----------
+#include "util.h"
+#include &lt;iostream&gt;
+int main() { std::cout &lt;&lt; square(3.0); }</code></pre>
+      <div class="code-label">运行结果</div><pre><code class="language-text">9</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　编译命令：g++ -std=c++17 -Wall -Wextra -o app main.cpp util.cpp。工程大时分开编译：先 -c 各出 .o，再链接。</div>
+      <h3>ODR：为什么有的东西能放头文件</h3>
+      <p>单一定义规则（ODR）：同一个名字在整个程序里可以有多个声明，但只能有一个定义，而且声明必须完全一致。inline 函数、constexpr 常量、类内定义的成员函数、模板，这些“可以写在头文件里”的东西，本质上都是标准给出的 ODR 豁免——它们允许在多处出现且保持一份定义。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　看到“重复定义（multiple definition）”链接错误，就是违反了 ODR：通常是普通函数定义被放进了头文件。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-3-3-1">
+      <div class="ex-head"><span class="ex-id">3.3.1</span><span class="badge easy">必做</span><span class="ex-title">自己的命名空间</span></div>
+      <p>定义命名空间 math，里面放 constexpr double PI 和函数 double square(double x)。main 里用 math:: 前缀调用，输出 PI 和 square(3.0)。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　两行：PI 的值、9。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>3.14159265
+9</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　namespace math { ... } 包起来，外面用 math::square 访问。double 默认只显示 6 位有效数字，输出 PI 前用 std::setprecision(9)（9 位有效数字），不要用 fixed（会把 square 也变成 9.00000000）。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+namespace math {
+    constexpr double PI = 3.14159265;
+    double square(double x) { return x * x; }
+}
+int main() {
+    std::cout &lt;&lt; std::setprecision(9) &lt;&lt; math::PI &lt;&lt; '\n';
+    std::cout &lt;&lt; math::square(3.0) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　完全限定名 math:: 最安全；命名空间解决名字冲突。</p></details>
+      </section>
+      <section class="ex" id="ex-3-3-2">
+      <div class="ex-head"><span class="ex-id">3.3.2</span><span class="badge hard">挑战</span><span class="ex-title">拆成 .h 和 .cpp</span></div>
+      <p>把一个求平方的函数拆成三个文件：util.h（声明 + #pragma once）、util.cpp（定义）、main.cpp（调用），编译运行。这道题先不写进一个文件，按下面参考代码建三个文件，再用 g++ main.cpp util.cpp 编译。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　9</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>9</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　编译命令：g++ -std=c++17 -Wall -Wextra -o app main.cpp util.cpp</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<div class="code-label">util.h</div><pre><code class="language-cpp">#pragma once
+double square(double x);
+</code></pre>
+<div class="code-label">util.cpp</div><pre><code class="language-cpp">#include "util.h"
+double square(double x) { return x * x; }
+</code></pre>
+<div class="code-label">main.cpp</div><pre><code class="language-cpp">#include "util.h"
+#include &lt;iostream&gt;
+int main() {
+    std::cout &lt;&lt; square(3.0) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　头文件放声明、源文件放定义；多个 .cpp 一起交给 g++，链接器把函数定义拼起来。</p></details>
+      </section>
+      <h2 id="summary">本章小结</h2>
+      <ul class="recap"><li>声明放头文件、定义放源文件；编译期看声明，链接期看定义。</li><li>const T&amp; 是最高频参数写法：不拷贝、不改、能绑临时对象。</li><li>引用必须初始化、不能改绑、不存在空引用；不要返回局部变量的引用。</li><li>using namespace std 别写进头文件；模板、inline、constexpr 可以放头文件（ODR 豁免）。</li></ul>
+      <h2 id="combo">🧩 本章综合练习</h2>
+      <p>这几道题把本章多个知识点串起来，建议合上资料独立完成，再展开答案对照。</p>
+      <section class="ex" id="ex-3-A">
+      <div class="ex-head"><span class="ex-id">3.A</span><span class="badge hard">综合</span><span class="ex-title">统计函数：const 引用入参 + 引用输出参数</span></div>
+      <p>写一个函数 void analyze(const std::vector&lt;int&gt;&amp; v, int&amp; minv, int&amp; maxv, double&amp; avg)，把最小值、最大值、平均值写回调用方。main 读入数据后调用并输出。这是 C++ 参数设计最典型的组合：只读的用 const 引用（零拷贝），要写回的用引用。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　第一行整数 n；第二行 n 个整数。</p><p class="io-line"><b>输出</b>　三行：<code>min=</code>、<code>max=</code>、<code>avg=</code>（2 位小数）。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>6
+5 3 9 1 7 4</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>min=1
+max=9
+avg=4.83</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　返回多个值就用引用输出参数；传入的容器不要按值传，否则整份拷贝。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+void analyze(const std::vector&lt;int&gt;&amp; v, int&amp; minv, int&amp; maxv, double&amp; avg) {
+    minv = v[0];
+    maxv = v[0];
+    long long sum = 0;
+    for (int x : v) {                  // 只读遍历
+        if (x &lt; minv) { minv = x; }
+        if (x &gt; maxv) { maxv = x; }
+        sum += x;
+    }
+    avg = static_cast&lt;double&gt;(sum) / static_cast&lt;double&gt;(v.size());
+}
+
+int main() {
+    int n{};
+    std::cin &gt;&gt; n;
+    std::vector&lt;int&gt; v(n);
+    for (int i = 0; i &lt; n; ++i) { std::cin &gt;&gt; v[i]; }
+    int lo{}, hi{};
+    double avg{};
+    analyze(v, lo, hi, avg);
+    std::cout &lt;&lt; "min=" &lt;&lt; lo &lt;&lt; '\n';
+    std::cout &lt;&lt; "max=" &lt;&lt; hi &lt;&lt; '\n';
+    std::cout &lt;&lt; "avg=" &lt;&lt; std::fixed &lt;&lt; std::setprecision(2) &lt;&lt; avg &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　const 引用既避免拷贝又承诺不改；引用输出参数在写回前要先赋初值（这里从 v[0] 起步）。</p></details>
+      </section>
+      <div class="tip"><b>📚 本文概念都在知识大全：</b><p style="margin-top:6px"><a href="../../knowledge/index.html#reference">引用</a> · <a href="../../knowledge/index.html#namespace">命名空间</a> · <a href="../../knowledge/index.html#header-include">头文件</a> · <a href="../../knowledge/index.html#odr">ODR 单一定义规则</a></p></div>
+      <div class="lesson-nav"><a href="02-types-and-control.html">← 上一章：第 2 章 变量、类型与流程控制</a><a href="04-pointers-and-memory.html">下一章：第 4 章 指针、数组与内存模型 →</a></div>
+    </article>
+
+  <script src="../../assets/highlight.min.js"></script>
+  <script src="../../assets/article.js"></script>
+  <script src="../../assets/interact.js"></script>
+  <script src="../../assets/search.js"></script>
+  <script src="../../assets/giscus-config.js"></script>
+  <script src="../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

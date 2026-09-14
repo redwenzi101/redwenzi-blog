@@ -1,0 +1,95 @@
+/* ============ 课程页面组件（C/C++ 等语言教程共用） ============ */
+
+/* 章节进度条：顶部细线 */
+.course-progress { position:fixed; top:0; left:0; height:3px; width:0; z-index:60;
+  background:linear-gradient(90deg,var(--accent),var(--accent2)); }
+
+/* 章节卡片里的元信息 */
+.crumb { font-size:13px; color:var(--sub); margin-top:6px; }
+
+/* 小节标题 */
+article h2 { border-bottom:0; }
+article h3 { color:#1f3a5f; }
+.ex-h { font-size:16px; color:#6a6a6a; font-weight:600; margin:30px 0 12px; }
+
+/* ---------- 练习卡片 ---------- */
+.ex { background:#fff; border:1px solid var(--border); border-radius:var(--radius-lg);
+  padding:18px 22px; margin:20px 0; box-shadow:var(--shadow); scroll-margin-top:18px; }
+.ex-head { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:8px; }
+.ex-id { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:13px;
+  font-weight:600; color:var(--accent); background:var(--accent-lighter);
+  border-radius:6px; padding:2px 8px; }
+.badge { font-size:12px; border-radius:980px; padding:2px 10px; white-space:nowrap; }
+.badge.easy { background:#e9f6ee; color:#1f7a45; border:1px solid #c3e5d1; }
+.badge.hard { background:#fdf6e6; color:#9a6a10; border:1px solid #f0e0b8; }
+.ex-title { font-size:17px; font-weight:600; color:#2f2f2f; }
+
+/* 输入输出说明与样例 */
+.io { background:#fbfaf7; border:1px solid var(--border-light); border-radius:10px;
+  padding:10px 14px; margin:12px 0; }
+.io-line { margin:4px 0 !important; font-size:14px !important; color:#4a4a4a; }
+.samples { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0; }
+.io-cap { font-size:12px; color:#8a8a8a; margin-bottom:4px; }
+.io-pre { background:#f7f9fc !important; border:1px solid #e5e9f0 !important;
+  border-radius:10px !important; padding:10px 12px !important; font-size:13px !important;
+  margin:0 !important; overflow-x:auto; }
+/* 样例块是浅底，必须覆盖主题的深色代码配色，否则白字浅底看不清 */
+.io-pre, .io-pre code { color:#2b3440 !important; }
+.io-pre code { font-size:13px; }
+/* 样例只有一两行，不需要行号（行号是为暗色代码块设计的白字） */
+.io-pre .ln-gutter { display:none !important; }
+.hint { font-size:14px; color:#5a6472; background:#f7f9fc; border-left:3px solid var(--accent-gold);
+  border-radius:0 8px 8px 0; padding:9px 13px; margin:12px 0; }
+
+/* 折叠答案 */
+details.ans { margin-top:14px; border:1px dashed #d8dee9; border-radius:12px;
+  padding:10px 14px; background:#fcfdff; }
+details.ans summary { cursor:pointer; font-weight:600; color:var(--accent); font-size:15px; }
+details.ans[open] summary { margin-bottom:8px; }
+details.ans pre { margin:10px 0; }
+details.ans .note { margin-top:10px; }
+
+/* 其它小组件 */
+.code-label { font-size:12px; color:#8a8a8a; margin:12px 0 4px; }
+.note { background:#fbfaf7; border:1px solid var(--border); border-left:3px solid var(--accent-gold);
+  border-radius:0 10px 10px 0; padding:10px 14px; margin:12px 0; font-size:15px; color:#5a5a5a; }
+.recap { background:#fbfaf7; border:1px solid var(--border); border-radius:var(--radius);
+  padding:14px 18px 14px 34px; }
+.recap li { margin:6px 0; }
+
+/* 上一章 / 下一章 */
+.lesson-nav { display:flex; justify-content:space-between; gap:12px; margin-top:30px; flex-wrap:wrap; }
+.lesson-nav a { background:#fff; border:1px solid var(--border); border-radius:12px;
+  padding:12px 16px; font-size:14px; box-shadow:var(--shadow); }
+.lesson-nav a:hover { border-color:var(--accent); text-decoration:none; }
+
+/* 目录页的章节列表 */
+.chapters { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; }
+.chapters a { display:block; background:#fff; border:1px solid var(--border);
+  border-radius:var(--radius); padding:14px 16px; box-shadow:var(--shadow); }
+.chapters a:hover { border-color:var(--accent); text-decoration:none; }
+.chapters b { display:block; font-size:15px; color:#2f2f2f; }
+.chapters span { font-size:13px; color:var(--sub); }
+
+/* 图（内联 SVG） */
+figure { margin:20px 0; background:#fff; border:1px solid var(--border);
+  border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); overflow-x:auto; }
+figure svg { display:block; max-width:100%; height:auto; margin:0 auto; }
+figcaption { font-size:13px; color:var(--sub); text-align:center; margin-top:10px; }
+
+@media (max-width:640px) {
+  .samples { grid-template-columns:1fr; }
+  .ex { padding:14px 16px; }
+}
+
+/* 练习卡片、提示框里不要首字下沉（那是正文首段的排版效果） */
+.ex p:first-of-type::first-letter,
+.io p::first-letter,
+.hint::first-letter,
+.note::first-letter,
+.tip p::first-letter,
+figure figcaption::first-letter {
+  float:none !important; font-size:inherit !important; font-family:inherit !important;
+  color:inherit !important; font-weight:inherit !important;
+  line-height:inherit !important; padding:0 !important;
+}

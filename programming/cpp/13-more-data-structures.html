@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第 13 章 数据结构与算法补遗 · C++ 新手进阶教材（13/13） · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../assets/article.css">
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="index.html">← C++ 教材目录（共 13 章）</a>
+      <h1>第 13 章　数据结构与算法补遗</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · C++ · 📖 预计阅读 41 分钟 · 共 4 道练习</div>
+    </header>
+
+    <article>
+<div class="tip">🎯 <b>本章你会学到：</b>四种排序、二叉树、图、并查集与复杂度速查。建议边读边敲代码，每节的练习先自己做，再展开答案对照。</div>
+      <p>第 10 章写了顺序表和链表，第 11 章讲了十种算法思想。这一章把常见课程作业和面试里最容易考到的部分补齐：**四种排序、二叉树、图、并查集**，最后给两张速查表和一张选型清单。</p>
+      <p>这些结构不需要背，但要做到：给一个需求，能立刻说出用哪个结构、复杂度是多少、边界在哪里。</p>
+      <h2 id="s-13-1">13.1 四种必须会写的排序</h2>
+      <p>std::sort 平时够用，但“手写一遍”能让你真正理解复杂度从哪来。四种里前两种必须默写，后两种要能讲清思路。</p>
+      <h3>插入排序：像整理扑克牌</h3>
+      <div class="code-label">插入排序</div><pre><code class="language-cpp">for (int i = 1; i &lt; n; ++i) {
+    int key = a[i];
+    int j = i - 1;
+    while (j &gt;= 0 &amp;&amp; a[j] &gt; key) { a[j + 1] = a[j]; --j; }
+    a[j + 1] = key;
+}</code></pre>
+      <p>已排好序的区间在左边不断长大。数据基本有序时非常快（接近 O(n)），也是很多标准库在小数组上的实际做法。</p>
+      <h3>归并排序：分治 + 合并</h3>
+      <div class="code-label">归并排序</div><pre><code class="language-cpp">void mergeSort(std::vector&lt;int&gt;&amp; a, int l, int r, std::vector&lt;int&gt;&amp; buf) {
+    if (r - l &lt;= 1) { return; }              // [l, r) 只剩 0/1 个元素
+    int mid = l + (r - l) / 2;
+    mergeSort(a, l, mid, buf);
+    mergeSort(a, mid, r, buf);
+    int i = l, j = mid, k = l;               // 合并两个有序区间
+    while (i &lt; mid &amp;&amp; j &lt; r) { buf[k++] = (a[i] &lt;= a[j]) ? a[i++] : a[j++]; }
+    while (i &lt; mid) { buf[k++] = a[i++]; }
+    while (j &lt; r) { buf[k++] = a[j++]; }
+    for (int t = l; t &lt; r; ++t) { a[t] = buf[t]; }
+}</code></pre>
+      <p>复杂度稳定在 O(n log n)，而且是**稳定排序**（相等元素保持原顺序）。代价是需要 O(n) 的额外空间。</p>
+      <h3>快速排序：选基准 + 分区</h3>
+      <div class="code-label">快速排序</div><pre><code class="language-cpp">void quickSort(std::vector&lt;int&gt;&amp; a, int l, int r) {   // [l, r]
+    if (l &gt;= r) { return; }
+    int i = l, j = r;
+    int pivot = a[l + (r - l) / 2];                  // 取中间值当基准
+    while (i &lt;= j) {
+        while (a[i] &lt; pivot) { ++i; }
+        while (a[j] &gt; pivot) { --j; }
+        if (i &lt;= j) { std::swap(a[i], a[j]); ++i; --j; }
+    }
+    quickSort(a, l, j);
+    quickSort(a, i, r);
+}</code></pre>
+      <p>平均 O(n log n)、常数小、原地排序，是 std::sort 的基础。最坏 O(n²)（每次选到极值当基准），随机化或三数取中可以规避。</p>
+      <h3>堆排序：借优先队列的思路</h3>
+      <div class="code-label">堆排序（用标准库的堆操作）</div><pre><code class="language-cpp">std::make_heap(a.begin(), a.end());          // 建大顶堆 O(n)
+for (int i = n - 1; i &gt; 0; --i) {
+    std::pop_heap(a.begin(), a.begin() + i + 1);   // 最大值换到末尾
+}</code></pre>
+      <p>O(n log n)、原地、不用递归。手写版的关键是 sift_down（下沉）：父节点和较大的子节点交换，直到满足堆性质。</p>
+      <table><thead><tr><th>算法</th><th>平均</th><th>最坏</th><th>额外空间</th><th>稳定</th></tr></thead><tbody><tr><td>插入排序</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td><td>是</td></tr><tr><td>归并排序</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n)</td><td>是</td></tr><tr><td>快速排序</td><td>O(n log n)</td><td>O(n²)</td><td>O(log n) 递归栈</td><td>否</td></tr><tr><td>堆排序</td><td>O(n log n)</td><td>O(n log n)</td><td>O(1)</td><td>否</td></tr></tbody></table>
+      <div class="warn"><b>⚠️ 易错点</b>　排序函数的区间一律是左闭右开 [l, r)（除了快排那种闭区间写法），递归终止条件写错是最常见的死循环来源。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-13-1-1">
+      <div class="ex-head"><span class="ex-id">13.1.1</span><span class="badge easy">必做</span><span class="ex-title">手写归并排序 + 与 std::sort 对拍</span></div>
+      <p>读入 n 个整数，用自己写的归并排序升序输出；再用固定种子 12345 做 200 轮随机对拍，每轮把随机数组分别交给你的排序和 std::sort，断言结果完全一致，最后输出 <code>ok</code>。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　一个整数 n，随后 n 个整数。</p><p class="io-line"><b>输出</b>　第一行升序序列；第二行 <code>ok</code>。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>6
+5 2 9 1 5 6</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>1 2 5 5 6 9
+ok</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　对拍固定种子：std::mt19937 gen(12345)；比较直接用 == 比较两个 vector。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;cassert&gt;
+#include &lt;cstddef&gt;
+#include &lt;iostream&gt;
+#include &lt;random&gt;
+#include &lt;vector&gt;
+
+void mergeSort(std::vector&lt;int&gt;&amp; a, int l, int r, std::vector&lt;int&gt;&amp; buf) {
+    if (r - l &lt;= 1) { return; }
+    int mid = l + (r - l) / 2;
+    mergeSort(a, l, mid, buf);
+    mergeSort(a, mid, r, buf);
+    int i = l, j = mid, k = l;
+    while (i &lt; mid &amp;&amp; j &lt; r) { buf[k++] = (a[i] &lt;= a[j]) ? a[i++] : a[j++]; }
+    while (i &lt; mid) { buf[k++] = a[i++]; }
+    while (j &lt; r) { buf[k++] = a[j++]; }
+    for (int t = l; t &lt; r; ++t) { a[t] = buf[t]; }
+}
+
+int main() {
+    int n{};
+    std::cin &gt;&gt; n;
+    std::vector&lt;int&gt; a(static_cast&lt;std::size_t&gt;(n));
+    for (int i = 0; i &lt; n; ++i) { std::cin &gt;&gt; a[i]; }
+
+    std::vector&lt;int&gt; buf(a.size());
+    mergeSort(a, 0, n, buf);
+    for (int i = 0; i &lt; n; ++i) { std::cout &lt;&lt; a[i] &lt;&lt; (i + 1 == n ? '\n' : ' '); }
+
+    std::mt19937 gen(12345);                 // 固定种子，结果可复现
+    std::uniform_int_distribution&lt;int&gt; dist(-1000, 1000);
+    for (int round = 0; round &lt; 200; ++round) {
+        int len = 1 + round % 50;
+        std::vector&lt;int&gt; mine(static_cast&lt;std::size_t&gt;(len)), ref;
+        for (int i = 0; i &lt; len; ++i) { mine[i] = dist(gen); }
+        ref = mine;
+        std::vector&lt;int&gt; tmp(mine.size());
+        mergeSort(mine, 0, len, tmp);
+        std::sort(ref.begin(), ref.end());
+        assert(mine == ref);
+    }
+    std::cout &lt;&lt; "ok\n";
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　对拍是验证自己实现的通用手段：同一份随机输入喂给两个实现，逐元素比较；固定种子保证失败可复现。</p></details>
+      </section>
+      <h2 id="s-13-2">13.2 二叉树与二叉搜索树</h2>
+      <p>二叉树是“每个节点最多两个孩子”的结构。二叉搜索树（BST）额外要求：左子树全部小于根，右子树全部大于根——这让查找可以像二分一样折半。</p>
+      <div class="code-label">BST 的节点与插入（unique_ptr 版）</div><pre><code class="language-cpp">struct Node {
+    int value{};
+    std::unique_ptr&lt;Node&gt; left;
+    std::unique_ptr&lt;Node&gt; right;
+    explicit Node(int v) : value(v) { }
+};
+
+void insert(std::unique_ptr&lt;Node&gt;&amp; root, int v) {
+    if (!root) { root = std::make_unique&lt;Node&gt;(v); return; }
+    if (v &lt; root-&gt;value) { insert(root-&gt;left, v); }
+    else if (v &gt; root-&gt;value) { insert(root-&gt;right, v); }
+    // 相等就忽略（集合语义）
+}
+
+void inorder(const std::unique_ptr&lt;Node&gt;&amp; root) {   // 中序 = 升序
+    if (!root) { return; }
+    inorder(root-&gt;left);
+    std::cout &lt;&lt; root-&gt;value &lt;&lt; ' ';
+    inorder(root-&gt;right);
+}</code></pre>
+      <p>中序遍历输出一定是有序序列，这是 BST 最好用的性质。查找的平均复杂度 O(log n)，但**如果插入顺序本身有序，BST 会退化成链表**，复杂度变成 O(n)。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　std::map / std::set 底层用的是红黑树（一种自平衡 BST），所以它敢承诺 O(log n)；你自己写的裸 BST 没有平衡机制，性能没有保障。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-13-2-1">
+      <div class="ex-head"><span class="ex-id">13.2.1</span><span class="badge easy">必做</span><span class="ex-title">BST：插入 + 中序 + 最值</span></div>
+      <p>读入 n 个整数依次插入二叉搜索树（重复值忽略），输出中序遍历结果、最小值、最大值。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　第一行整数 n；第二行 n 个整数。</p><p class="io-line"><b>输出</b>　第一行升序的中序序列；第二行 <code>min=</code>；第三行 <code>max=</code>。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>6
+5 3 8 1 4 7</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>1 3 4 5 7 8
+min=1
+max=8</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　最小值就是一路往左走到底，最大值一路往右走到底。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+
+struct Node {
+    int value{};
+    std::unique_ptr&lt;Node&gt; left;
+    std::unique_ptr&lt;Node&gt; right;
+    explicit Node(int v) : value(v) { }
+};
+
+void insert(std::unique_ptr&lt;Node&gt;&amp; root, int v) {
+    if (!root) { root = std::make_unique&lt;Node&gt;(v); return; }
+    if (v &lt; root-&gt;value) { insert(root-&gt;left, v); }
+    else if (v &gt; root-&gt;value) { insert(root-&gt;right, v); }
+    // 相等：忽略，保持集合语义
+}
+
+void inorder(const std::unique_ptr&lt;Node&gt;&amp; root, bool&amp; first) {
+    if (!root) { return; }
+    inorder(root-&gt;left, first);
+    std::cout &lt;&lt; (first ? "" : " ") &lt;&lt; root-&gt;value;
+    first = false;
+    inorder(root-&gt;right, first);
+}
+
+const Node* minNode(const std::unique_ptr&lt;Node&gt;&amp; root) {
+    const Node* p = root.get();
+    while (p &amp;&amp; p-&gt;left) { p = p-&gt;left.get(); }
+    return p;
+}
+
+const Node* maxNode(const std::unique_ptr&lt;Node&gt;&amp; root) {
+    const Node* p = root.get();
+    while (p &amp;&amp; p-&gt;right) { p = p-&gt;right.get(); }
+    return p;
+}
+
+int main() {
+    int n{};
+    std::cin &gt;&gt; n;
+    std::unique_ptr&lt;Node&gt; root;
+    for (int i = 0; i &lt; n; ++i) {
+        int x{};
+        std::cin &gt;&gt; x;
+        insert(root, x);
+    }
+    bool first = true;
+    inorder(root, first);
+    std::cout &lt;&lt; '\n';
+    std::cout &lt;&lt; "min=" &lt;&lt; minNode(root)-&gt;value &lt;&lt; '\n';
+    std::cout &lt;&lt; "max=" &lt;&lt; maxNode(root)-&gt;value &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　unique_ptr 让整棵树在 root 析构时自动递归释放，不需要手写析构函数；注意树很深时递归释放同样有爆栈风险。</p></details>
+      </section>
+      <h2 id="s-13-3">13.3 图：邻接表、DFS、BFS</h2>
+      <p>图就是“点和边”。存图最常用的方式是**邻接表**：vector&lt;vector&lt;int&gt;&gt;，下标是点，里面存相邻点。点少边多也可以用邻接矩阵。</p>
+      <div class="code-label">建图（无向）</div><pre><code class="language-cpp">int n, m;
+std::cin &gt;&gt; n &gt;&gt; m;
+std::vector&lt;std::vector&lt;int&gt;&gt; g(n);
+for (int i = 0; i &lt; m; ++i) {
+    int u, v;
+    std::cin &gt;&gt; u &gt;&gt; v;
+    g[u].push_back(v);
+    g[v].push_back(u);        // 无向图：两个方向都存；有向图去掉这行
+}</code></pre>
+      <p>建好图之后：DFS 用来回答“有哪些点连在一起”（连通块、判环、拓扑序）；BFS 用来回答“最少几步能到”（无权图最短路）。两者的边界检查写法不一样，记住这一点就不会写混。</p>
+      <table><thead><tr><th>问题</th><th>用哪个</th><th>复杂度</th></tr></thead><tbody><tr><td>有多少个连通块</td><td>DFS / BFS 都行</td><td>O(n + m)</td></tr><tr><td>从 a 到 b 最少几条边</td><td>BFS</td><td>O(n + m)</td></tr><tr><td>图里有没有环</td><td>DFS（记录父节点）</td><td>O(n + m)</td></tr><tr><td>按拓扑序输出</td><td>DFS 后序反着输出 / 入度 BFS</td><td>O(n + m)</td></tr></tbody></table>
+      <div class="warn"><b>⚠️ 易错点</b>　点编号从 0 开始时数组要开 n 个；从 1 开始就开 n+1 个。越界是图论题最常见的崩溃原因，先用小数据跑一遍。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-13-3-1">
+      <div class="ex-head"><span class="ex-id">13.3.1</span><span class="badge hard">挑战</span><span class="ex-title">连通块数 + 无权图最短路</span></div>
+      <p>读入 n 个点、m 条无向边，输出两行：整张图的连通块个数；点 0 到点 n-1 的最短边数（不可达输出 -1）。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　第一行 n m；接下来 m 行每行两个整数 u v。</p><p class="io-line"><b>输出</b>　第一行 <code>components=</code>；第二行 <code>dist=</code>。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>6 5
+0 1
+1 2
+2 3
+3 4
+1 5</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>components=1
+dist=2</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　连通块用 DFS；最短路用 BFS 的 dist 数组，初始 -1 表示未访问。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;queue&gt;
+#include &lt;vector&gt;
+
+void dfs(int u, const std::vector&lt;std::vector&lt;int&gt;&gt;&amp; g, std::vector&lt;char&gt;&amp; vis) {
+    vis[u] = 1;
+    for (int v : g[u]) {
+        if (!vis[v]) { dfs(v, g, vis); }
+    }
+}
+
+int main() {
+    int n{}, m{};
+    std::cin &gt;&gt; n &gt;&gt; m;
+    std::vector&lt;std::vector&lt;int&gt;&gt; g(n);
+    for (int i = 0; i &lt; m; ++i) {
+        int u{}, v{};
+        std::cin &gt;&gt; u &gt;&gt; v;
+        g[u].push_back(v);
+        g[v].push_back(u);
+    }
+
+    // 1) 连通块计数（DFS）
+    std::vector&lt;char&gt; vis(n, 0);
+    int components = 0;
+    for (int i = 0; i &lt; n; ++i) {
+        if (!vis[i]) {
+            ++components;
+            dfs(i, g, vis);
+        }
+    }
+    std::cout &lt;&lt; "components=" &lt;&lt; components &lt;&lt; '\n';
+
+    // 2) 无权最短路（BFS）
+    std::vector&lt;int&gt; dist(n, -1);
+    std::queue&lt;int&gt; q;
+    dist[0] = 0;
+    q.push(0);
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+        for (int v : g[u]) {
+            if (dist[v] == -1) {
+                dist[v] = dist[u] + 1;
+                q.push(v);
+            }
+        }
+    }
+    std::cout &lt;&lt; "dist=" &lt;&lt; dist[n - 1] &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　BFS 里“入队即标记”是保证每个点只入队一次的关键；如果改成出队时标记，同一个点会被重复入队，复杂度退化甚至出错。</p></details>
+      </section>
+      <h2 id="s-13-4">13.4 并查集：合并与查询</h2>
+      <p>并查集解决“谁和谁是一伙的”：不断合并两个集合，随时查询两个人是否同一集合。路径压缩 + 按大小合并之后，单次操作接近 O(1)。</p>
+      <div class="code-label">并查集模板</div><pre><code class="language-cpp">struct DSU {
+    std::vector&lt;int&gt; parent, size;
+    explicit DSU(int n) : parent(n), size(n, 1) {
+        for (int i = 0; i &lt; n; ++i) { parent[i] = i; }
+    }
+    int find(int x) {                       // 路径压缩
+        if (parent[x] != x) { parent[x] = find(parent[x]); }
+        return parent[x];
+    }
+    void unite(int a, int b) {              // 按大小合并
+        int ra = find(a), rb = find(b);
+        if (ra == rb) { return; }
+        if (size[ra] &lt; size[rb]) { std::swap(ra, rb); }
+        parent[rb] = ra;
+        size[ra] += size[rb];
+    }
+    bool same(int a, int b) { return find(a) == find(b); }
+};</code></pre>
+      <p>递归版 find 写起来短；数据量极大时递归可能爆栈，可以改成 while 循环加两遍扫描的写法。</p>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-13-4-1">
+      <div class="ex-head"><span class="ex-id">13.4.1</span><span class="badge easy">必做</span><span class="ex-title">朋友圈：合并 + 查询</span></div>
+      <p>读入 n 个人和 m 对朋友关系（朋友的朋友也是朋友），输出朋友圈个数；再读入一对查询 a b，输出他们是否在同一朋友圈。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　第一行 n m；接下来 m 行每行两个整数 u v；最后一行两个整数 a b（查询）。</p><p class="io-line"><b>输出</b>　第一行 <code>groups=</code>；第二行同一圈输出 <code>yes</code>，否则输出 <code>no</code>。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>5 3
+0 1
+2 3
+3 4
+2 4</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>groups=2
+yes</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　每读一对朋友就 unite(u, v)；统计 groups 就是数 find(i) == i 的个数。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;utility&gt;
+#include &lt;vector&gt;
+
+struct DSU {
+    std::vector&lt;int&gt; parent, sz;
+    explicit DSU(int n) : parent(static_cast&lt;std::size_t&gt;(n)), sz(static_cast&lt;std::size_t&gt;(n), 1) {
+        for (int i = 0; i &lt; n; ++i) { parent[static_cast&lt;std::size_t&gt;(i)] = i; }
+    }
+    int find(int x) {
+        if (parent[static_cast&lt;std::size_t&gt;(x)] != x) {
+            parent[static_cast&lt;std::size_t&gt;(x)] = find(parent[static_cast&lt;std::size_t&gt;(x)]);
+        }
+        return parent[static_cast&lt;std::size_t&gt;(x)];
+    }
+    void unite(int a, int b) {
+        int ra = find(a), rb = find(b);
+        if (ra == rb) { return; }
+        if (sz[static_cast&lt;std::size_t&gt;(ra)] &lt; sz[static_cast&lt;std::size_t&gt;(rb)]) {
+            std::swap(ra, rb);
+        }
+        parent[static_cast&lt;std::size_t&gt;(rb)] = ra;
+        sz[static_cast&lt;std::size_t&gt;(ra)] += sz[static_cast&lt;std::size_t&gt;(rb)];
+    }
+};
+
+int main() {
+    int n{}, m{};
+    std::cin &gt;&gt; n &gt;&gt; m;
+    DSU dsu(n);
+    for (int i = 0; i &lt; m; ++i) {
+        int u{}, v{};
+        std::cin &gt;&gt; u &gt;&gt; v;
+        dsu.unite(u, v);
+    }
+    int groups = 0;
+    for (int i = 0; i &lt; n; ++i) {
+        if (dsu.find(i) == i) { ++groups; }
+    }
+    std::cout &lt;&lt; "groups=" &lt;&lt; groups &lt;&lt; '\n';
+    int a{}, b{};
+    std::cin &gt;&gt; a &gt;&gt; b;
+    std::cout &lt;&lt; (dsu.find(a) == dsu.find(b) ? "yes" : "no") &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　统计集合个数时不要数 parent[i] == i 而不做路径压缩——必须先 find(i) 把路径压平再比较，否则中间节点会被漏算。</p></details>
+      </section>
+      <h2 id="s-13-5">13.5 复杂度速查表</h2>
+      <p>写代码时选错容器，往往就是“超时”的根源。这两张表建议抄在笔记本第一页。</p>
+      <table><thead><tr><th>容器</th><th>随机访问</th><th>尾部插入</th><th>中部插入/删除</th><th>查找</th><th>有序</th></tr></thead><tbody><tr><td>vector</td><td>O(1)</td><td>平摊 O(1)</td><td>O(n)</td><td>O(n)</td><td>否</td></tr><tr><td>deque</td><td>O(1)</td><td>O(1)</td><td>O(n)</td><td>O(n)</td><td>否</td></tr><tr><td>list</td><td>不支持</td><td>O(1)</td><td>O(1)（已有迭代器）</td><td>O(n)</td><td>否</td></tr><tr><td>map / set</td><td>不支持</td><td>—</td><td>O(log n)</td><td>O(log n)</td><td>是</td></tr><tr><td>unordered_map / unordered_set</td><td>不支持</td><td>—</td><td>平均 O(1)</td><td>平均 O(1)</td><td>否</td></tr><tr><td>priority_queue</td><td>只能看堆顶</td><td>O(log n)</td><td>—</td><td>—</td><td>堆序</td></tr></tbody></table>
+      <table><thead><tr><th>任务</th><th>推荐做法</th><th>复杂度</th></tr></thead><tbody><tr><td>频繁按下标读写</td><td>vector</td><td>O(1)</td></tr><tr><td>已知规模先开空间</td><td>vector + reserve</td><td>—</td></tr><tr><td>去重且要顺序</td><td>set / 排序后 unique</td><td>O(n log n)</td></tr><tr><td>统计频率</td><td>unordered_map</td><td>平均 O(n)</td></tr><tr><td>每次取最值</td><td>priority_queue</td><td>O(log n)</td></tr><tr><td>大量区间求和</td><td>前缀和</td><td>预处理 O(n)，查询 O(1)</td></tr><tr><td>在单调序列里找边界</td><td>二分 / lower_bound</td><td>O(log n)</td></tr><tr><td>判断连通性、动态合并</td><td>并查集</td><td>近 O(1)</td></tr></tbody></table>
+      <h2 id="s-13-6">13.6 怎么选：一张决策清单</h2>
+      <p>拿到题目先别写代码，按下面的顺序问自己几个问题，答案基本就出来了。</p>
+      <ul class="pick"><li>数据是线性的一串？→ 先想双指针 / 滑动窗口 / 前缀和。</li><li>要频繁查“某个值在不在 / 出现过几次”？→ 哈希表（unordered_map）。</li><li>答案具有“单调性”（越大越容易满足）？→ 二分答案。</li><li>要求“所有方案 / 所有路径”？→ 回溯（DFS + 撤销）。</li><li>要求“最少步数 / 最短距离”，边权都一样？→ BFS。</li><li>要求“最优值”，且每一步的最优能推出全局最优？→ 贪心（先想反例）。</li><li>要求“最优值”，子问题会重复出现？→ 动态规划（定义状态 → 转移方程 → 初值）。</li><li>涉及“谁和谁连着 / 合并集合”？→ 并查集。</li><li>数据规模 &lt; 20？→ 直接枚举 / 状态压缩，别过度设计。</li><li>数据规模 10^9 但只需要判断能不能？→ 二分或数学推导，别想着开数组。</li></ul>
+      <div class="tip">💡 复杂度和数据规模对照：n ≤ 20 可以 O(2ⁿ)；n ≤ 500 可以 O(n³)；n ≤ 5000 可以 O(n²)；n ≤ 10⁶ 只能 O(n log n) 或 O(n)。先看 n 的范围，再选算法——这比“先想算法再担心超时”省时间。</div>
+      <h2 id="summary">本章小结</h2>
+      <ul class="recap"><li>四种排序：插入（近乎有序时快）、归并（稳定、O(n log n)）、快排（平均最快、原地）、堆排（原地、无递归）。</li><li>二叉搜索树中序有序，但会退化；map/set 用红黑树保证 O(log n)。</li><li>图的两种遍历分工明确：DFS 管连通性，BFS 管无权最短路；邻接表是最常用的存图方式。</li><li>并查集 = 路径压缩 + 按大小合并，处理“连通/合并”问题接近 O(1)。</li><li>选算法先看数据规模和单调性，再看需不需要枚举所有方案。</li></ul>
+      <div class="tip"><b>📚 本文概念都在知识大全：</b><p style="margin-top:6px"><a href="../../knowledge/index.html#sorting">排序算法</a> · <a href="../../knowledge/index.html#binary-tree">二叉树与 BST</a> · <a href="../../knowledge/index.html#graph">图的存储与遍历</a> · <a href="../../knowledge/index.html#dsu">并查集</a> · <a href="../../knowledge/index.html#complexity">时间复杂度</a> · <a href="../../knowledge/index.html#stack-queue">栈与队列</a></p></div>
+      <div class="lesson-nav"><a href="12-debugging-build-test.html">← 上一章：第 12 章 调试、构建与测试</a><a href="index.html">回到教材目录 →</a></div>
+    </article>
+
+  <script src="../../assets/highlight.min.js"></script>
+  <script src="../../assets/article.js"></script>
+  <script src="../../assets/interact.js"></script>
+  <script src="../../assets/search.js"></script>
+  <script src="../../assets/giscus-config.js"></script>
+  <script src="../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

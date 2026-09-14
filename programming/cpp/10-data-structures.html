@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第 10 章 动手写数据结构 · C++ 新手进阶教材（10/13） · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../assets/article.css">
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="index.html">← C++ 教材目录（共 13 章）</a>
+      <h1>第 10 章　动手写数据结构</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · C++ · 📖 预计阅读 40 分钟 · 共 7 道练习</div>
+    </header>
+
+    <article>
+<div class="tip">🎯 <b>本章你会学到：</b>自己实现顺序表与单链表，并学会验证它。建议边读边敲代码，每节的练习先自己做，再展开答案对照。</div>
+      <p>本章把前面九章用起来：完整实现顺序表和单链表——它们分别代表“连续存储”和“链式存储”两条路线，把这两个写明白，后面的栈、队列、树、图都是它们的变形。</p>
+      <h2 id="s-10-1">10.1 顺序表</h2>
+      <p>顺序表 = 一段连续内存 + 边界纪律。工程写法用 std::vector 做底层，重点在接口设计和边界检查。</p>
+      <h3>接口设计：能用 std::vector 就省下五法则</h3>
+      <p>template &lt;typename T&gt; class ArrayList，用 std::vector&lt;T&gt; data_ 做底层。拷贝、析构自动正确（零法则），不需要手写任何特殊函数。需要提供：push_back、size、operator[]（返回 T&amp; 支持读写）、at（带边界检查）。insert 前检查 pos &gt; size() 抛 std::out_of_range——边界纪律必须在接口层守住。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">template &lt;typename T&gt;
+class ArrayList {
+public:
+    void push_back(const T&amp; v) { data_.push_back(v); }
+    std::size_t size() const { return data_.size(); }
+    T&amp; operator[](std::size_t i) { return data_[i]; }
+    void insert(std::size_t pos, const T&amp; v) {
+        if (pos &gt; size()) { throw std::out_of_range("out of range"); }
+        data_.insert(data_.begin() + static_cast&lt;std::ptrdiff_t&gt;(pos), v);
+    }
+private:
+    std::vector&lt;T&gt; data_;
+};</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　begin() + pos 要 static_cast&lt;std::ptrdiff_t&gt;：size_t 和迭代器差值的类型不同，混用会有符号警告。</div>
+      <h3>自己管理数组时多出来的三件事</h3>
+      <p>若作业要求不用 std::vector：① size_ 与 capacity_ 分开维护，容量不够时按 1.5~2 倍扩容；② 插入删除要搬移元素，用 std::move 比逐个赋值高效；③ 必须写析构（delete[] data_）、拷贝构造（新数组+复制）、拷贝赋值（处理自赋值）、移动构造/移动赋值——就是第 5 章的五法则。把 data_ 换成 T* data_ 自己补一遍五法则，是检验第 4、5 章是否真懂的最好方式。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　顺序表插入/删除是 O(n)（元素搬移），随机访问 O(1)。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-10-1-1">
+      <div class="ex-head"><span class="ex-id">10.1.1</span><span class="badge easy">必做</span><span class="ex-title">迷你顺序表</span></div>
+      <p>基于 std::vector&lt;T&gt; 实现模板类 ArrayList：push_back、size、operator[]。main 里插入 1、3、5 三个数，用 [] 输出。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　1 3 5</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>1 3 5</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　operator[] 返回 T&amp; 支持读写。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+template &lt;typename T&gt;
+class ArrayList {
+public:
+    void push_back(const T&amp; v) { data_.push_back(v); }
+    std::size_t size() const { return data_.size(); }
+    T&amp; operator[](std::size_t i) { return data_[i]; }
+private:
+    std::vector&lt;T&gt; data_;
+};
+int main() {
+    ArrayList&lt;int&gt; list;
+    list.push_back(1);
+    list.push_back(3);
+    list.push_back(5);
+    for (std::size_t i = 0; i &lt; list.size(); ++i) {
+        std::cout &lt;&lt; list[i] &lt;&lt; ' ';
+    }
+    std::cout &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　用 vector 做底层，拷贝/析构自动正确（零法则）。</p></details>
+      </section>
+      <section class="ex" id="ex-10-1-2">
+      <div class="ex-head"><span class="ex-id">10.1.2</span><span class="badge hard">挑战</span><span class="ex-title">带插入的顺序表</span></div>
+      <p>在 ArrayList 里加 insert(pos, value)：位置非法（pos &gt; size）抛 std::out_of_range。main 里先 push 1、3，再 insert(1, 2) 变成 1 2 3 输出；再故意 insert(99, 9) 观察异常被捕获。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　第一行 1 2 3；第二行 out of range。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>1 2 3
+out of range</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　insert 内部用 data_.insert(data_.begin() + pos, v)，注意 pos 转 ptrdiff_t。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+#include &lt;vector&gt;
+template &lt;typename T&gt;
+class ArrayList {
+public:
+    void push_back(const T&amp; v) { data_.push_back(v); }
+    void insert(std::size_t pos, const T&amp; v) {
+        if (pos &gt; size()) { throw std::out_of_range("out of range"); }
+        data_.insert(data_.begin() + static_cast&lt;std::ptrdiff_t&gt;(pos), v);
+    }
+    std::size_t size() const { return data_.size(); }
+    T&amp; operator[](std::size_t i) { return data_[i]; }
+private:
+    std::vector&lt;T&gt; data_;
+};
+int main() {
+    ArrayList&lt;int&gt; list;
+    list.push_back(1);
+    list.push_back(3);
+    list.insert(1, 2);
+    for (std::size_t i = 0; i &lt; list.size(); ++i) {
+        std::cout &lt;&lt; list[i] &lt;&lt; ' ';
+    }
+    std::cout &lt;&lt; '\n';
+    try {
+        list.insert(99, 9);
+    }
+    catch (const std::out_of_range&amp; e) {
+        std::cout &lt;&lt; e.what() &lt;&lt; '\n';
+    }
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　对外接口用异常报告错误；先检查再操作是顺序表的边界纪律。</p></details>
+      </section>
+      <h2 id="s-10-2">10.2 单链表</h2>
+      <p>链表的价值：插入删除不需要搬移元素（O(1)，前提是知道位置）。但要处理“表头”这个特殊情况，还要保证析构释放所有节点。</p>
+      <h3>裸指针链表的两处特殊 + 析构纪律</h3>
+      <p>教材常见的裸指针实现有三个必须注意的点：① 删除要维护 prev 指针——单链表只能单向走，删 cur 得让前一个节点跳过它；② insert/remove 都要单独处理“表头”这个特殊情况（prev == nullptr 时改 head_）；③ 析构必须 while 循环遍历释放所有节点，一个都不能漏。更优雅的解法是用哨兵头节点，把两种情况统一成一种。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">bool remove(const T&amp; v) {
+    Node* cur = head_; Node* prev = nullptr;
+    while (cur != nullptr &amp;&amp; cur-&gt;value != v) { prev = cur; cur = cur-&gt;next; }
+    if (cur == nullptr) { return false; }
+    if (prev == nullptr) { head_ = cur-&gt;next; }   // 删的是头节点
+    else { prev-&gt;next = cur-&gt;next; }
+    delete cur;
+    return true;
+}</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　默认拷贝会复制 head_ 指针：两个对象指向同一条链，析构释放两次。禁止拷贝（= delete）或写深拷贝。</div>
+      <p>unique_ptr 版链表：没有 delete 的写法</p>
+      <p>用 std::unique_ptr&lt;Node&gt; next 实现，head 析构时递归释放整条链，不需要写析构函数，也不会泄漏。注意：递归释放对超长链表会栈溢出，工程上处理超长链表会自己写循环释放，或干脆用 vector/deque。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">struct Node {
+    T value;
+    std::unique_ptr&lt;Node&gt; next;
+};
+std::unique_ptr&lt;Node&gt; head_;
+// 没有析构函数：head_ 析构时递归释放整条链</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　结构没有绝对好坏，只有适不适合当前的数据规模和访问模式。随机访问和尾插用顺序表，频繁在已知位置增删用链表。</div>
+      <figure><svg viewBox="0 0 640 200" width="100%" role="img" aria-label="链表就地反转三指针" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f3a5f"/></marker></defs><rect x="0" y="0" width="640" height="200" fill="#fbfaf7" rx="10"/><rect x="60" y="70" width="84" height="40" rx="8" fill="#fff" stroke="#1f3a5f" stroke-width="1.5"/><text x="102.0" y="95.0" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="14" font-weight="400" fill="#2b2b2b" text-anchor="middle">1</text><line x1="144" y1="90" x2="176" y2="90" stroke="#1f3a5f" stroke-width="1.6" marker-end="url(#ah)"/><rect x="180" y="70" width="84" height="40" rx="8" fill="#fff" stroke="#1f3a5f" stroke-width="1.5"/><text x="222.0" y="95.0" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="14" font-weight="400" fill="#2b2b2b" text-anchor="middle">2</text><line x1="264" y1="90" x2="296" y2="90" stroke="#1f3a5f" stroke-width="1.6" marker-end="url(#ah)"/><rect x="300" y="70" width="84" height="40" rx="8" fill="#fff" stroke="#1f3a5f" stroke-width="1.5"/><text x="342.0" y="95.0" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="14" font-weight="400" fill="#2b2b2b" text-anchor="middle">3</text><text x="102" y="60" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f3a5f" text-anchor="middle">prev</text><text x="222" y="60" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="12" fill="#c9a227" text-anchor="middle">cur</text><text x="342" y="60" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="12" fill="#b3261e" text-anchor="middle">next</text><text x="470" y="88" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="12.5" fill="#4a4a4a">先存 next</text><text x="470" y="110" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="12.5" fill="#4a4a4a">cur-&gt;next = prev</text><text x="470" y="132" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="12.5" fill="#4a4a4a">三个指针整体右移</text><text x="60" y="160" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#6a6a6a">口诀：存 next → 反指向 → 挪 prev/cur。漏掉任何一步断链，就是段错误。</text></svg><figcaption>图 5：链表就地反转的三指针顺序</figcaption></figure>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-10-2-1">
+      <div class="ex-head"><span class="ex-id">10.2.1</span><span class="badge easy">必做</span><span class="ex-title">头插链表</span></div>
+      <p>实现单链表（裸指针版）的 pushFront、print、clear 和析构。main 里头插 1、2、3，打印后自动析构。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　3 -&gt; 2 -&gt; 1 -&gt; null</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>3 -&gt; 2 -&gt; 1 -&gt; null</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　头插：新节点指向旧 head；析构必须遍历释放所有节点。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+template &lt;typename T&gt;
+class LinkedList {
+public:
+    ~LinkedList() { clear(); }
+    void pushFront(const T&amp; v) {
+        head_ = new Node{v, head_};
+    }
+    void clear() {
+        while (head_ != nullptr) {
+            Node* next = head_-&gt;next;
+            delete head_;
+            head_ = next;
+        }
+    }
+    void print() const {
+        for (Node* cur = head_; cur != nullptr; cur = cur-&gt;next) {
+            std::cout &lt;&lt; cur-&gt;value &lt;&lt; " -&gt; ";
+        }
+        std::cout &lt;&lt; "null\n";
+    }
+private:
+    struct Node { T value; Node* next; };
+    Node* head_ = nullptr;
+};
+int main() {
+    LinkedList&lt;int&gt; list;
+    list.pushFront(1);
+    list.pushFront(2);
+    list.pushFront(3);
+    list.print();
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　先存 next 再 delete 当前节点，逐个释放；漏掉循环就泄漏。</p></details>
+      </section>
+      <section class="ex" id="ex-10-2-2">
+      <div class="ex-head"><span class="ex-id">10.2.2</span><span class="badge hard">挑战</span><span class="ex-title">就地反转</span></div>
+      <p>在链表中加 void reverse()：就地反转链表（三指针）。main 里头插 1、2、3（链表为 3-&gt;2-&gt;1），反转后打印（1-&gt;2-&gt;3）。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　1 -&gt; 2 -&gt; 3 -&gt; null</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>1 -&gt; 2 -&gt; 3 -&gt; null</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　三指针 prev/cur/next：先存 next，再 cur-&gt;next = prev，整体前进。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+template &lt;typename T&gt;
+class LinkedList {
+public:
+    ~LinkedList() { clear(); }
+    void pushFront(const T&amp; v) { head_ = new Node{v, head_}; }
+    void reverse() {
+        Node* prev = nullptr;
+        Node* cur = head_;
+        while (cur != nullptr) {
+            Node* next = cur-&gt;next;   // 先存下一个
+            cur-&gt;next = prev;         // 改指向
+            prev = cur;
+            cur = next;
+        }
+        head_ = prev;
+    }
+    void clear() {
+        while (head_ != nullptr) {
+            Node* next = head_-&gt;next;
+            delete head_;
+            head_ = next;
+        }
+    }
+    void print() const {
+        for (Node* cur = head_; cur != nullptr; cur = cur-&gt;next) {
+            std::cout &lt;&lt; cur-&gt;value &lt;&lt; " -&gt; ";
+        }
+        std::cout &lt;&lt; "null\n";
+    }
+private:
+    struct Node { T value; Node* next; };
+    Node* head_ = nullptr;
+};
+int main() {
+    LinkedList&lt;int&gt; list;
+    list.pushFront(1);
+    list.pushFront(2);
+    list.pushFront(3);   // 3 -&gt; 2 -&gt; 1
+    list.reverse();
+    list.print();        // 1 -&gt; 2 -&gt; 3
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　就地反转是链表经典题：三指针缺一不可，顺序不能乱。</p></details>
+      </section>
+      <h2 id="s-10-3">10.3 调试与验证：让错误自己暴露</h2>
+      <p>手写数据结构最大的困难是“错了但不报错”：链表断链、数组越界、忘记释放，程序往往不崩溃，只是结果悄悄不对。所以要把下面这套流程变成习惯。</p>
+      <h3>四件套流程</h3>
+      <p>① 编译打开 -Wall -Wextra -Wpedantic；② 用 assert 把不变量写下来（assert(size_ &lt;= capacity_)），断言既是文档也是测试，-DNDEBUG 在发布版关掉；③ 小数据规模手动验证：先测空容器、一个元素、两个元素，绝大多数边界错误都在这里；④ 用 -fsanitize=address,undefined 跑一遍，直接定位越界、泄漏和未定义行为。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　sanitizer 只在调试期开，会拖慢程序，不要带上线。</div>
+      <h3>随机对拍：最有效的自动化验证</h3>
+      <p>写一个随机测试，把同样的操作序列同时作用在你的结构和 std::vector/std::list 上，每次操作后 assert 两边 size 相等、逐个元素相等。固定随机种子（std::mt19937 gen(12345)）方便复现。十几行随机测试，比反复读代码找错高效得多。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">std::mt19937 gen(12345);
+std::uniform_int_distribution&lt;int&gt; op(0, 2);
+for (int step = 0; step &lt; 10000; ++step) {
+    int action = op(gen);
+    // switch (action) { case 0: mine.pushBack(x); ref.push_back(x); break; ... }
+    // assert(mine.size() == reference.size());
+    // 逐个元素比较，相等则继续
+}</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　数据结构作业评分往往只看通过测试用例的数量，对拍测试是性价比最高的提分方式。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-10-3-1">
+      <div class="ex-head"><span class="ex-id">10.3.1</span><span class="badge easy">必做</span><span class="ex-title">越界抓现行</span></div>
+      <p>写一个越界访问的坏程序：int a[5] 循环 i &lt;= 5 访问 a[i]。用 g++ -fsanitize=address,undefined 编译运行，观察它打印的越界报错（第几行、读写几个字节）。然后把循环改成 i &lt; 5，确认零报错。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　正常运行后输出 12345。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>12345</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　坏版本运行时会打印 AddressSanitizer 报错；好版本只有 12345。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+int main() {
+    int a[5]{1, 2, 3, 4, 5};
+    for (int i = 0; i &lt; 5; ++i) {   // 好版本：i &lt; 5
+        std::cout &lt;&lt; a[i];
+    }
+    std::cout &lt;&lt; '\n';
+    return 0;
+}
+// 坏版本（改成 i &lt;= 5 后用 sanitizer 编译运行）：
+// g++ -std=c++17 -g -fsanitize=address,undefined -o app app.cpp</code></pre>
+<p class="note"><b>解析</b>　AddressSanitizer 会精确报出越界位置，这是新手阶段回报最高的工具。</p></details>
+      </section>
+      <section class="ex" id="ex-10-3-2">
+      <div class="ex-head"><span class="ex-id">10.3.2</span><span class="badge hard">挑战</span><span class="ex-title">随机对拍</span></div>
+      <p>写一个随机对拍程序：固定种子生成 1000 对随机数，你的 max 函数和标准答案（条件运算符）比对，不一致就报错退出。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　stress test passed</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>stress test passed</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　std::mt19937 gen(12345) 固定种子保证可复现。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;cassert&gt;
+#include &lt;iostream&gt;
+#include &lt;random&gt;
+int myMax(int a, int b) { return a &gt; b ? a : b; }
+int main() {
+    std::mt19937 gen(12345);
+    std::uniform_int_distribution&lt;int&gt; dist(-100, 100);
+    for (int step = 0; step &lt; 1000; ++step) {
+        int a = dist(gen), b = dist(gen);
+        int got = myMax(a, b);
+        int expect = (a &gt; b ? a : b);
+        assert(got == expect);
+    }
+    std::cout &lt;&lt; "stress test passed\n";
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　对拍 = 你的实现 vs 标准实现跑同样输入再比较；写数据结构时这是最有效的自动化验证。</p></details>
+      </section>
+      <h2 id="summary">本章小结</h2>
+      <ul class="recap"><li>顺序表：连续内存 + 边界纪律；insert/erase 前先检查，越界抛 out_of_range。</li><li>链表：删除维护 prev、表头特殊处理、析构遍历释放，三件事缺一不可。</li><li>零法则优先：成员用自管理类型，五法则只在含裸资源时出现。</li><li>验证四件套：-Wall -Wextra -Wpedantic + assert 不变量 + 空/单元素边界 + sanitizer；再上随机对拍。</li></ul>
+      <h2 id="combo">🧩 本章综合练习</h2>
+      <p>这几道题把本章多个知识点串起来，建议合上资料独立完成，再展开答案对照。</p>
+      <section class="ex" id="ex-10-A">
+      <div class="ex-head"><span class="ex-id">10.A</span><span class="badge hard">综合</span><span class="ex-title">unique_ptr 版单链表 + 随机对拍</span></div>
+      <p>用 std::unique_ptr 实现单链表（pushFront / pushBack / reverse / print / size），全程不写析构函数；再用固定随机种子做 1000 轮随机对拍，断言链表和 std::vector 的 size 与元素逐一相等。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　第一行整数 n；第二行 n 个整数（依次 pushBack 进链表）。</p><p class="io-line"><b>输出</b>　第一行输出反转后的链表内容；第二行输出 <code>stress test passed</code>。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>4
+1 2 3 4</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>4 -&gt; 3 -&gt; 2 -&gt; 1 -&gt; null
+stress test passed</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　节点的 next 是 unique_ptr，交接所有权一律用 std::move；反转时用三个 unique_ptr 轮换，不要手写 delete。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;cassert&gt;
+#include &lt;cstddef&gt;
+#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;random&gt;
+#include &lt;vector&gt;
+
+struct Node {
+    int value{};
+    std::unique_ptr&lt;Node&gt; next;
+    explicit Node(int v) : value(v) { }
+};
+
+class List {
+public:
+    void pushFront(int v) {
+        auto n = std::make_unique&lt;Node&gt;(v);
+        n-&gt;next = std::move(head_);
+        head_ = std::move(n);
+        ++size_;
+    }
+
+    void pushBack(int v) {
+        auto n = std::make_unique&lt;Node&gt;(v);
+        if (!head_) {
+            head_ = std::move(n);
+        } else {
+            Node* cur = head_.get();
+            while (cur-&gt;next) { cur = cur-&gt;next.get(); }
+            cur-&gt;next = std::move(n);
+        }
+        ++size_;
+    }
+
+    void reverse() {                      // 就地反转
+        std::unique_ptr&lt;Node&gt; prev;
+        while (head_) {
+            std::unique_ptr&lt;Node&gt; cur = std::move(head_);
+            head_ = std::move(cur-&gt;next);
+            cur-&gt;next = std::move(prev);
+            prev = std::move(cur);
+        }
+        head_ = std::move(prev);
+    }
+
+    std::size_t size() const { return size_; }
+
+    std::vector&lt;int&gt; toVector() const {
+        std::vector&lt;int&gt; out;
+        for (const Node* p = head_.get(); p != nullptr; p = p-&gt;next.get()) {
+            out.push_back(p-&gt;value);
+        }
+        return out;
+    }
+
+    void print() const {
+        for (const Node* p = head_.get(); p != nullptr; p = p-&gt;next.get()) {
+            std::cout &lt;&lt; p-&gt;value &lt;&lt; " -&gt; ";
+        }
+        std::cout &lt;&lt; "null\n";
+    }
+
+private:
+    std::unique_ptr&lt;Node&gt; head_;
+    std::size_t size_ = 0;
+};
+
+int main() {
+    int n{};
+    std::cin &gt;&gt; n;
+    List list;
+    for (int i = 0; i &lt; n; ++i) {
+        int x{};
+        std::cin &gt;&gt; x;
+        list.pushBack(x);
+    }
+    list.reverse();
+    list.print();
+
+    std::mt19937 gen(20260914);                      // 固定种子，可复现
+    std::uniform_int_distribution&lt;int&gt; dist(-50, 50);
+    for (int round = 0; round &lt; 1000; ++round) {
+        List mine;
+        std::vector&lt;int&gt; ref;
+        for (int k = 0; k &lt; 20; ++k) {
+            int x = dist(gen);
+            mine.pushBack(x);
+            ref.push_back(x);
+            assert(mine.size() == ref.size());
+            assert(mine.toVector() == ref);           // 和标准容器对拍
+        }
+    }
+    std::cout &lt;&lt; "stress test passed\n";
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　head_ 析构时会递归释放整条链，所以不必写析构函数；链表极长时递归释放可能爆栈，工程上会改成循环释放。</p></details>
+      </section>
+      <div class="tip"><b>📚 本文概念都在知识大全：</b><p style="margin-top:6px"><a href="../../knowledge/index.html#linked-list">链表</a> · <a href="../../knowledge/index.html#stack-queue">栈与队列</a> · <a href="../../knowledge/index.html#sanitizer">Sanitizer</a> · <a href="../../knowledge/index.html#unit-test">单元测试</a></p></div>
+      <div class="lesson-nav"><a href="09-modern-cpp.html">← 上一章：第 9 章 现代 C++ 特性</a><a href="11-algorithm-patterns.html">下一章：第 11 章 十个算法思想 →</a></div>
+    </article>
+
+  <script src="../../assets/highlight.min.js"></script>
+  <script src="../../assets/article.js"></script>
+  <script src="../../assets/interact.js"></script>
+  <script src="../../assets/search.js"></script>
+  <script src="../../assets/giscus-config.js"></script>
+  <script src="../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

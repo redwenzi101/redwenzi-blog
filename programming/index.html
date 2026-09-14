@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>编程语言分享 · C / C++ / Java / Python · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../assets/article.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+  <link rel="stylesheet" href="../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="../index.html">← 返回博客主页</a>
+      <h1>编程语言分享</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 学习路线 · 4 门语言 · C++ 已上线</div>
+    </header>
+
+    <article>
+<div class="tip">🎯 <b>这条线是什么：</b>把每门编程语言的学习资料整理成能直接照着学的教材——有概念、有示例、有练习、有答案，全部代码实测可编译。</div>
+      <div class="tip">🗺️ <b>推荐路线：</b>C（底层直觉）→ <b>C++</b>（系统 + 算法）→ Java（面向对象生态）→ Python（脚本 + 数据）。也可以按已有基础跳着学，每门语言都可以单独看。</div>
+
+      <h2>四门语言，按这个顺序走</h2>
+      <div class="cards">
+        <div class="card"><h3>C <span style="font-size:13px;color:#6a6a6a">🚧 整理中</span></h3><p>把 C 语言的核心（指针、内存、结构体、预处理器）单独讲一遍，作为 C++ 的前置。</p><p style="color:#6a6a6a;font-size:14px">🎯 适合完全零基础或想补“底层直觉”的人。</p><p class="soon" style="margin-top:10px;color:#9a9a9a">内容整理中，先看 C++ 那条线 →</p></div><div class="card"><h3>C++ <span style="font-size:13px;color:#6a6a6a">✅ 已上线 · 13 章 98 题</span></h3><p>从第一个程序讲到模板、STL、数据结构与算法思想，每节有练习、每题有参考代码。</p><p style="color:#6a6a6a;font-size:14px">🎯 适合有 C 或 Java 基础、想系统补 C++ 的人。</p><p style="margin-top:10px"><a href="cpp/index.html">进入 C++ 教材目录 →</a> · <a href="cpp/problems.html">全部 98 道练习 →</a></p></div><div class="card"><h3>Java <span style="font-size:13px;color:#6a6a6a">🚧 规划中</span></h3><p>面向对象、集合框架、JVM 与并发入门；和 C++ 对照讲，两边都能更清楚。</p><p style="color:#6a6a6a;font-size:14px">🎯 适合学过 C++ 想换生态，或课程需要 Java 的人。</p><p class="soon" style="margin-top:10px;color:#9a9a9a">内容整理中，先看 C++ 那条线 →</p></div><div class="card"><h3>Python <span style="font-size:13px;color:#6a6a6a">🚧 规划中</span></h3><p>语法速通 + 数据分析方向（pandas / matplotlib），衔接博客里的数据科学线。</p><p style="color:#6a6a6a;font-size:14px">🎯 适合想快速上手做数据、做脚本的人。</p><p class="soon" style="margin-top:10px;color:#9a9a9a">内容整理中，先看 C++ 那条线 →</p></div>
+      </div>
+
+      <h2>现在可以从这里开始</h2>
+      <div class="post" style="background:linear-gradient(135deg,#eef6ff,#f5fbf9);border:1px solid rgba(0,113,227,.2);border-radius:22px;padding:22px 26px">
+        <div>
+          <h3 style="margin-bottom:6px"><a href="cpp/index.html">C++ 新手进阶教材（边学边练）</a></h3>
+          <p style="color:#3d4552">13 章 · 98 道练习 · 6 张示意图。覆盖：程序怎么跑起来 → 类型与流程 → 函数与引用 → 指针与内存 → 类与对象 → 模板 → STL 容器与算法 → 现代 C++ → 手写数据结构 → 十种算法思想 → 调试构建测试 → 数据结构与算法补遗。</p>
+          <p><a href="cpp/index.html">阅读教材目录 →</a></p>
+        </div>
+      </div>
+
+      <h2>这套资料怎么用</h2>
+      <ul>
+        <li><b>先看目录页</b>：里面有四周学习计划、每章练习数量和推荐顺序。</li>
+        <li><b>边读边敲</b>：示例代码都补齐了 <code>#include</code>，复制到 <code>app.cpp</code> 就能编译。</li>
+        <li><b>先做后看</b>：练习的答案默认折叠着，先自己写，再展开对照。</li>
+        <li><b>卡住了查概念</b>：文中出现的术语都在 <a href="../knowledge/index.html">📚 知识大全</a> 里有词条。</li>
+      </ul>
+
+      <div class="warn">⚙️ 环境约定：代码用 <code>g++ -std=c++17 -Wall -Wextra -Wpedantic</code> 实测通过；示例以 Windows PowerShell 为主，macOS / Linux 把 <code>.\app.exe</code> 换成 <code>./app</code>。</div>
+
+      <div class="tip"><b>📚 本文概念都在知识大全：</b>
+      <p style="margin-top:6px"><a href="../knowledge/index.html#cpp-compile-link">编译与链接</a> ·
+      <a href="../knowledge/index.html#stl">STL</a> ·
+      <a href="../knowledge/index.html#raii">RAII</a> ·
+      <a href="../knowledge/index.html#complexity">时间复杂度</a></p></div>
+    </article>
+
+  <script src="../assets/highlight.min.js"></script>
+  <script src="../assets/article.js"></script>
+  <script src="../assets/interact.js"></script>
+  <script src="../assets/search.js"></script>
+  <script src="../assets/giscus-config.js"></script>
+  <script src="../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

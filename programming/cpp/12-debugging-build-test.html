@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第 12 章 调试、构建与测试 · C++ 新手进阶教材（12/13） · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../assets/article.css">
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="index.html">← C++ 教材目录（共 13 章）</a>
+      <h1>第 12 章　调试、构建与测试</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · C++ · 📖 预计阅读 33 分钟 · 共 4 道练习</div>
+    </header>
+
+    <article>
+<div class="tip">🎯 <b>本章你会学到：</b>警告/sanitizer/调试器/CMake/自动化测试。建议边读边敲代码，每节的练习先自己做，再展开答案对照。</div>
+      <p>前 11 章都在教你“怎么写对”。这一章反过来：**写错的时候，怎么最快找到错**。真实开发里，找 bug 花掉的时间远多于敲代码——把工具用起来，等于给自己省一半时间。</p>
+      <p>本章四件事：让编译器替你找问题、用 sanitizer 抓内存错误、用调试器定位崩溃、用 CMake 管多文件工程，最后写一个最小的自动化测试。</p>
+      <h2 id="s-12-1">12.1 三件套：警告、断言、sanitizer</h2>
+      <p>新手最常见的损失是：程序“看起来能跑”，结果悄悄错了。下面三件工具专门抓这类问题，而且都是免费的。</p>
+      <h3>第一件：把警告全开</h3>
+      <pre><code class="language-cpp">g++ -std=c++17 -Wall -Wextra -Wpedantic -Wshadow -Wconversion -o app app.cpp</code></pre>
+      <p>-Wall -Wextra 打开绝大多数常用警告；-Wpedantic 拒绝非标准扩展；-Wshadow 提示变量遮蔽外层同名变量；-Wconversion 提示会丢精度的隐式转换（会和 size_t/迭代器混用冲突，可按需开）。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　“改了警告还能跑”是最贵的心态。C++ 里未初始化变量、类型截断、漏 return，很多时候只是警告。</div>
+      <h3>第二件：sanitizer 抓内存错误</h3>
+      <pre><code class="language-cpp">g++ -std=c++17 -g -fsanitize=address,undefined -o app app.cpp</code></pre>
+      <p>MSVC 上的对应写法是 cl /fsanitize=address /Zi app.cpp。开了之后，越界读写、释放后使用、双重释放、整数溢出等会直接在出错的那一行报错并中止。</p>
+      <pre><code class="language-cpp">int a[3]{};
+int i{3};
+a[i] = 1;      // 越界：不开 sanitizer 可能“静默通过”</code></pre>
+      <p>同样的代码，关掉 sanitizer 时可能照常输出、什么都不提示；开了之后会立刻打印 stack-buffer-overflow 并指出行号。这就是它存在的意义——把“运气”变成“确定性”。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　sanitizer 只在调试期用：程序会变慢、内存占用变高，不要带到发布版本。</div>
+      <h3>第三件：断言把不变量写下来</h3>
+      <pre><code class="language-cpp">assert(size_ &lt;= capacity_);          // 调试期不满足就直接崩，并打印文件行号
+assert(!v.empty());                  // 调用 back() 之前先确认非空</code></pre>
+      <p>断言既是文档也是测试：它把你心里“这里一定成立”的假设写进代码。发布时用 -DNDEBUG 关掉（NDEBUG 定义了以后 assert 变成空语句）。</p>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-12-1-1">
+      <div class="ex-head"><span class="ex-id">12.1.1</span><span class="badge easy">必做</span><span class="ex-title">用 sanitizer 抓出越界与泄漏</span></div>
+      <p>下面这段程序有两处问题：一处数组越界，一处忘记释放。先直接编译运行看看会发生什么，再用 -fsanitize=address,undefined 重新编译，按报错把那两处改掉（越界改成合法下标、用 unique_ptr 管理内存），最后让它输出 sum=12。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　本题无输入。</p><p class="io-line"><b>输出</b>　输出 <code>sum=12</code>。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>sum=12</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　先跑一次“能用但不对”的版本，再开 sanitizer 看真实错误；数组用 std::array 或 vector 更安全。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+int main() {
+    const int n = 4;
+    std::unique_ptr&lt;int[]&gt; a(new int[n]{1, 2, 4, 5});   // 用智能指针管理
+    int sum = 0;
+    for (int i = 0; i &lt; n; ++i) {                       // i &lt;= n 就是越界
+        sum += a[i];
+    }
+    std::cout &lt;&lt; "sum=" &lt;&lt; sum &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　原始代码里 a[4] 是越界（合法下标是 0~3），而 new 之后没有 delete 会造成泄漏。开 sanitizer 后运行会直接指出 <code>stack/ heap-buffer-overflow</code> 或 <code>detected memory leaks</code>，按提示改完即通过。</p></details>
+      </section>
+      <h2 id="s-12-2">12.2 调试器：断点、单步、看变量</h2>
+      <p>打印调试（到处插 cout）在程序小的时候够用，但一旦是几百行的多文件工程，调试器能省掉大量来回。</p>
+      <pre><code class="language-cpp">g++ -std=c++17 -g -O0 -o app app.cpp     # -g 保留调试信息，-O0 关优化</code></pre>
+      <p>然后用 gdb ./app 进入调试器。最常用的命令只有这几个：</p>
+      <table><thead><tr><th>命令</th><th>作用</th></tr></thead><tbody><tr><td>break 行号 / 函数名</td><td>下断点（b main、b app.cpp:42）</td></tr><tr><td>run</td><td>开始运行，命中断点停下</td></tr><tr><td>next / n</td><td>单步执行，不进入函数内部</td></tr><tr><td>step / s</td><td>单步执行，进入函数内部</td></tr><tr><td>print 变量 / p</td><td>查看变量的值</td></tr><tr><td>bt（backtrace）</td><td>打印调用栈，看是谁调用了当前函数</td></tr><tr><td>watch 变量</td><td>变量变化时自动停下</td></tr><tr><td>continue / c</td><td>继续运行到下一个断点</td></tr><tr><td>quit</td><td>退出</td></tr></tbody></table>
+      <pre><code class="language-cpp"># 一个典型会话
+$ gdb ./app
+(gdb) break app.cpp:12
+(gdb) run
+Breakpoint 1, main () at app.cpp:12
+(gdb) print head
+$1 = (Node *) 0x0            &lt;- 这里发现 head 是空的
+(gdb) bt
+#0  main () at app.cpp:12
+(gdb) continue
+(gdb) quit</code></pre>
+      <p>在 VS Code 里同样是这套东西：装 C/C++ 扩展，写一个 launch.json，把 program 指向编译出的可执行文件、MIMode 设为 gdb / lldb，就能用鼠标打断点、悬停看变量。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　不要在 -O2 下调试：变量可能被优化掉，断点顺序也会“跳”。调试用 -O0 -g，发布再开优化。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-12-2-1">
+      <div class="ex-head"><span class="ex-id">12.2.1</span><span class="badge easy">必做</span><span class="ex-title">用 gdb 找出崩溃位置</span></div>
+      <p>下面这段程序在运行时会崩溃（段错误）。不要靠猜：用 -g 编译后交给 gdb，用 run 复现崩溃、bt 看调用栈、print 看变量，找出崩在哪一行、哪个变量有问题，最后修好它，让它输出 <code>3 -&gt; 1 -&gt; -1 -&gt; 2 -&gt; null</code>。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　本题无输入。</p><p class="io-line"><b>输出</b>　输出一行链表内容，程序不崩溃。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>3 -&gt; 1 -&gt; -1 -&gt; 2 -&gt; null</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　崩溃往往发生在解引用空指针那一行；bt 会直接告诉你第几行。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+
+struct Node {
+    int value{};
+    Node* next = nullptr;
+};
+
+int main() {
+    Node a{3, nullptr};
+    Node b{1, nullptr};
+    Node c{-1, nullptr};
+    Node d{2, nullptr};
+    a.next = &amp;b;
+    b.next = &amp;c;
+    c.next = &amp;d;
+
+    for (const Node* p = &amp;a; p != nullptr; p = p-&gt;next) {
+        std::cout &lt;&lt; p-&gt;value &lt;&lt; " -&gt; ";
+    }
+    std::cout &lt;&lt; "null\n";
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　崩溃的经典原因是链路断在某个节点上（指针为 nullptr）却继续解引用。用 gdb 的 bt 看到崩溃行、用 p 变量名 看到空指针后，把断链补上即可；修好后的循环必须严格用 p != nullptr 作终止条件。</p></details>
+      </section>
+      <h2 id="s-12-3">12.3 CMake：把多文件工程管起来</h2>
+      <p>文件一多，“编译命令”就开始变成负担：加了新 .cpp 要改命令、想开 sanitizer 要改命令、换台电脑路径又不一样。CMake 的作用是把这些写进一个配置文件。</p>
+      <pre><code class="language-cpp"># CMakeLists.txt
+cmake_minimum_required(VERSION 3.16)
+project(cpp_learn CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_executable(app util.cpp main.cpp)     # 源文件列在这里
+
+target_compile_options(app PRIVATE -Wall -Wextra -Wpedantic)
+
+option(ENABLE_ASAN "打开 AddressSanitizer" OFF)
+if(ENABLE_ASAN)
+  target_compile_options(app PRIVATE -fsanitize=address,undefined -g)
+  target_link_options(app PRIVATE -fsanitize=address,undefined)
+endif()
+# 配置 + 构建 + 运行
+cmake -S . -B build                  # 生成构建文件
+cmake --build build                  # 编译
+./build/app                          # 运行（Windows 上是 .\build\app.exe）
+
+# 想开 sanitizer 就加一个开关
+cmake -S . -B build -DENABLE_ASAN=ON
+cmake --build build</code></pre>
+      <p>这样做的三个好处：加文件只改一行；编译选项集中在一处，全项目一致；换到别的机器上照样能构建。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　build/ 是生成物，必须写进 .gitignore，不要提交进仓库。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-12-3-1">
+      <div class="ex-head"><span class="ex-id">12.3.1</span><span class="badge hard">挑战</span><span class="ex-title">把三文件工程改造成 CMake 工程</span></div>
+      <p>第 3 章的 3.3.2 题把代码拆成了 util.h / util.cpp / main.cpp。请为它写一个 CMakeLists.txt，要求：C++17、开 -Wall -Wextra -Wpedantic、支持 -DENABLE_ASAN=ON 打开 sanitizer；然后写出完整的构建与运行命令。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　本题无输入。</p><p class="io-line"><b>输出</b>　构建成功并输出 9。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>9</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　把三个文件都列进 add_executable；头文件不用列（会被自动跟踪）。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">cmake_minimum_required(VERSION 3.16)
+project(square_demo CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_executable(app util.cpp main.cpp)
+target_compile_options(app PRIVATE -Wall -Wextra -Wpedantic)
+
+option(ENABLE_ASAN "打开 AddressSanitizer" OFF)
+if(ENABLE_ASAN)
+  target_compile_options(app PRIVATE -fsanitize=address,undefined -g)
+  target_link_options(app PRIVATE -fsanitize=address,undefined)
+endif()</code></pre>
+<p class="note"><b>解析</b>　构建命令：cmake -S . -B build 然后 cmake --build build；运行 ./build/app（Windows 用 .\build\app.exe）。目录结构保持 util.h / util.cpp / main.cpp / CMakeLists.txt 平铺即可。</p></details>
+      </section>
+      <h2 id="s-12-4">12.4 最小自动化测试</h2>
+      <p>“我手动试了几个输入，都对”不等于测试。测试要能在改代码之后**一条命令重跑一遍**，这样你才敢改。</p>
+      <p>最小的测试框架只要三件事：注册用例、运行用例、统计失败。下面这个 40 行的版本足够应付学习阶段的所有需求。</p>
+      <pre><code class="language-cpp">#include &lt;cassert&gt;
+#include &lt;functional&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+struct Case {
+    std::string name;
+    std::function&lt;void()&gt; fn;
+};
+
+std::vector&lt;Case&gt;&amp; all() {           // 全局用例表
+    static std::vector&lt;Case&gt; cases;
+    return cases;
+}
+
+struct AutoReg {                     // 构造时自动注册
+    AutoReg(const std::string&amp; n, std::function&lt;void()&gt; f) { all().push_back({n, f}); }
+};
+
+#define TEST(name) \
+    void name(); \
+    static AutoReg reg_##name(#name, name); \
+    void name()
+
+TEST(add_works) {
+    assert(1 + 1 == 2);
+}
+
+TEST(vector_grows) {
+    std::vector&lt;int&gt; v;
+    for (int i = 0; i &lt; 100; ++i) { v.push_back(i); }
+    assert(v.size() == 100);
+}
+
+int main() {
+    int failed = 0;
+    for (const auto&amp; c : all()) {
+        try {
+            c.fn();
+            std::cout &lt;&lt; "[PASS] " &lt;&lt; c.name &lt;&lt; '\n';
+        } catch (...) {
+            ++failed;
+            std::cout &lt;&lt; "[FAIL] " &lt;&lt; c.name &lt;&lt; '\n';
+        }
+    }
+    std::cout &lt;&lt; "failed=" &lt;&lt; failed &lt;&lt; '\n';
+    return failed == 0 ? 0 : 1;      // 有失败就返回非 0，CI 能感知
+}</code></pre>
+      <p>真实项目里会用 GoogleTest、Catch2、doctest 这些库，提供的断言更细（EXPECT_EQ / ASSERT_THROW），但骨架和上面一样。工程上还会配合 sanitizer 一起跑，属于“一条命令验证一遍”的标准动作。</p>
+      <div class="tip">💡 和随机对拍配合：对拍负责“大范围随机输入下不崩、结果一致”，单元测试负责“边界和异常路径覆盖”，两个一起用，手写数据结构就基本不会翻车。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-12-4-1">
+      <div class="ex-head"><span class="ex-id">12.4.1</span><span class="badge hard">挑战</span><span class="ex-title">给 IntArray 写四个用例</span></div>
+      <p>用上面这个最小测试框架，为第 5 章综合练习里的 IntArray 写四个测试：① 构造后 size 正确且元素为 0；② 拷贝构造后两边独立（改一个不影响另一个）；③ at() 越界抛 std::out_of_range；④ 自赋值 a = a 之后内容不变。程序要能打印四个 [PASS] 并输出 <code>failed=0</code>。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　本题无输入。</p><p class="io-line"><b>输出</b>　四行 [PASS] 和一行 <code>failed=0</code>。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>[PASS] ctor_zero
+[PASS] copy_independent
+[PASS] at_throws
+[PASS] self_assign
+failed=0</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　断言异常要用 try/catch 包起来再 assert；自赋值用 a = a 直接调用。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;cassert&gt;
+#include &lt;cstddef&gt;
+#include &lt;functional&gt;
+#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+class IntArray {
+public:
+    explicit IntArray(std::size_t n) : size_(n), data_(n &gt; 0 ? new int[n]{} : nullptr) { }
+    IntArray(const IntArray&amp; o)
+        : size_(o.size_), data_(o.size_ &gt; 0 ? new int[o.size_]{} : nullptr) {
+        for (std::size_t i = 0; i &lt; size_; ++i) { data_[i] = o.data_[i]; }
+    }
+    IntArray&amp; operator=(const IntArray&amp; o) {
+        if (this == &amp;o) { return *this; }
+        int* fresh = o.size_ &gt; 0 ? new int[o.size_]{} : nullptr;
+        for (std::size_t i = 0; i &lt; o.size_; ++i) { fresh[i] = o.data_[i]; }
+        delete[] data_;
+        data_ = fresh;
+        size_ = o.size_;
+        return *this;
+    }
+    ~IntArray() { delete[] data_; }
+    std::size_t size() const { return size_; }
+    int&amp; at(std::size_t i) {
+        if (i &gt;= size_) { throw std::out_of_range("IntArray::at"); }
+        return data_[i];
+    }
+    int at(std::size_t i) const {
+        if (i &gt;= size_) { throw std::out_of_range("IntArray::at"); }
+        return data_[i];
+    }
+private:
+    std::size_t size_ = 0;
+    int* data_ = nullptr;
+};
+
+struct Case { std::string name; std::function&lt;void()&gt; fn; };
+std::vector&lt;Case&gt;&amp; all() { static std::vector&lt;Case&gt; c; return c; }
+struct AutoReg { AutoReg(const std::string&amp; n, std::function&lt;void()&gt; f) { all().push_back({n, f}); } };
+#define TEST(name) void name(); static AutoReg reg_##name(#name, name); void name()
+
+TEST(ctor_zero) {
+    IntArray a(3);
+    assert(a.size() == 3);
+    for (std::size_t i = 0; i &lt; a.size(); ++i) { assert(a.at(i) == 0); }
+}
+
+TEST(copy_independent) {
+    IntArray a(3);
+    a.at(0) = 7;
+    IntArray b = a;
+    b.at(0) = 99;
+    assert(a.at(0) == 7);            // 深拷贝：互不影响
+    assert(b.at(0) == 99);
+}
+
+TEST(at_throws) {
+    IntArray a(2);
+    bool thrown = false;
+    try { a.at(5); } catch (const std::out_of_range&amp;) { thrown = true; }
+    assert(thrown);
+}
+
+TEST(self_assign) {
+    IntArray a(2);
+    a.at(1) = 42;
+    a = a;                            // 自赋值不能崩也不能变
+    assert(a.size() == 2);
+    assert(a.at(1) == 42);
+}
+
+int main() {
+    int failed = 0;
+    for (const auto&amp; c : all()) {
+        try { c.fn(); std::cout &lt;&lt; "[PASS] " &lt;&lt; c.name &lt;&lt; '\n'; }
+        catch (...) { ++failed; std::cout &lt;&lt; "[FAIL] " &lt;&lt; c.name &lt;&lt; '\n'; }
+    }
+    std::cout &lt;&lt; "failed=" &lt;&lt; failed &lt;&lt; '\n';
+    return failed == 0 ? 0 : 1;
+}</code></pre>
+<p class="note"><b>解析</b>　注意用例的执行顺序和注册顺序一致（同一个 vector 里），所以输出顺序稳定；如果哪天输出顺序变了，说明有静态初始化顺序问题——这也是这套极简框架的一个已知局限。</p></details>
+      </section>
+      <h2 id="summary">本章小结</h2>
+      <ul class="recap"><li>警告全开 + sanitizer + 断言，是“让工具替你找 bug”的三件套；sanitizer 只在调试期开。</li><li>调试用 -O0 -g：gdb 的 break / run / next / step / print / bt 六个命令能解决大多数崩溃定位。</li><li>CMake 把“源文件列表 + 编译选项”写成配置，多文件工程和 sanitizer 开关都不用再手写长命令；build/ 要进 .gitignore。</li><li>自动化测试的最小骨架是注册用例 + 运行 + 统计失败；和随机对拍配合，才能放心改代码。</li></ul>
+      <div class="tip"><b>📚 本文概念都在知识大全：</b><p style="margin-top:6px"><a href="../../knowledge/index.html#gdb">调试器 GDB</a> · <a href="../../knowledge/index.html#sanitizer">Sanitizer</a> · <a href="../../knowledge/index.html#cmake">CMake</a> · <a href="../../knowledge/index.html#unit-test">单元测试</a> · <a href="../../knowledge/index.html#gpp-flags">编译选项</a></p></div>
+      <div class="lesson-nav"><a href="11-algorithm-patterns.html">← 上一章：第 11 章 十个算法思想</a><a href="13-more-data-structures.html">下一章：第 13 章 数据结构与算法补遗 →</a></div>
+    </article>
+
+  <script src="../../assets/highlight.min.js"></script>
+  <script src="../../assets/article.js"></script>
+  <script src="../../assets/interact.js"></script>
+  <script src="../../assets/search.js"></script>
+  <script src="../../assets/giscus-config.js"></script>
+  <script src="../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

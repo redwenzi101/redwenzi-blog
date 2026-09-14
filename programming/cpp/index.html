@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C++ 新手进阶教材（边学边练）目录 · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../assets/article.css">
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="../../index.html">← 返回博客主页</a>
+      <h1>C++ 新手进阶教材</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · C++ · 13 章 · 98 道练习 · 📖 建议 4 周</div>
+    </header>
+
+    <article>
+<div class="tip">🎯 <b>这份教材是什么：</b>13 章、98 道编程练习的 C++ 进阶教材，从第一个程序讲到模板、STL、数据结构与算法思想。<b>每个知识点都配示例代码、运行结果和易错点；每道题都有可运行的参考代码。</b></div>
+      <div class="tip">🧰 <b>本次整理做了什么：</b>
+        <p style="margin:6px 0 0">① 修正原稿中 8 处题号与小节错位（题号现在严格等于“所在小节 + 序号”）；<br>
+        ② 每章综合练习换成真正跨知识点的新题，共 12 道，全部实测编译通过；<br>
+        ③ 示例代码补齐 <code>#include</code>，照抄就能编译；<br>
+        ④ 第 11 章的“运行结果”改为真实输出 + 单独的复杂度说明；<br>
+        ⑤ 新增第 12 章（调试、构建与测试）与第 13 章（排序、二叉树、图、并查集、复杂度速查）；<br>
+        ⑥ 补 6 张示意图，并修正附录学习计划的编号错位。</p>
+      </div>
+      <div class="warn">⚙️ <b>环境约定：</b>全书代码用 <code>g++ -std=c++17 -Wall -Wextra -Wpedantic</code> 实测通过，需要 C++17；命令示例以 Windows PowerShell / g++ 为主，macOS / Linux 把 <code>.\app.exe</code> 换成 <code>./app</code> 即可。</div>
+
+      <h2>📖 怎么用这份教材</h2>
+      <p>每 15~20 分钟完成一个学习单元，四步闭环：</p>
+      <ol>
+        <li><b>学（5 分钟）</b>：读知识讲解，碰到“示例代码”就亲手敲一遍，看运行结果是否和文里一致。</li>
+        <li><b>练（10 分钟）</b>：做本节练习。编译报错先自己读 3 分钟，想不出来再看提示。</li>
+        <li><b>对（2 分钟）</b>：展开题目的「查看参考答案与解析」核对；没一次跑通的题记进错题本。</li>
+        <li><b>复盘（每周日）</b>：连续错两次的题，不看答案重写一遍。</li>
+      </ol>
+      <p><b>过关标准：</b>必做题全部编译运行通过、输出与样例一致，才进入下一节；挑战题做不出来不卡进度，先标记，第 3 天回来重试。</p>
+
+      <h2>🗂️ 章节导航</h2>
+      <div class="chapters">
+        <a href="01-first-program.html"><b>第 1 章　先让程序跑起来</b><span>写下第一个程序、看懂编译过程、学会读报错</span><span style="display:block;margin-top:6px;color:#1f3a5f">7 道练习 · 点开阅读 →</span></a><a href="02-types-and-control.html"><b>第 2 章　变量、类型与流程控制</b><span>类型选对、初始化别踩坑、流程写清楚</span><span style="display:block;margin-top:6px;color:#1f3a5f">9 道练习 · 点开阅读 →</span></a><a href="03-functions-and-references.html"><b>第 3 章　函数与引用</b><span>把程序拆成函数，搞懂值/引用/指针三种传参</span><span style="display:block;margin-top:6px;color:#1f3a5f">7 道练习 · 点开阅读 →</span></a><a href="04-pointers-and-memory.html"><b>第 4 章　指针、数组与内存模型</b><span>指针与 const 的四组合、栈与堆、RAII 与智能指针</span><span style="display:block;margin-top:6px;color:#1f3a5f">9 道练习 · 点开阅读 →</span></a><a href="05-classes-and-objects.html"><b>第 5 章　类与对象</b><span>构造析构、拷贝控制、运算符重载与多态</span><span style="display:block;margin-top:6px;color:#1f3a5f">7 道练习 · 点开阅读 →</span></a><a href="06-templates.html"><b>第 6 章　模板与泛型编程</b><span>函数模板、类模板，以及模板为什么放头文件</span><span style="display:block;margin-top:6px;color:#1f3a5f">5 道练习 · 点开阅读 →</span></a><a href="07-stl-containers.html"><b>第 7 章　STL 容器与迭代器</b><span>vector 扩容、map/set 用法、迭代器失效</span><span style="display:block;margin-top:6px;color:#1f3a5f">7 道练习 · 点开阅读 →</span></a><a href="08-stl-algorithms.html"><b>第 8 章　STL 算法与常用编程范式</b><span>sort 与 lambda、erase-remove、二分函数</span><span style="display:block;margin-top:6px;color:#1f3a5f">5 道练习 · 点开阅读 →</span></a><a href="09-modern-cpp.html"><b>第 9 章　现代 C++ 特性</b><span>auto、结构化绑定、constexpr、异常处理</span><span style="display:block;margin-top:6px;color:#1f3a5f">5 道练习 · 点开阅读 →</span></a><a href="10-data-structures.html"><b>第 10 章　动手写数据结构</b><span>自己实现顺序表与单链表，并学会验证它</span><span style="display:block;margin-top:6px;color:#1f3a5f">7 道练习 · 点开阅读 →</span></a><a href="11-algorithm-patterns.html"><b>第 11 章　十个算法思想</b><span>双指针到动态规划，十种思想的模板与练习</span><span style="display:block;margin-top:6px;color:#1f3a5f">22 道练习 · 点开阅读 →</span></a><a href="12-debugging-build-test.html"><b>第 12 章　调试、构建与测试</b><span>警告/sanitizer/调试器/CMake/自动化测试</span><span style="display:block;margin-top:6px;color:#1f3a5f">4 道练习 · 点开阅读 →</span></a><a href="13-more-data-structures.html"><b>第 13 章　数据结构与算法补遗</b><span>四种排序、二叉树、图、并查集与复杂度速查</span><span style="display:block;margin-top:6px;color:#1f3a5f">4 道练习 · 点开阅读 →</span></a>
+      </div>
+
+      <h2>🗓️ 四周学习计划</h2>
+      <p>按每天 1~2 个单元推进；编号已与原教材小节一一对应。每天做完在下面表格里打个勾，错题记进自己的错题本。</p>
+      <table>
+        <thead><tr><th>周次</th><th>星期</th><th>今日单元</th></tr></thead>
+        <tbody><tr><td>第 1 周</td><td>周一</td><td>1.1 第一个程序 / 1.2 输入输出</td></tr><tr><td>第 1 周</td><td>周二</td><td>1.3 编译报错 / 2.1 变量与初始化</td></tr><tr><td>第 1 周</td><td>周三</td><td>2.2 基本类型与溢出 / 2.3 运算符与表达式</td></tr><tr><td>第 1 周</td><td>周四</td><td>2.4 流程控制 / 2.5 常量与编译期计算</td></tr><tr><td>第 1 周</td><td>周五</td><td>3.1 函数基础 / 3.2 参数传递</td></tr><tr><td>第 1 周</td><td>周六</td><td>3.3 多文件组织 + 第 1~3 章错题复习</td></tr><tr><td>第 1 周</td><td>周日</td><td>周复盘：连续错两次的题重写一遍</td></tr><tr><td>第 2 周</td><td>周一</td><td>4.1 指针与 const / 4.2 数组与 vector</td></tr><tr><td>第 2 周</td><td>周二</td><td>4.3 动态内存 / 4.4 RAII 与智能指针</td></tr><tr><td>第 2 周</td><td>周三</td><td>5.1 struct 与 class / 5.2 构造与析构</td></tr><tr><td>第 2 周</td><td>周四</td><td>5.3 拷贝控制 / 5.4 运算符重载</td></tr><tr><td>第 2 周</td><td>周五</td><td>5.5 继承与多态 / 6.1 函数模板</td></tr><tr><td>第 2 周</td><td>周六</td><td>6.2 类模板 / 7.1 vector 与迭代器</td></tr><tr><td>第 2 周</td><td>周日</td><td>复习第 4~7 章错题 + 周复盘</td></tr><tr><td>第 3 周</td><td>周一</td><td>7.2 map / set / 7.3 迭代器失效</td></tr><tr><td>第 3 周</td><td>周二</td><td>8.1 排序与 lambda / 8.2 erase-remove 与二分</td></tr><tr><td>第 3 周</td><td>周三</td><td>9.1 auto 与结构化绑定 / 9.2 constexpr 与异常</td></tr><tr><td>第 3 周</td><td>周四</td><td>10.1 顺序表 / 10.2 单链表</td></tr><tr><td>第 3 周</td><td>周五</td><td>10.3 调试与验证 / 11.1 双指针</td></tr><tr><td>第 3 周</td><td>周六</td><td>11.2 滑动窗口 / 11.3 哈希表</td></tr><tr><td>第 3 周</td><td>周日</td><td>复习第 8~10 章 + 11.1~11.3 + 周复盘</td></tr><tr><td>第 4 周</td><td>周一</td><td>11.4 前缀和 / 11.5 二分查找</td></tr><tr><td>第 4 周</td><td>周二</td><td>11.6 DFS / 11.7 BFS</td></tr><tr><td>第 4 周</td><td>周三</td><td>11.8 回溯 / 11.9 贪心</td></tr><tr><td>第 4 周</td><td>周四</td><td>11.10 动态规划 + 第 11 章综合练习</td></tr><tr><td>第 4 周</td><td>周五</td><td>第 12 章 调试、构建与测试</td></tr><tr><td>第 4 周</td><td>周六</td><td>第 13 章 数据结构与算法补遗</td></tr><tr><td>第 4 周</td><td>周日</td><td>总复盘：全册错题重写 + 整理错题本</td></tr></tbody>
+      </table>
+
+      <h2>✅ 全部练习题</h2>
+      <p>共 98 道（必做 / 挑战 / 综合三档），想按题目顺序刷可以进题目索引：</p>
+      <p><a href="problems.html">→ 打开全部 98 道练习索引</a></p>
+
+      <div class="tip"><b>📚 本文概念都在知识大全：</b>
+      <p style="margin-top:6px"><a href="../../knowledge/index.html#cpp-compile-link">编译与链接</a> ·
+      <a href="../../knowledge/index.html#stl">STL</a> ·
+      <a href="../../knowledge/index.html#raii">RAII</a> ·
+      <a href="../../knowledge/index.html#complexity">时间复杂度</a> ·
+      <a href="../../knowledge/index.html#gdb">调试器 GDB</a> ·
+      <a href="../../knowledge/index.html#cmake">CMake</a></p></div>
+    </article>
+
+  <script src="../../assets/highlight.min.js"></script>
+  <script src="../../assets/article.js"></script>
+  <script src="../../assets/interact.js"></script>
+  <script src="../../assets/search.js"></script>
+  <script src="../../assets/giscus-config.js"></script>
+  <script src="../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

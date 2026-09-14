@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第 1 章 先让程序跑起来 · C++ 新手进阶教材（1/13） · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../assets/article.css">
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="index.html">← C++ 教材目录（共 13 章）</a>
+      <h1>第 1 章　先让程序跑起来</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · C++ · 📖 预计阅读 24 分钟 · 共 7 道练习</div>
+    </header>
+
+    <article>
+<div class="tip">🎯 <b>本章你会学到：</b>写下第一个程序、看懂编译过程、学会读报错。建议边读边敲代码，每节的练习先自己做，再展开答案对照。</div>
+      <p>本章目标：跑通你的第一个 C++ 程序；看懂一个程序是怎么从源码变成可执行文件的；学会读报错、用编译选项。</p>
+      <h2 id="s-1-1">1.1 第一个程序</h2>
+      <p>先别管理论，把下面这个程序敲出来、编译、跑起来。这是所有 C++ 学习的起点。</p>
+      <h3>心智模型：C++ 为什么看着这么杂</h3>
+      <p>很多人学 C++ 觉得内容杂，是因为它同时背着三个时代：带类的 C（对象与继承）、模板（泛型）、现代特性（lambda、智能指针）。这三层会一直混在一起出现，你现在只需要知道它们存在，以后每学一个语法点，问一句“它是为哪一层服务的”，就不会乱。C++ 的设计哲学叫“零开销抽象”：你写的高级写法，运行时不该比手写底层代码慢。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　不用一次性搞懂所有特性。先学会写能跑的程序，特性逐个遇到再逐个学。</div>
+      <h3>从源码到可执行文件的四步</h3>
+      <p>一个 .cpp 文件变成能运行的程序，要经过四步：① 预处理：处理 #include、#define，本质是纯文本复制；② 编译：把每个 .cpp 单独翻译成机器码，得到 .o 目标文件；③ 汇编：转成机器码（通常和编译一起完成）；④ 链接：把所有目标文件和用到的库拼成可执行文件，这时才检查“某个函数到底有没有被实现”。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　由此产生 C++ 特有的两类错误：编译错误（语法、类型）和链接错误（函数没实现）。记住口诀：编译期看声明，链接期看定义。</div>
+      <h3>第一个程序逐行拆解</h3>
+      <p>下面每一行的作用：#include &lt;iostream&gt; 引入标准输入输出库（尖括号表示去系统目录找）；int main() 是程序入口，返回类型必须是 int（和 Java 的 void main 不同）；std::cout &lt;&lt; 表示把右边的数据送进输出流；&lt;&lt; 是运算符重载（同一个符号在整数运算里是左移，在这里叫插入运算符）；std::endl 是换行并刷新缓冲区；return 0 表示正常结束（省略也等价于 return 0）。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">#include &lt;iostream&gt;          // 标准输入输出流
+int main() {                 // 程序入口，返回类型必须是 int
+    std::cout &lt;&lt; "Hello, C++" &lt;&lt; std::endl;
+    return 0;                // 正常结束
+}</code></pre>
+      <div class="code-label">运行结果</div><pre><code class="language-text">Hello, C++</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　字符串必须用双引号；cout &lt;&lt; a &lt;&lt; b 不会自动加空格和换行，都要自己写。</div>
+      <h3>编译命令：每天都会用的一条</h3>
+      <p>手敲完代码后，在终端（PowerShell）里执行下面的命令编译并运行。这些开关的意思：-std=c++17 用 C++17 标准；-Wall -Wextra 打开大部分警告（C++ 里警告非常重要，很多错误只以警告形式出现）；-o hello 指定输出文件名。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">g++ -std=c++17 -Wall -Wextra -o hello hello.cpp
+.\hello.exe        # Windows PowerShell 运行</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　-Wall -Wextra 一定要一直开着。C++ 里不少“看起来能跑其实有问题”的代码只会在编译时给你一个 warning。</div>
+      <figure><svg viewBox="0 0 760 120" width="100%" role="img" aria-label="C++ 从源码到可执行文件的四步" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f3a5f"/></marker></defs><rect x="0" y="0" width="760" height="120" fill="#fbfaf7" rx="10"/><rect x="14" y="26" width="132" height="56" rx="8" fill="#fff" stroke="#1f3a5f" stroke-width="1.5"/><text x="80.0" y="59.0" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="13" font-weight="400" fill="#2b2b2b" text-anchor="middle"></text><text x="80.0" y="44" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="13" font-weight="600" fill="#2b2b2b" text-anchor="middle">hello.cpp</text><line x1="149" y1="54" x2="167" y2="54" stroke="#1f3a5f" stroke-width="1.6" marker-end="url(#ah)"/><rect x="170" y="26" width="132" height="56" rx="8" fill="#fff" stroke="#1f3a5f" stroke-width="1.5"/><text x="236.0" y="59.0" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="13" font-weight="400" fill="#2b2b2b" text-anchor="middle"></text><text x="236.0" y="44" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="13" font-weight="600" fill="#2b2b2b" text-anchor="middle">预处理</text><text x="236.0" y="66" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6a6a6a" text-anchor="middle">#include 展开</text><line x1="305" y1="54" x2="323" y2="54" stroke="#1f3a5f" stroke-width="1.6" marker-end="url(#ah)"/><rect x="326" y="26" width="132" height="56" rx="8" fill="#fff" stroke="#1f3a5f" stroke-width="1.5"/><text x="392.0" y="59.0" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="13" font-weight="400" fill="#2b2b2b" text-anchor="middle"></text><text x="392.0" y="44" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="13" font-weight="600" fill="#2b2b2b" text-anchor="middle">编译</text><text x="392.0" y="66" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6a6a6a" text-anchor="middle">生成汇编</text><line x1="461" y1="54" x2="479" y2="54" stroke="#1f3a5f" stroke-width="1.6" marker-end="url(#ah)"/><rect x="482" y="26" width="132" height="56" rx="8" fill="#fff" stroke="#1f3a5f" stroke-width="1.5"/><text x="548.0" y="59.0" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="13" font-weight="400" fill="#2b2b2b" text-anchor="middle"></text><text x="548.0" y="44" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="13" font-weight="600" fill="#2b2b2b" text-anchor="middle">汇编</text><text x="548.0" y="66" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6a6a6a" text-anchor="middle">生成 .o</text><line x1="617" y1="54" x2="635" y2="54" stroke="#1f3a5f" stroke-width="1.6" marker-end="url(#ah)"/><rect x="638" y="26" width="132" height="56" rx="8" fill="#fff" stroke="#1f3a5f" stroke-width="1.5"/><text x="704.0" y="59.0" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="13" font-weight="400" fill="#2b2b2b" text-anchor="middle"></text><text x="704.0" y="44" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="13" font-weight="600" fill="#2b2b2b" text-anchor="middle">链接</text><text x="704.0" y="66" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6a6a6a" text-anchor="middle">拼成可执行</text><text x="14" y="105" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="12" fill="#c9a227">编译期只管声明；链接期才检查定义——"函数没实现"属于链接错误</text></svg><figcaption>图 1：一个 .cpp 到可执行文件要经过的四步，以及每一步的报错类型</figcaption></figure>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-1-1-1">
+      <div class="ex-head"><span class="ex-id">1.1.1</span><span class="badge easy">必做</span><span class="ex-title">输出我的名片</span></div>
+      <p>写一个程序，第一行输出你的名字，第二行输出“开始学 C++ 啦”，每行都要换行。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　两行，第一行是你的名字，第二行是“开始学 C++ 啦”。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>小明
+开始学 C++ 啦</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　用 std::cout，结尾用 '\n' 换行。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+int main() {
+    std::cout &lt;&lt; "小明" &lt;&lt; '\n';
+    std::cout &lt;&lt; "开始学 C++ 啦\n";
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　字符串必须用双引号包住；'\n' 是换行字符。</p></details>
+      </section>
+      <section class="ex" id="ex-1-1-2">
+      <div class="ex-head"><span class="ex-id">1.1.2</span><span class="badge hard">挑战</span><span class="ex-title">链式输出</span></div>
+      <p>用一条 std::cout 语句输出三个数 1、2、3，要求数字之间用一个空格隔开，最后换行。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　1 2 3（空格分隔，末尾换行）。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>1 2 3</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　cout 不会自动加空格，需要自己写 ' '。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+int main() {
+    std::cout &lt;&lt; 1 &lt;&lt; ' ' &lt;&lt; 2 &lt;&lt; ' ' &lt;&lt; 3 &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　cout &lt;&lt; a &lt;&lt; b 输出的是紧挨着的两个值，分隔符要自己加。</p></details>
+      </section>
+      <h2 id="s-1-2">1.2 输入输出</h2>
+      <p>输入输出是新手最容易卡住的地方，因为报错往往看不出原因。这一节把最常见的写法直接记住。</p>
+      <h3>cout：流，不是拼接</h3>
+      <p>std::cout 是一个“输出流”对象，&lt;&lt; 把数据一件一件送进去。注意它不会自动加空格、不会自动换行——cout &lt;&lt; 1 &lt;&lt; 2 输出的是 12，不是 1 2。分隔符要自己写。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　endl 会刷新缓冲区，大量输出时比 '\n' 慢很多，算法题里统一用 '\n'。</div>
+      <h3>cin：读入的两种方式</h3>
+      <p>std::cin &gt;&gt; a &gt;&gt; b 会跳过所有空白字符（空格、换行、制表）再读入；而 std::getline 读一整行（读到换行为止），适合含空格的文字。两者混用有一个经典坑：cin &gt;&gt; n 之后缓冲区里还留着一个换行符，直接 getline 会读到一个空串。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+int main() {
+    int n;
+    std::string line;
+    std::cin &gt;&gt; n;
+    std::cin.ignore();              // 吃掉 n 后面遗留的换行符
+    std::getline(std::cin, line);   // 读一整行（可含空格）
+    std::cout &lt;&lt; n &lt;&lt; '\n' &lt;&lt; line &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+      <div class="code-label">运行结果</div><pre><code class="language-text">5
+hello world</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　cin &gt;&gt; x 读字符串遇到空白就停，所以“hello world”只会读到 hello；要整行必须 getline。</div>
+      <p>输入加速两行（算法题必备）</p>
+      <p>写算法题时在 main 开头加上这两行，cin/cout 会快很多：std::ios::sync_with_stdio(false) 关闭与 C 标准库的同步；std::cin.tie(nullptr) 解除 cin 与 cout 的绑定。另外格式化输出用 &lt;iomanip&gt; 的 fixed 和 setprecision。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+int main() {
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    double pi = 3.14159265;
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(3) &lt;&lt; pi &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+      <div class="code-label">运行结果</div><pre><code class="language-text">3.142</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　printf 和 cin 不要混用，混用后输出顺序可能错乱。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-1-2-1">
+      <div class="ex-head"><span class="ex-id">1.2.1</span><span class="badge easy">必做</span><span class="ex-title">两数之和</span></div>
+      <p>读入两个整数 a 和 b，输出 a + b 的结果。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　一行两个整数 a b。</p><p class="io-line"><b>输出</b>　一个整数，a 与 b 的和。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>3 5</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>8</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　std::cin &gt;&gt; a &gt;&gt; b; 一次读两个数。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+int main() {
+    int a, b;
+    std::cin &gt;&gt; a &gt;&gt; b;
+    std::cout &lt;&lt; a + b &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　cin 会自动跳过空格和换行，所以一行读两个数很简单。</p></details>
+      </section>
+      <section class="ex" id="ex-1-2-2">
+      <div class="ex-head"><span class="ex-id">1.2.2</span><span class="badge hard">挑战</span><span class="ex-title">带空格的整行</span></div>
+      <p>先读入一个整数 n，再读入一整行文字（可能含空格），把 n 和这行文字各输出一行。注意：n 后面紧跟的换行不能影响 getline。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　第一行整数 n；第二行一行文字（可含空格）。</p><p class="io-line"><b>输出</b>　第一行输出 n，第二行原样输出文字。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>5
+hello world</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>5
+hello world</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　cin &gt;&gt; n 会把换行符留在缓冲区，需要 std::cin.ignore() 吃掉它再 getline。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+int main() {
+    int n;
+    std::string line;
+    std::cin &gt;&gt; n;
+    std::cin.ignore();              // 吃掉 n 后面遗留的换行符
+    std::getline(std::cin, line);   // 读一整行
+    std::cout &lt;&lt; n &lt;&lt; '\n';
+    std::cout &lt;&lt; line &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　这是 cin 和 getline 混用的经典坑：&gt;&gt; 不消耗换行，ignore() 专门用来丢弃它。</p></details>
+      </section>
+      <h2 id="s-1-3">1.3 编译报错与调试习惯</h2>
+      <p>报错信息是学习 C++ 最直接的老师。学会读报错，能省下你 80% 的卡壳时间。</p>
+      <h3>读报错的两个习惯</h3>
+      <p>第一，先看第一条错误，不要看最后一条——后面的错误经常是第一条引发的连锁反应。第二，先看文件名和行号，再看描述。编译器提示的位置有时会偏移一行，比如“缺少分号”往往指的是上一行末尾。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　一次修一个错误，改完重新编译。不要一次性改十处，否则不知道哪处修对了哪处改坏了。</div>
+      <h3>警告就是潜在的错误</h3>
+      <p>C++ 里很多错误只以警告形式出现（比如 if (x = 5) 永远为真、变量未初始化）。打开 -Wall -Wextra 后，见到 warning 就修，不要无视。养成“零警告”的习惯，比什么都值。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　区别 warning 和 error：error 编译不过，warning 能编译但大概率有隐患。两者都要处理。</div>
+      <h3>手敲，不要复制粘贴</h3>
+      <p>learncpp 和几乎所有优秀教程都强调：示例代码要亲手敲一遍。手敲会让你熟悉常见错误（漏分号、方向写反、括号不配对），也能让你熟悉各种报错信息长什么样。敲完再试着改改数字、改改逻辑，观察输出变化——改代码比抄代码学得快。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　遇到报错先自己读 3 分钟，想不出来再看答案。直接抄答案 = 没练到。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-1-3-1">
+      <div class="ex-head"><span class="ex-id">1.3.1</span><span class="badge easy">必做</span><span class="ex-title">修好这段代码</span></div>
+      <p>下面这段代码编译不过（有 3 处错误），请手敲一遍，修复后编译运行，让它输出 Hello, C++。</p>
+      <div class="code-label">坏代码（有 3 处错误）</div><pre><code class="language-cpp">#include &lt;iostream&gt;
+int main() {
+    std::cout &gt;&gt; "Hello, C++" &lt;&lt; std::endl   // 3 处错误
+    return 0;
+}</code></pre>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　Hello, C++</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>Hello, C++</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　错误藏在：缺头文件、&gt;&gt; 方向、缺分号。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+int main() {
+    std::cout &lt;&lt; "Hello, C++" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　三处错误：1) 缺 #include &lt;iostream&gt;；2) &lt;&lt; 方向写反成 &gt;&gt;；3) 缺分号。修复后零错误零警告。</p></details>
+      </section>
+      <section class="ex" id="ex-1-3-2">
+      <div class="ex-head"><span class="ex-id">1.3.2</span><span class="badge hard">挑战</span><span class="ex-title">零警告编译</span></div>
+      <p>写一个程序输出 Hello, C++，然后用这条命令编译，要求零警告零错误：g++ -std=c++17 -Wall -Wextra -o hello hello.cpp</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　Hello, C++</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>Hello, C++</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　-Wall -Wextra 会打开大部分警告；如果看到 warning 就要修。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+int main() {
+    std::cout &lt;&lt; "Hello, C++" &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　C++ 里很多错误只以警告形式出现，养成零警告编译的习惯。</p></details>
+      </section>
+      <h2 id="summary">本章小结</h2>
+      <ul class="recap"><li>C++ 程序四步变成可执行文件：预处理 → 编译 → 汇编 → 链接；编译期看声明，链接期看定义。</li><li>cout 不会自动加空格换行；cin 跳过空白、getline 读整行，混用要 cin.ignore()。</li><li>编译命令 g++ -std=c++17 -Wall -Wextra 要一直开着，警告必须处理。</li><li>代码亲手敲、报错先读第一条、一次修一个错误。</li></ul>
+      <h2 id="combo">🧩 本章综合练习</h2>
+      <p>这几道题把本章多个知识点串起来，建议合上资料独立完成，再展开答案对照。</p>
+      <section class="ex" id="ex-1-A">
+      <div class="ex-head"><span class="ex-id">1.A</span><span class="badge hard">综合</span><span class="ex-title">命令行名片卡：cin / getline / 格式化输出</span></div>
+      <p>读入一个整数 n（1~5），再读入 n 行文字（每行可能含空格），按格式输出。这道题把第 1 章的三个坑一次踩全：cin 和 getline 混用要 ignore、换行要自己写、输出格式要严格对齐。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　第一行一个整数 n；接下来 n 行，每行一段文字（可含空格）。</p><p class="io-line"><b>输出</b>　第 1 行 <code>n=数字</code>；之后 n 行 <code>line i: 内容</code>（i 从 1 开始）。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>3
+hello world
+C++ 新手
+第四天</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>n=3
+line 1: hello world
+line 2: C++ 新手
+line 3: 第四天</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　cin &gt;&gt; n 之后缓冲区还留着换行，必须 std::cin.ignore() 再 getline。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+int main() {
+    int n{};
+    std::cin &gt;&gt; n;
+    std::cin.ignore();                 // 吃掉 n 后面的换行
+    std::cout &lt;&lt; "n=" &lt;&lt; n &lt;&lt; '\n';
+    for (int i = 1; i &lt;= n; ++i) {
+        std::string line;
+        std::getline(std::cin, line);  // 读一整行，保留空格
+        std::cout &lt;&lt; "line " &lt;&lt; i &lt;&lt; ": " &lt;&lt; line &lt;&lt; '\n';
+    }
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　cin &gt;&gt; 跳过空白、getline 读整行，两者混用必须先 ignore。用 '\n' 而不是 endl，大量输出时更快。</p></details>
+      </section>
+      <div class="tip"><b>📚 本文概念都在知识大全：</b><p style="margin-top:6px"><a href="../../knowledge/index.html#cpp-compile-link">编译与链接</a> · <a href="../../knowledge/index.html#gpp-flags">编译选项</a> · <a href="../../knowledge/index.html#io-stream">输入输出流</a> · <a href="../../knowledge/index.html#header-include">头文件</a></p></div>
+      <div class="lesson-nav"><a href="index.html">← 返回教材目录</a><a href="02-types-and-control.html">下一章：第 2 章 变量、类型与流程控制 →</a></div>
+    </article>
+
+  <script src="../../assets/highlight.min.js"></script>
+  <script src="../../assets/article.js"></script>
+  <script src="../../assets/interact.js"></script>
+  <script src="../../assets/search.js"></script>
+  <script src="../../assets/giscus-config.js"></script>
+  <script src="../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

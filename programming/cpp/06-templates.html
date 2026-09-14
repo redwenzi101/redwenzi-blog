@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第 6 章 模板与泛型编程 · C++ 新手进阶教材（6/13） · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../assets/article.css">
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="index.html">← C++ 教材目录（共 13 章）</a>
+      <h1>第 6 章　模板与泛型编程</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · C++ · 📖 预计阅读 24 分钟 · 共 5 道练习</div>
+    </header>
+
+    <article>
+<div class="tip">🎯 <b>本章你会学到：</b>函数模板、类模板，以及模板为什么放头文件。建议边读边敲代码，每节的练习先自己做，再展开答案对照。</div>
+      <p>模板是 C++ 泛型的基础，也是标准库能同时支持 vector&lt;int&gt;、vector&lt;double&gt;、vector&lt;string&gt; 的原因。数据结构课上你会被要求“用模板实现一个顺序表”，这一章要理解得比别人多一点。</p>
+      <h2 id="s-6-1">6.1 函数模板</h2>
+      <p>心智模型：模板不是一份“能装任何类型的代码”，而是编译器按类型生成具体代码的模具。</p>
+      <h3>从重复代码到模板</h3>
+      <p>C 语言里只能为每种类型写一份 max 函数；模板让你写一份：template &lt;typename T&gt; T maxOf(T a, T b)。编译器在调用处自动推导类型并实例化：写了 maxOf(3, 5) 就生成 int 版本，写了 maxOf(1.5, 2.5) 就再生成 double 版本。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+template &lt;typename T&gt;
+T maxOf(T a, T b) { return a &gt; b ? a : b; }
+int main() {
+    std::cout &lt;&lt; maxOf(3, 5) &lt;&lt; '\n';            // 实例化为 maxOf&lt;int&gt;
+    std::cout &lt;&lt; maxOf(1.5, 2.5) &lt;&lt; '\n';        // maxOf&lt;double&gt;
+    std::cout &lt;&lt; maxOf(std::string("ab"), std::string("cd"));
+}</code></pre>
+      <div class="code-label">运行结果</div><pre><code class="language-text">5
+2.5
+cd</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　typename 和 class 在模板参数里等价。这不是“运行时多态”，是编译期生成代码。</div>
+      <p>为什么 C++ 模板比 Java 泛型“真”</p>
+      <p>Java 的泛型是擦除过的：ArrayList&lt;Integer&gt; 底层是 Object[]，每次取值要转换。C++ 的 vector&lt;int&gt; 就是一片连续的 int，没有一层间接。这是算法竞赛和数据结构课偏爱 C++ 的原因之一。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　类模板的类型参数不能省略：必须写 std::vector&lt;int&gt;（C++17 起部分场景可推导）。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-6-1-1">
+      <div class="ex-head"><span class="ex-id">6.1.1</span><span class="badge easy">必做</span><span class="ex-title">模板求最大值</span></div>
+      <p>写模板函数 template &lt;typename T&gt; T maxOf(T a, T b)，分别用 int、double、std::string 调用并输出。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　三行：5、2.5、cd。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>5
+2.5
+cd</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　std::string 的 &gt; 比较字典序。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+template &lt;typename T&gt;
+T maxOf(T a, T b) { return a &gt; b ? a : b; }
+int main() {
+    std::cout &lt;&lt; maxOf(3, 5) &lt;&lt; '\n';
+    std::cout &lt;&lt; maxOf(1.5, 2.5) &lt;&lt; '\n';
+    std::cout &lt;&lt; maxOf(std::string("ab"), std::string("cd")) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　同一份模板自动适配三种类型，编译器在调用处实例化出具体版本。</p></details>
+      </section>
+      <section class="ex" id="ex-6-1-2">
+      <div class="ex-head"><span class="ex-id">6.1.2</span><span class="badge hard">挑战</span><span class="ex-title">模板求和</span></div>
+      <p>写模板函数 template &lt;typename T&gt; T sumOf(const std::vector&lt;T&gt;&amp; v) 求 vector 元素之和，分别用 vector&lt;int&gt; 和 vector&lt;double&gt; 测试。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　两行：15、7.5。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>15
+7.5</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　遍历用范围 for，累加到 T 类型的变量。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+template &lt;typename T&gt;
+T sumOf(const std::vector&lt;T&gt;&amp; v) {
+    T sum = T{};
+    for (const T&amp; x : v) { sum += x; }
+    return sum;
+}
+int main() {
+    std::vector&lt;int&gt; vi{1, 2, 3, 4, 5};
+    std::vector&lt;double&gt; vd{1.5, 2.5, 3.5};
+    std::cout &lt;&lt; sumOf(vi) &lt;&lt; '\n';
+    std::cout &lt;&lt; sumOf(vd) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　T{} 得到该类型的零值；const T&amp; 避免拷贝。</p></details>
+      </section>
+      <h2 id="s-6-2">6.2 类模板与“必须放头文件”</h2>
+      <p>这是模板最反直觉的规则：普通函数声明放头文件、定义放 .cpp；模板刚好相反。</p>
+      <h3>模板必须写在头文件里</h3>
+      <p>模板只有被实例化时才生成真正的代码，而实例化发生在使用它的那个源文件里——编译器必须能看到完整定义才能生成代码。所以模板类/函数的声明和定义都放头文件。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">#include &lt;vector&gt;
+template &lt;typename T&gt;
+class Stack {
+public:
+    void push(const T&amp; v) { data_.push_back(v); }
+    void pop() { if (!data_.empty()) { data_.pop_back(); } }
+    T&amp; top() { return data_.back(); }
+    bool empty() const { return data_.empty(); }
+private:
+    std::vector&lt;T&gt; data_;
+};
+int main() { Stack&lt;int&gt; st; st.push(1); }</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　如果确实想分开，工程做法是 .tpp 文件放定义、头文件末尾 #include 进来；或显式实例化 template class Stack&lt;int&gt;;</div>
+      <h3>非类型模板参数</h3>
+      <p>template &lt;typename T, std::size_t N&gt; 里的 N 是编译期整数，直接写在类型里：FixedArray&lt;double, 8&gt; buf;。它让数组长度成为类型的一部分。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　可变参数模板（typename... Args）和折叠表达式是标准库基础设施，知道存在、能看懂就行，数据结构课不需要自己写。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-6-2-1">
+      <div class="ex-head"><span class="ex-id">6.2.1</span><span class="badge easy">必做</span><span class="ex-title">模板栈 Stack</span></div>
+      <p>用 std::vector&lt;T&gt; 作底层写模板类 Stack&lt;T&gt;，实现 push、pop、top、empty。main 里用 Stack&lt;int&gt; 压入 1、2，输出栈顶，再 pop 后输出栈顶。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　两行：2、1。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>2
+1</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　pop 前检查 empty()。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+template &lt;typename T&gt;
+class Stack {
+public:
+    void push(const T&amp; v) { data_.push_back(v); }
+    void pop() { if (!data_.empty()) { data_.pop_back(); } }
+    T&amp; top() { return data_.back(); }
+    bool empty() const { return data_.empty(); }
+private:
+    std::vector&lt;T&gt; data_;
+};
+int main() {
+    Stack&lt;int&gt; st;
+    st.push(1);
+    st.push(2);
+    std::cout &lt;&lt; st.top() &lt;&lt; '\n';   // 2
+    st.pop();
+    std::cout &lt;&lt; st.top() &lt;&lt; '\n';   // 1
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　类模板必须写出具体类型 Stack&lt;int&gt;；成员的类型依赖 T。</p></details>
+      </section>
+      <section class="ex" id="ex-6-2-2">
+      <div class="ex-head"><span class="ex-id">6.2.2</span><span class="badge hard">挑战</span><span class="ex-title">模板栈适配字符串</span></div>
+      <p>复用上面写好的 Stack 模板类，这次压入两个 std::string（"hi"、"yo"），输出栈顶，pop 后再输出。体会“一份模板类，int 和 string 都能用”。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　两行：yo、hi。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>yo
+hi</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　Stack&lt;std::string&gt; ss; 即可，代码其他部分不用改。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+template &lt;typename T&gt;
+class Stack {
+public:
+    void push(const T&amp; v) { data_.push_back(v); }
+    void pop() { if (!data_.empty()) { data_.pop_back(); } }
+    T&amp; top() { return data_.back(); }
+    bool empty() const { return data_.empty(); }
+private:
+    std::vector&lt;T&gt; data_;
+};
+int main() {
+    Stack&lt;std::string&gt; ss;
+    ss.push("hi");
+    ss.push("yo");
+    std::cout &lt;&lt; ss.top() &lt;&lt; '\n';   // yo
+    ss.pop();
+    std::cout &lt;&lt; ss.top() &lt;&lt; '\n';   // hi
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　模板类实例化时编译器为 string 生成一份新代码，这就是泛型复用。</p></details>
+      </section>
+      <h2 id="summary">本章小结</h2>
+      <ul class="recap"><li>模板=编译期模具：一次编写，按类型实例化生成多份代码。</li><li>函数模板自动推导类型；类模板必须写出具体类型。</li><li>模板的完整定义必须放在头文件里（实例化发生在使用处）。</li></ul>
+      <h2 id="combo">🧩 本章综合练习</h2>
+      <p>这几道题把本章多个知识点串起来，建议合上资料独立完成，再展开答案对照。</p>
+      <section class="ex" id="ex-6-A">
+      <div class="ex-head"><span class="ex-id">6.A</span><span class="badge hard">综合</span><span class="ex-title">写一个通用的 Stack&lt;T&gt;：模板类 + 模板函数</span></div>
+      <p>实现模板类 Stack&lt;T&gt;（push / pop / top / empty / size，空栈操作抛异常），再写模板函数 maxOf(const std::vector&lt;T&gt;&amp;)。main 里分别用 int 和 std::string 实例化，验证同一份代码能处理不同类型。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　第一行整数 n；第二行 n 个整数；第三行整数 m；第四行 m 个单词。</p><p class="io-line"><b>输出</b>　四行：<code>size=n</code>、<code>int stack: ...</code>、<code>string stack: ...</code>、<code>max=最大值</code>（栈内元素按栈顶到栈底输出）。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>3
+5 1 9
+2
+hi yo</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>size=3
+int stack: 9 1 5
+string stack: yo hi
+max=9</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　模板定义要放在调用之前（通常在头文件里）；空栈操作抛异常，不要返回垃圾值。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;cstddef&gt;
+#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+template &lt;typename T&gt;
+class Stack {
+public:
+    void push(const T&amp; v) { data_.push_back(v); }
+
+    void pop() {
+        if (data_.empty()) { throw std::runtime_error("pop from empty stack"); }
+        data_.pop_back();
+    }
+
+    const T&amp; top() const {
+        if (data_.empty()) { throw std::runtime_error("top of empty stack"); }
+        return data_.back();
+    }
+
+    bool empty() const { return data_.empty(); }
+    std::size_t size() const { return data_.size(); }
+
+private:
+    std::vector&lt;T&gt; data_;
+};
+
+template &lt;typename T&gt;
+T maxOf(const std::vector&lt;T&gt;&amp; v) {
+    if (v.empty()) { throw std::runtime_error("empty vector"); }
+    T best = v[0];
+    for (const T&amp; x : v) {
+        if (best &lt; x) { best = x; }
+    }
+    return best;
+}
+
+int main() {
+    int n{};
+    std::cin &gt;&gt; n;
+    std::vector&lt;int&gt; vi(n);
+    Stack&lt;int&gt; si;
+    for (int i = 0; i &lt; n; ++i) {
+        std::cin &gt;&gt; vi[i];
+        si.push(vi[i]);
+    }
+    std::cout &lt;&lt; "size=" &lt;&lt; si.size() &lt;&lt; '\n';
+    std::cout &lt;&lt; "int stack:";
+    while (!si.empty()) {
+        std::cout &lt;&lt; ' ' &lt;&lt; si.top();
+        si.pop();
+    }
+    std::cout &lt;&lt; '\n';
+
+    int m{};
+    std::cin &gt;&gt; m;
+    Stack&lt;std::string&gt; ss;
+    for (int i = 0; i &lt; m; ++i) {
+        std::string s;
+        std::cin &gt;&gt; s;
+        ss.push(s);
+    }
+    std::cout &lt;&lt; "string stack:";
+    while (!ss.empty()) {
+        std::cout &lt;&lt; ' ' &lt;&lt; ss.top();
+        ss.pop();
+    }
+    std::cout &lt;&lt; '\n';
+
+    std::cout &lt;&lt; "max=" &lt;&lt; maxOf(vi) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　模板让 Stack&lt;int&gt; 和 Stack&lt;std::string&gt; 由编译器各生成一份；这也是标准库 vector 能装任何类型的原因。</p></details>
+      </section>
+      <div class="tip"><b>📚 本文概念都在知识大全：</b><p style="margin-top:6px"><a href="../../knowledge/index.html#template">模板</a> · <a href="../../knowledge/index.html#odr">ODR 单一定义规则</a></p></div>
+      <div class="lesson-nav"><a href="05-classes-and-objects.html">← 上一章：第 5 章 类与对象</a><a href="07-stl-containers.html">下一章：第 7 章 STL 容器与迭代器 →</a></div>
+    </article>
+
+  <script src="../../assets/highlight.min.js"></script>
+  <script src="../../assets/article.js"></script>
+  <script src="../../assets/interact.js"></script>
+  <script src="../../assets/search.js"></script>
+  <script src="../../assets/giscus-config.js"></script>
+  <script src="../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

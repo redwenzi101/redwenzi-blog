@@ -4,8 +4,114 @@
   <subtitle>数据、AI、服务器与建站笔记</subtitle>
   <link href="https://redwenzi-blog.pages.dev/"/>
   <id>https://redwenzi-blog.pages.dev/</id>
-  <updated>2026-09-10T00:00:00Z</updated>
+  <updated>2026-09-15T00:00:00Z</updated>
   <author><name>red wenzi</name></author>
+
+  <entry>
+    <title>编程语言分享 · C / C++ / Java / Python 学习路线</title>
+    <link href="https://redwenzi-blog.pages.dev/programming/index.html"/>
+    <id>https://redwenzi-blog.pages.dev/programming/index.html</id>
+    <updated>2026-09-15T00:00:00Z</updated>
+    <summary>新建的学习线：C → C++ → Java → Python，C++ 教材已上线，其余三门规划中。</summary>
+  </entry>
+  <entry>
+    <title>C++ 新手进阶教材（边学边练）· 目录</title>
+    <link href="https://redwenzi-blog.pages.dev/programming/cpp/index.html"/>
+    <id>https://redwenzi-blog.pages.dev/programming/cpp/index.html</id>
+    <updated>2026-09-15T00:00:00Z</updated>
+    <summary>13 章 98 道练习的 C++ 教材：怎么用、四周学习计划、章节导航与全部练习索引。</summary>
+  </entry>
+  <entry>
+    <title>第 1 章 先让程序跑起来</title>
+    <link href="https://redwenzi-blog.pages.dev/programming/cpp/01-first-program.html"/>
+    <id>https://redwenzi-blog.pages.dev/programming/cpp/01-first-program.html</id>
+    <updated>2026-09-15T00:00:00Z</updated>
+    <summary>第一个程序、输入输出、编译报错与调试习惯。</summary>
+  </entry>
+  <entry>
+    <title>第 2 章 变量、类型与流程控制</title>
+    <link href="https://redwenzi-blog.pages.dev/programming/cpp/02-types-and-control.html"/>
+    <id>https://redwenzi-blog.pages.dev/programming/cpp/02-types-and-control.html</id>
+    <updated>2026-09-15T00:00:00Z</updated>
+    <summary>四种初始化、类型与溢出、运算符、流程控制、constexpr。</summary>
+  </entry>
+  <entry>
+    <title>第 3 章 函数与引用</title>
+    <link href="https://redwenzi-blog.pages.dev/programming/cpp/03-functions-and-references.html"/>
+    <id>https://redwenzi-blog.pages.dev/programming/cpp/03-functions-and-references.html</id>
+    <updated>2026-09-15T00:00:00Z</updated>
+    <summary>声明与定义、重载、值/引用/指针传参、命名空间与多文件组织。</summary>
+  </entry>
+  <entry>
+    <title>第 4 章 指针、数组与内存模型</title>
+    <link href="https://redwenzi-blog.pages.dev/programming/cpp/04-pointers-and-memory.html"/>
+    <id>https://redwenzi-blog.pages.dev/programming/cpp/04-pointers-and-memory.html</id>
+    <updated>2026-09-15T00:00:00Z</updated>
+    <summary>指针与 const 的四种组合、数组退化、new/delete、RAII 与智能指针。</summary>
+  </entry>
+  <entry>
+    <title>第 5 章 类与对象</title>
+    <link href="https://redwenzi-blog.pages.dev/programming/cpp/05-classes-and-objects.html"/>
+    <id>https://redwenzi-blog.pages.dev/programming/cpp/05-classes-and-objects.html</id>
+    <updated>2026-09-15T00:00:00Z</updated>
+    <summary>构造析构、拷贝控制与五法则、运算符重载、继承与多态。</summary>
+  </entry>
+  <entry>
+    <title>第 6 章 模板与泛型编程</title>
+    <link href="https://redwenzi-blog.pages.dev/programming/cpp/06-templates.html"/>
+    <id>https://redwenzi-blog.pages.dev/programming/cpp/06-templates.html</id>
+    <updated>2026-09-15T00:00:00Z</updated>
+    <summary>函数模板、类模板、模板为什么必须放头文件。</summary>
+  </entry>
+  <entry>
+    <title>第 7 章 STL 容器与迭代器</title>
+    <link href="https://redwenzi-blog.pages.dev/programming/cpp/07-stl-containers.html"/>
+    <id>https://redwenzi-blog.pages.dev/programming/cpp/07-stl-containers.html</id>
+    <updated>2026-09-15T00:00:00Z</updated>
+    <summary>vector 扩容、map/set、容器适配器与迭代器失效。</summary>
+  </entry>
+  <entry>
+    <title>第 8 章 STL 算法与常用编程范式</title>
+    <link href="https://redwenzi-blog.pages.dev/programming/cpp/08-stl-algorithms.html"/>
+    <id>https://redwenzi-blog.pages.dev/programming/cpp/08-stl-algorithms.html</id>
+    <updated>2026-09-15T00:00:00Z</updated>
+    <summary>sort 与 lambda、erase-remove 惯用法、三个二分函数的分工。</summary>
+  </entry>
+  <entry>
+    <title>第 9 章 现代 C++ 特性</title>
+    <link href="https://redwenzi-blog.pages.dev/programming/cpp/09-modern-cpp.html"/>
+    <id>https://redwenzi-blog.pages.dev/programming/cpp/09-modern-cpp.html</id>
+    <updated>2026-09-15T00:00:00Z</updated>
+    <summary>auto、结构化绑定、constexpr、异常处理。</summary>
+  </entry>
+  <entry>
+    <title>第 10 章 动手写数据结构</title>
+    <link href="https://redwenzi-blog.pages.dev/programming/cpp/10-data-structures.html"/>
+    <id>https://redwenzi-blog.pages.dev/programming/cpp/10-data-structures.html</id>
+    <updated>2026-09-15T00:00:00Z</updated>
+    <summary>顺序表与单链表的完整实现，以及调试与随机对拍。</summary>
+  </entry>
+  <entry>
+    <title>第 11 章 十个算法思想</title>
+    <link href="https://redwenzi-blog.pages.dev/programming/cpp/11-algorithm-patterns.html"/>
+    <id>https://redwenzi-blog.pages.dev/programming/cpp/11-algorithm-patterns.html</id>
+    <updated>2026-09-15T00:00:00Z</updated>
+    <summary>双指针、滑动窗口、哈希表、前缀和、二分、DFS、BFS、回溯、贪心、动态规划。</summary>
+  </entry>
+  <entry>
+    <title>第 12 章 调试、构建与测试</title>
+    <link href="https://redwenzi-blog.pages.dev/programming/cpp/12-debugging-build-test.html"/>
+    <id>https://redwenzi-blog.pages.dev/programming/cpp/12-debugging-build-test.html</id>
+    <updated>2026-09-15T00:00:00Z</updated>
+    <summary>警告与 sanitizer、GDB 调试、CMake 多文件工程、最小自动化测试。</summary>
+  </entry>
+  <entry>
+    <title>第 13 章 数据结构与算法补遗</title>
+    <link href="https://redwenzi-blog.pages.dev/programming/cpp/13-more-data-structures.html"/>
+    <id>https://redwenzi-blog.pages.dev/programming/cpp/13-more-data-structures.html</id>
+    <updated>2026-09-15T00:00:00Z</updated>
+    <summary>四种排序、二叉树与 BST、图的存储与遍历、并查集、复杂度速查表。</summary>
+  </entry>
 
   <entry>
     <title>AI 是什么？它能做什么？</title>

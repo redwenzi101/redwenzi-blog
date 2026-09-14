@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第 4 章 指针、数组与内存模型 · C++ 新手进阶教材（4/13） · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../assets/article.css">
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="index.html">← C++ 教材目录（共 13 章）</a>
+      <h1>第 4 章　指针、数组与内存模型</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · C++ · 📖 预计阅读 35 分钟 · 共 9 道练习</div>
+    </header>
+
+    <article>
+<div class="tip">🎯 <b>本章你会学到：</b>指针与 const 的四组合、栈与堆、RAII 与智能指针。建议边读边敲代码，每节的练习先自己做，再展开答案对照。</div>
+      <p>本章目标是数据结构课的地基：把指针的 const 组合分清、搞懂数组退化、会用 new/delete、理解 RAII 和智能指针——这是写链表、树、图时不担心内存泄漏的关键。</p>
+      <h2 id="s-4-1">4.1 指针与 const</h2>
+      <p>心智模型：指针是“门牌号”，告诉你东西在哪。问题在于——这个门牌号本身能不能改？门牌号指向的东西能不能改？</p>
+      <h3>const 的四种组合</h3>
+      <p>const int* p：指向常量的指针，不能通过 p 改值，但能改指向；int* const p：常量指针，能改值，但不能改指向；const int* const p：两者都不能；int* p：都能。记不住就往回读：const 默认修饰它左边最近的东西，左边没东西就修饰右边的词。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">int a = 1, b = 2;
+const int* p = &amp;a;    // 不能 *p = 20（改值），但 p = &amp;b 合法
+int* const q = &amp;a;    // *q = 30 合法，但 q = &amp;b 编译错误</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　int* pa, pb; 的坑：pa 是 int*，pb 是 int！星号只跟着第一个名字。要两个指针就写 int *pa, *pb;</div>
+      <h3>空指针用 nullptr</h3>
+      <p>nullptr 是类型安全的空指针（C++11）。NULL 在 C++ 里通常是整数 0，在重载解析时会挑错函数。既然写 C++，就用 nullptr。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　指针算术按元素大小步进：p + 1 前进 sizeof(*p) 字节。只能对同一数组内的元素做算术，越界计算指针本身就是未定义行为。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-4-1-1">
+      <div class="ex-head"><span class="ex-id">4.1.1</span><span class="badge easy">必做</span><span class="ex-title">指针版交换</span></div>
+      <p>写一个函数 void swapPtr(int* a, int* b) 交换两个 int（用指针解引用），main 里读两个数，传入地址调用，输出交换结果。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　一行两个整数 a b。</p><p class="io-line"><b>输出</b>　交换后的 a b。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>3 5</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>5 3</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　调用时传 &amp;x、&amp;y；函数里用 *a 解引用。先判空 if (!a || !b) return;</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+void swapPtr(int* a, int* b) {
+    if (!a || !b) { return; }
+    int t = *a;
+    *a = *b;
+    *b = t;
+}
+int main() {
+    int x, y;
+    std::cin &gt;&gt; x &gt;&gt; y;
+    swapPtr(&amp;x, &amp;y);
+    std::cout &lt;&lt; x &lt;&lt; ' ' &lt;&lt; y &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　指针可能为空，使用前先判空；&amp;x 取地址，*a 解引用。</p></details>
+      </section>
+      <section class="ex" id="ex-4-1-2">
+      <div class="ex-head"><span class="ex-id">4.1.2</span><span class="badge hard">挑战</span><span class="ex-title">const 指针实验</span></div>
+      <p>写程序验证：const int* p 不能通过 p 修改值但能改指向；int* const q 能改值但不能改指向。让程序在“非法操作”的地方用注释标出，只保留合法操作，最后输出 a 和 b 的值。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　两行，a 的值、b 的值。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>30
+2</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　下面参考代码里被注释的行就是非法操作，手敲时试着打开注释看看编译器报什么错。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+int main() {
+    int a = 1, b = 2;
+    const int* p = &amp;a;      // 指向常量的指针：不能改 *p
+    // *p = 20;             // 非法：编译错误
+    p = &amp;b;                 // 合法：可以改指向
+    std::cout &lt;&lt; *p &lt;&lt; '\n';   // 2：读一下，避免“变量未使用”警告
+    int* const q = &amp;a;      // 常量指针：不能改指向
+    *q = 30;                // 合法：可以改值
+    // q = &amp;b;              // 非法：编译错误
+    std::cout &lt;&lt; a &lt;&lt; '\n';   // 30
+    std::cout &lt;&lt; b &lt;&lt; '\n';   // 2
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　const int* 修饰的是 *p（值）；int* const 修饰的是 p 本身（指向）。</p></details>
+      </section>
+      <h2 id="s-4-2">4.2 数组、字符串与 vector</h2>
+      <p>数组是 C++ 里最容易“静悄悄出错”的东西。核心教训：能用 vector 就别用原生数组。</p>
+      <h3>数组会退化为指针</h3>
+      <p>数组不是指针，但传参、赋值给指针时退化为指向首元素的指针。最经典的陷阱：在定义数组的作用域里 sizeof(a) 是数组总大小；一旦退化成指针，sizeof 就变成指针大小（8 字节）。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">#include &lt;iostream&gt;
+void f(int* arr) {                  // 写成 int arr[] 也等价
+    std::cout &lt;&lt; sizeof(arr);      // 8：指针大小，不是数组大小
+}
+int main() {
+    int a[5]{1, 2, 3, 4, 5};
+    std::cout &lt;&lt; sizeof(a) / sizeof(a[0]);   // 5：元素个数
+}</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　原生数组不检查越界。a[5] 越界读写不会报错，只是访问别人的内存，结果不可预测——这是和 Java 最危险的差别之一。</div>
+      <h3>选择标准：能用容器就别用数组</h3>
+      <p>长度在编译期就确定、且不需要在函数之间传递，才考虑原生数组；其他情况一律用 std::vector。数据结构课的实现里几乎只会用到 vector 和 std::array。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　函数参数里的数组写法只是装饰：void f(int a[10]) 和 void f(int* a) 完全一样，那个 10 没有任何约束作用。</div>
+      <h3>字符串：用 std::string，别用 char*</h3>
+      <p>字符串字面量是 const char[N]，存只读区，绝不能通过指针修改；写 char* p = "abc"; 在 C++11 起是编译错误。std::string 值语义、自动管理内存、可以拼接修改。传参用 const std::string&amp;（Java 传引用副本没有这个开销，C++ 里 string 传值会拷贝）。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">std::string s = "hello";
+s += ", world";
+std::cout &lt;&lt; s.substr(0, 5) &lt;&lt; ' ' &lt;&lt; s.find("world");  // hello 7
+int n = std::stoi("42");          // 字符串转数字
+std::string t = std::to_string(3.14);   // 数字转字符串</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　find 找不到返回 std::string::npos，别拿它和 -1 比较。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-4-2-1">
+      <div class="ex-head"><span class="ex-id">4.2.1</span><span class="badge easy">必做</span><span class="ex-title">vector 找最大值</span></div>
+      <p>读入 n 个整数存入 std::vector，输出其中的最大值。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　第一行 n；第二行 n 个整数。</p><p class="io-line"><b>输出</b>　最大值。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>5
+3 7 2 9 1</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>9</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　遍历用 for (int x : v)。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+int main() {
+    int n;
+    std::cin &gt;&gt; n;
+    std::vector&lt;int&gt; v(n);
+    for (int i = 0; i &lt; n; ++i) { std::cin &gt;&gt; v[i]; }
+    int mx = v[0];
+    for (int x : v) { if (x &gt; mx) { mx = x; } }
+    std::cout &lt;&lt; mx &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　动态长度优先 vector；范围 for 只读遍历最简洁。</p></details>
+      </section>
+      <section class="ex" id="ex-4-2-2">
+      <div class="ex-head"><span class="ex-id">4.2.2</span><span class="badge hard">挑战</span><span class="ex-title">字符串反转</span></div>
+      <p>读入一行字符串（不含空格），输出反转后的字符串。要求先用 std::reverse 做一遍，再手写循环做一遍（两行输出）。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　一行字符串（不含空格，长度 ≤ 100）。</p><p class="io-line"><b>输出</b>　两行，都是反转后的字符串。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>hello</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>olleh
+olleh</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　std::reverse(s.begin(), s.end()) 需要 &lt;algorithm&gt;。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+int main() {
+    std::string s;
+    std::cin &gt;&gt; s;
+    std::string t = s;
+    std::reverse(t.begin(), t.end());
+    std::cout &lt;&lt; t &lt;&lt; '\n';
+    for (int i = 0, j = (int)s.size() - 1; i &lt; j; ++i, --j) {
+        std::swap(s[i], s[j]);
+    }
+    std::cout &lt;&lt; s &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　双指针首尾交换是手写反转的标准写法；std::swap 在 &lt;utility&gt;（algorithm 也会带进来）。</p></details>
+      </section>
+      <h2 id="s-4-3">4.3 动态内存：new 与 delete</h2>
+      <p>你在 C 里学过 malloc/free，在 Java 里完全不用管内存。C++ 在中间：用 new/delete 手动管理，但有一条铁律必须守住。</p>
+      <h3>new / delete 的配对规则</h3>
+      <p>new 分配单个对象、delete 释放；new[] 分配数组、delete[] 释放（必须配对）。new Node{1, nullptr} 分配结构体并列表初始化。两套内存函数绝对不能混用：new 出来的不能 free，malloc 出来的不能 delete，混用=未定义行为，程序经常在毫不相关的地方崩溃。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">int* p = new int(42);        delete p;
+int* arr = new int[10]();     delete[] arr;
+Node* head = new Node{1, nullptr};   delete head;</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　new (std::nothrow) 失败返回 nullptr 而不抛异常；普通 new 失败抛 std::bad_alloc。</div>
+      <h3>内存分区：对象放在哪、什么时候销毁</h3>
+      <p>程序运行起来，内存分成几个区：栈（局部变量，离开作用域自动销毁）、堆（new 出来的，手动管理）、静态区（全局/静态变量，程序结束时销毁）、代码区（机器码）、字面量区（只读）。理解它们的分工，才能回答“这个对象什么时候被销毁”。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　和 JVM 对照：Java 的堆由 GC 管理；C++ 的堆要你负责。C++ 的“确定性”是最大优势：析构在确定时刻被调用，你可以把释放内存、关闭文件都写进析构函数，让它们必然发生——这就是下一节的 RAII。</div>
+      <figure><svg viewBox="0 0 560 240" width="100%" role="img" aria-label="栈与堆" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#1f3a5f"/></marker></defs><rect x="0" y="0" width="560" height="240" fill="#fbfaf7" rx="10"/><text x="120" y="26" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="13" font-weight="600" fill="#1f3a5f" text-anchor="middle">栈（自动回收）</text><text x="430" y="26" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="13" font-weight="600" fill="#1f3a5f" text-anchor="middle">堆（手动/智能指针管理）</text><rect x="40" y="40" width="160" height="170" fill="#fff" stroke="#cfd8e3" rx="8"/><rect x="52" y="52" width="136" height="34" rx="8" fill="#fff" stroke="#1f3a5f" stroke-width="1.5"/><text x="120.0" y="74.0" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="400" fill="#2b2b2b" text-anchor="middle">int a = 1</text><rect x="52" y="92" width="136" height="34" rx="8" fill="#fff" stroke="#1f3a5f" stroke-width="1.5"/><text x="120.0" y="114.0" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="400" fill="#2b2b2b" text-anchor="middle">int b = 2</text><rect x="52" y="132" width="136" height="34" rx="8" fill="#fff" stroke="#c9a227" stroke-width="1.5"/><text x="120.0" y="154.0" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="400" fill="#2b2b2b" text-anchor="middle">int* p</text><rect x="350" y="40" width="160" height="170" fill="#fff" stroke="#cfd8e3" rx="8"/><rect x="362" y="52" width="136" height="34" rx="8" fill="#fff" stroke="#c9a227" stroke-width="1.5"/><text x="430.0" y="74.0" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="13" font-weight="400" fill="#2b2b2b" text-anchor="middle">new int(42)</text><text x="430" y="132" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6a6a6a" text-anchor="middle">忘记 delete 就泄漏</text><text x="430" y="152" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6a6a6a" text-anchor="middle">unique_ptr 离开作用域自动释放</text><line x1="188" y1="149" x2="360" y2="69" stroke="#c9a227" stroke-width="1.6" marker-end="url(#ah)"/><text x="276" y="205" font-family="-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" font-size="12" fill="#6a6a6a" text-anchor="middle">p 里存的是地址（门牌号）</text></svg><figcaption>图 2：栈上的变量与堆上的对象，指针只是记录了地址</figcaption></figure>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-4-3-1">
+      <div class="ex-head"><span class="ex-id">4.3.1</span><span class="badge easy">必做</span><span class="ex-title">动态数组求和</span></div>
+      <p>用 new 分配一个 5 个 int 的动态数组并初始化为 {1,2,3,4,5}，求和输出，最后用正确方式释放。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　15</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>15</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　new int[5]{1,2,3,4,5}；释放用 delete[] arr;</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+int main() {
+    int* arr = new int[5]{1, 2, 3, 4, 5};
+    int sum = 0;
+    for (int i = 0; i &lt; 5; ++i) { sum += arr[i]; }
+    std::cout &lt;&lt; sum &lt;&lt; '\n';
+    delete[] arr;
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　new[] 和 delete[] 必须配对；混用 free/delete 是未定义行为。</p></details>
+      </section>
+      <section class="ex" id="ex-4-3-2">
+      <div class="ex-head"><span class="ex-id">4.3.2</span><span class="badge hard">挑战</span><span class="ex-title">动态数组排序</span></div>
+      <p>读入 n，用 new 分配 n 个 int 的动态数组，读入 n 个数，排序后输出，最后释放。排序用 std::sort。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　第一行 n；第二行 n 个整数。</p><p class="io-line"><b>输出</b>　升序排列，空格分隔。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>5
+5 3 8 1 2</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>1 2 3 5 8</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　std::sort(arr, arr + n)。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+int main() {
+    int n;
+    std::cin &gt;&gt; n;
+    int* arr = new int[n];
+    for (int i = 0; i &lt; n; ++i) { std::cin &gt;&gt; arr[i]; }
+    std::sort(arr, arr + n);
+    for (int i = 0; i &lt; n; ++i) {
+        std::cout &lt;&lt; arr[i] &lt;&lt; (i + 1 == n ? '\n' : ' ');
+    }
+    delete[] arr;
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　指针算术 arr + n 是合法的（同一数组内）；删除后不要再碰 arr。</p></details>
+      </section>
+      <h2 id="s-4-4">4.4 RAII 与智能指针</h2>
+      <p>RAII 是 C++ 里最重要的编程思想，没有之一。心智模型：把资源的生命周期绑定到对象的生命周期上——构造时获取资源，析构时释放资源。因为栈对象的析构是编译器保证的，所以资源释放也就被保证了。</p>
+      <h3>RAII：资源跟着对象走</h3>
+      <p>不管你是正常返回、提前 return、break 跳出循环，还是抛了异常，栈对象的析构一定会被调用。把“释放内存”“关闭文件”“解锁互斥量”写进析构函数，它们就必然发生。标准库的容器、智能指针、lock_guard 全是 RAII。</p>
+      <div class="warn"><b>⚠️ 易错点</b>　看到裸指针就要问一句：谁负责释放？如果答案是“没人”，那就是内存泄漏。</div>
+      <h3>unique_ptr：独占所有权，第一选择</h3>
+      <p>std::unique_ptr 独占所有权：不能拷贝只能移动，没有额外开销。链表、树、图里的“拥有”关系用它最合适——head 析构时递归释放 next，整条链自动回收，不需要任何 delete。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">struct Node {
+    int value = 0;
+    std::unique_ptr&lt;Node&gt; next;
+};
+auto head = std::make_unique&lt;Node&gt;();
+head-&gt;value = 1;
+head-&gt;next = std::make_unique&lt;Node&gt;();
+// 离开作用域时整条链自动释放</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　永远用 std::make_unique / std::make_shared 创建，不要用裸指针 new 后再包装。</div>
+      <p>shared_ptr / weak_ptr：共享与观察</p>
+      <p>shared_ptr 用引用计数，最后一个引用消失时释放；拷贝使计数 +1，use_count() 查看。只在确实需要共享所有权时才用（有原子操作开销）。weak_ptr 不增加计数，用来观察或打破循环引用。</p>
+      <div class="code-label">示例代码</div><pre><code class="language-cpp">std::shared_ptr&lt;Node&gt; p = std::make_shared&lt;Node&gt;();
+std::shared_ptr&lt;Node&gt; q = p;          // 计数 2
+std::cout &lt;&lt; p.use_count();           // 2
+std::weak_ptr&lt;Node&gt; w = p;            // 不增加计数</code></pre>
+      <div class="warn"><b>⚠️ 易错点</b>　循环引用会泄漏：a-&gt;peer = b; b-&gt;peer = a; 计数永远不为 0，把一条边改成 weak_ptr。不要用裸指针 new 之后交给两个 shared_ptr（同一块内存释放两次）。</div>
+      <h3 class="ex-h">✍️ 本节练习</h3>
+      <section class="ex" id="ex-4-4-1">
+      <div class="ex-head"><span class="ex-id">4.4.1</span><span class="badge easy">必做</span><span class="ex-title">unique_ptr 小链表</span></div>
+      <p>用 std::unique_ptr 建两个链表节点（Node 含 int value 和 std::unique_ptr&lt;Node&gt; next），输出两个节点的值。整个程序不允许出现 delete。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　1 2</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>1 2</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　std::make_unique&lt;Node&gt;()；head-&gt;next = std::make_unique&lt;Node&gt;();</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+struct Node {
+    int value = 0;
+    std::unique_ptr&lt;Node&gt; next;
+};
+int main() {
+    auto head = std::make_unique&lt;Node&gt;();
+    head-&gt;value = 1;
+    head-&gt;next = std::make_unique&lt;Node&gt;();
+    head-&gt;next-&gt;value = 2;
+    std::cout &lt;&lt; head-&gt;value &lt;&lt; ' ' &lt;&lt; head-&gt;next-&gt;value &lt;&lt; '\n';
+    return 0;   // 离开作用域自动释放整条链
+}</code></pre>
+<p class="note"><b>解析</b>　unique_ptr 析构时递归释放 next，整条链自动回收，这就是 RAII。</p></details>
+      </section>
+      <section class="ex" id="ex-4-4-2">
+      <div class="ex-head"><span class="ex-id">4.4.2</span><span class="badge hard">挑战</span><span class="ex-title">shared_ptr 计数实验</span></div>
+      <p>用 shared_ptr 创建对象，拷贝两次后输出 use_count()，再让一个引用离开作用域，再输出一次 use_count()，观察引用计数变化。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　无</p><p class="io-line"><b>输出</b>　两行：3、2。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>3
+2</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　std::make_shared&lt;Node&gt;()；拷贝使计数 +1。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+struct Node { int value = 0; };
+int main() {
+    std::shared_ptr&lt;Node&gt; a = std::make_shared&lt;Node&gt;();
+    std::shared_ptr&lt;Node&gt; b = a;   // 计数 2
+    {
+        std::shared_ptr&lt;Node&gt; c = a;   // 计数 3
+        std::cout &lt;&lt; a.use_count() &lt;&lt; '\n';   // 3
+    }                                // c 离开作用域，计数 2
+    std::cout &lt;&lt; a.use_count() &lt;&lt; '\n';   // 2
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　shared_ptr 引用计数归零才释放；要共享所有权就从同一个指针拷贝，绝不用裸指针 new 两次。</p></details>
+      </section>
+      <h2 id="summary">本章小结</h2>
+      <ul class="recap"><li>const int* 修饰值、int* const 修饰指向；int *pa, *pb 才两个都是指针。</li><li>原生数组不检查越界、传参会退化；能用 vector 就别用原生数组。</li><li>new 配 delete、new[] 配 delete[]，两套内存函数绝不混用。</li><li>RAII：资源绑定生命周期；优先 unique_ptr，需要共享才用 shared_ptr。</li></ul>
+      <h2 id="combo">🧩 本章综合练习</h2>
+      <p>这几道题把本章多个知识点串起来，建议合上资料独立完成，再展开答案对照。</p>
+      <section class="ex" id="ex-4-A">
+      <div class="ex-head"><span class="ex-id">4.A</span><span class="badge hard">综合</span><span class="ex-title">智能指针 + 指针区间 + 就地反转</span></div>
+      <p>用 std::unique_ptr&lt;int[]&gt; 管理动态数组（全程不写 delete）；写 void reverse(int* first, int* last) 按左闭右开区间就地反转；再写 long long sum(const int* first, const int* last) 求和。输出反转后的数组与总和。</p>
+      <div class="io"><p class="io-line"><b>输入</b>　第一行整数 n；第二行 n 个整数。</p><p class="io-line"><b>输出</b>　第一行反转后的数组（空格分隔）；第二行 <code>sum=总和</code>。</p></div>
+      <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>5
+1 2 3 4 5</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>5 4 3 2 1
+sum=15</code></pre></div></div>
+      <p class="hint">💡 <b>提示</b>　区间用左闭右开 [first,last)：last 指向最后一个元素的下一位；unique_ptr&lt;int[]&gt; 用 get() 取裸指针传给函数。</p>
+      <details class="ans"><summary>✅ 查看参考答案与解析</summary>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;memory&gt;
+
+void reverse(int* first, int* last) {   // [first, last)
+    if (first == last) { return; }
+    --last;                             // 变成闭区间再交换
+    while (first &lt; last) {
+        std::swap(*first, *last);
+        ++first;
+        --last;
+    }
+}
+
+long long sum(const int* first, const int* last) {
+    long long s = 0;
+    for (const int* p = first; p != last; ++p) { s += *p; }
+    return s;
+}
+
+int main() {
+    int n{};
+    std::cin &gt;&gt; n;
+    std::unique_ptr&lt;int[]&gt; a(new int[n]);
+    for (int i = 0; i &lt; n; ++i) { std::cin &gt;&gt; a[i]; }
+    reverse(a.get(), a.get() + n);
+    for (int i = 0; i &lt; n; ++i) { std::cout &lt;&lt; a[i] &lt;&lt; (i + 1 == n ? '\n' : ' '); }
+    std::cout &lt;&lt; "sum=" &lt;&lt; sum(a.get(), a.get() + n) &lt;&lt; '\n';
+    return 0;
+}</code></pre>
+<p class="note"><b>解析</b>　裸指针只在函数内部流转，所有权始终在 unique_ptr 手里；这样即使中间抛异常也不会泄漏。</p></details>
+      </section>
+      <div class="tip"><b>📚 本文概念都在知识大全：</b><p style="margin-top:6px"><a href="../../knowledge/index.html#pointer">指针</a> · <a href="../../knowledge/index.html#const">const 与 const 正确性</a> · <a href="../../knowledge/index.html#stack-heap">栈与堆</a> · <a href="../../knowledge/index.html#raii">RAII</a> · <a href="../../knowledge/index.html#smart-pointer">智能指针</a></p></div>
+      <div class="lesson-nav"><a href="03-functions-and-references.html">← 上一章：第 3 章 函数与引用</a><a href="05-classes-and-objects.html">下一章：第 5 章 类与对象 →</a></div>
+    </article>
+
+  <script src="../../assets/highlight.min.js"></script>
+  <script src="../../assets/article.js"></script>
+  <script src="../../assets/interact.js"></script>
+  <script src="../../assets/search.js"></script>
+  <script src="../../assets/giscus-config.js"></script>
+  <script src="../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>
