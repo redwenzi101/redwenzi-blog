@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C++ 练习册 第 5 章 类与对象 · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../../assets/article.css">
+  <link rel="stylesheet" href="../../../assets/theme.css">
+  <link rel="stylesheet" href="../../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="index.html">← 练习册目录</a>
+      <h1>第 5 章　类与对象</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · C++ · 练习册 · 15 题</div>
+    </header>
+
+    <article>
+<div class="tip">📝 <b>本章练习：</b>15 题（A 识别 / B 理解 / C 改错 / D 写程序）。先自己做完再看答案——A、B 档不翻书做，C、D 档必须真的编译运行。</div>
+      <h2 id="s-5-1">5.1 构造函数与析构函数</h2>
+      <section class="ex" id="q-5-1-A1">
+      <div class="ex-head"><span class="ex-id">A1</span><span class="badge lv-a">识别</span><span class="ex-title">判断题：Point p{1.0, 2.0}; 直接在栈上创建了一个真实对象，离开作用域自动销毁。</span></div>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　对</p>
+<p class="note">解析：C++ 默认应该在栈上建对象：Point p{1.0, 2.0}; 没有任何运行时代价，也不需要 new。Java 的 new 习惯要改过来。</p></details>
+      </section>
+      <section class="ex" id="q-5-1-A2">
+      <div class="ex-head"><span class="ex-id">A2</span><span class="badge lv-a">识别</span><span class="ex-title">判断题：析构函数不能有参数、不能重载、不能抛异常。</span></div>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　对</p>
+<p class="note">解析：析构函数由编译器自动调用（栈对象出作用域、delete 堆对象、临时对象结束），不能抛异常，否则程序终止。</p></details>
+      </section>
+      <section class="ex" id="q-5-1-B1">
+      <div class="ex-head"><span class="ex-id">B1</span><span class="badge lv-b">理解</span><span class="ex-title">选择题：类的 const 成员变量必须在哪初始化？</span></div>
+      <p>构造函数体里赋值</p>
+      <p>初始化列表里</p>
+      <p>声明之后随便哪里</p>
+      <p>不能初始化</p>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　B</p>
+<p class="note">解析：const 成员、引用成员、没有默认构造函数的类类型成员，必须在初始化列表里初始化；写在函数体里是赋值，对它们不可能。</p></details>
+      </section>
+      <section class="ex" id="q-5-1-C1">
+      <div class="ex-head"><span class="ex-id">C1</span><span class="badge lv-c">应用</span><span class="ex-title">改错题：下面构造函数有误——成员 name_ 声明在后，却用它初始化先声明的成员。</span></div>
+      <pre><code class="language-cpp">class Buffer {
+    std::vector&lt;int&gt; data_;
+    std::string name_;
+public:
+    Buffer() : name_("buf"), data_(10, 0) { }  // 实际初始化顺序按声明顺序！</code></pre>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　把初始化列表顺序改成和声明顺序一致：</p>
+<p class="note">解析：成员初始化顺序由声明顺序决定，和列表书写顺序无关。编译器有 -Wreorder 专门提醒这件事。</p>
+<pre><code class="language-cpp">    Buffer() : data_(10, 0), name_("buf") { }</code></pre></details>
+      </section>
+      <section class="ex" id="q-5-1-D1">
+      <div class="ex-head"><span class="ex-id">D1</span><span class="badge lv-d">创造</span><span class="ex-title">写程序：写一个 Point 类（double x, y + 构造函数 + 求到原点距离的 dist() 成员函数），创建对象并输出距离。</span></div>
+      <p>提示：dist 用 std::sqrt(x*x + y*y)，需要 #include &lt;cmath&gt;；dist 加 const 修饰。</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　参考答案：</p>
+<p class="note">解析：struct 默认公有成员，适合数据打包；const 成员函数承诺不修改对象。</p>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;cmath&gt;
+struct Point {
+    double x = 0.0;
+    double y = 0.0;
+    double dist() const { return std::sqrt(x * x + y * y); }
+};
+int main() {
+    Point p{3.0, 4.0};
+    std::cout &lt;&lt; p.dist() &lt;&lt; '\n';   // 5
+    return 0;
+}</code></pre></details>
+      </section>
+      <h2 id="s-5-2">5.2 拷贝控制</h2>
+      <section class="ex" id="q-5-2-A1">
+      <div class="ex-head"><span class="ex-id">A1</span><span class="badge lv-a">识别</span><span class="ex-title">判断题：默认的拷贝构造是逐成员拷贝。成员都是 int、std::string、std::vector 时，默认行为是正确的，不用写任何东西。</span></div>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　对</p>
+<p class="note">解析：零法则：先用会管理资源的成员，能不写裸指针就不写，大部分内存管理问题自然消失。</p></details>
+      </section>
+      <section class="ex" id="q-5-2-A2">
+      <div class="ex-head"><span class="ex-id">A2</span><span class="badge lv-a">识别</span><span class="ex-title">判断题：类里含有裸指针或自己管理的资源时，默认拷贝会复制指针值，导致两个对象指向同一块内存、析构释放两次。</span></div>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　对</p>
+<p class="note">解析：这就是浅拷贝问题。这种类需要自己写深拷贝：拷贝构造、拷贝赋值、析构（以及移动构造、移动赋值）——即五法则。</p></details>
+      </section>
+      <section class="ex" id="q-5-2-B1">
+      <div class="ex-head"><span class="ex-id">B1</span><span class="badge lv-b">理解</span><span class="ex-title">选择题：IntArray b = a;（IntArray 是含裸指针的类）会调用什么？</span></div>
+      <p>移动构造</p>
+      <p>拷贝构造</p>
+      <p>默认构造</p>
+      <p>拷贝赋值</p>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　B</p>
+<p class="note">解析：用已存在的 a 初始化新对象 b，调用拷贝构造。IntArray c = std::move(a); 才调用移动构造。</p></details>
+      </section>
+      <section class="ex" id="q-5-2-C1">
+      <div class="ex-head"><span class="ex-id">C1</span><span class="badge lv-c">应用</span><span class="ex-title">改错题：下面类缺了拷贝控制，发生双重释放。</span></div>
+      <pre><code class="language-cpp">class IntArray {
+public:
+    IntArray(std::size_t n) : size_(n), data_(new int[n]{}) { }
+    ~IntArray() { delete[] data_; }
+    // 缺拷贝构造、拷贝赋值、移动构造、移动赋值
+private:
+    std::size_t size_;
+    int* data_;
+};</code></pre>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　补上五法则的其余四个函数（拷贝构造做深拷贝、拷贝赋值处理自赋值、移动构造/移动赋值窃取资源），或者把 data_ 换成 std::vector&lt;int&gt;。</p>
+<p class="note">解析：如果一个类需要自己写析构，那它通常也需要拷贝构造、拷贝赋值、移动构造、移动赋值。最省事：不写裸指针。</p></details>
+      </section>
+      <section class="ex" id="q-5-2-D1">
+      <div class="ex-head"><span class="ex-id">D1</span><span class="badge lv-d">创造</span><span class="ex-title">写程序：写一个简单的 Counter 类：构造时 ++instances、析构时 --instances，用静态成员记录存活对象数；main 里创建 3 个对象输出计数。</span></div>
+      <p>提示：静态成员变量要在类外定义一次：int Counter::instances = 0;（或 C++17 用 inline static）。</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　参考答案：</p>
+<p class="note">解析：静态成员属于类、所有对象共享；静态成员函数用 ClassName:: 访问。</p>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+class Counter {
+public:
+    Counter() { ++instances; }
+    ~Counter() { --instances; }
+    static int count() { return instances; }
+private:
+    static int instances;
+};
+int Counter::instances = 0;
+int main() {
+    Counter a, b, c;
+    std::cout &lt;&lt; Counter::count() &lt;&lt; '\n';   // 3
+    { Counter d; }
+    std::cout &lt;&lt; Counter::count() &lt;&lt; '\n';   // 3（d 已析构）
+    return 0;
+}</code></pre></details>
+      </section>
+      <h2 id="s-5-3">5.3 运算符重载与继承</h2>
+      <section class="ex" id="q-5-3-A1">
+      <div class="ex-head"><span class="ex-id">A1</span><span class="badge lv-a">识别</span><span class="ex-title">判断题：排序用的比较器必须是严格弱序，相等时返回 false；写成 return a.score &lt;= b.score; 会让 std::sort 行为未定义。</span></div>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　对</p>
+<p class="note">解析：严格弱序：相等必须返回 false。写成 &lt;= 或 &gt;= 会让 sort 走进未定义行为，典型症状是段错误或元素丢失。</p></details>
+      </section>
+      <section class="ex" id="q-5-3-A2">
+      <div class="ex-head"><span class="ex-id">A2</span><span class="badge lv-a">识别</span><span class="ex-title">判断题：多态基类的析构函数必须是虚的（virtual）。</span></div>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　对</p>
+<p class="note">解析：否则 Shape* p = new Circle(); delete p; 只调用 Shape 的析构，Circle 的资源就泄漏了。</p></details>
+      </section>
+      <section class="ex" id="q-5-3-B1">
+      <div class="ex-head"><span class="ex-id">B1</span><span class="badge lv-b">理解</span><span class="ex-title">选择题：Shape s = Circle(1.0);（Shape 是基类，Circle 是派生类）会发生什么？</span></div>
+      <p>正常多态调用</p>
+      <p>对象切片：Circle 被切成 Shape，多态信息丢失</p>
+      <p>编译错误</p>
+      <p>运行时报错</p>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　B</p>
+<p class="note">解析：按值传递基类会发生对象切片，多态信息全部丢失。多态必须通过指针或引用使用。</p></details>
+      </section>
+      <section class="ex" id="q-5-3-C1">
+      <div class="ex-head"><span class="ex-id">C1</span><span class="badge lv-c">应用</span><span class="ex-title">改错题：派生类想覆盖基类函数，但下面的写法编译通过、行为却不对（没覆盖成功）。</span></div>
+      <pre><code class="language-cpp">class Shape {
+public:
+    virtual double area() const = 0;
+};
+class Circle : public Shape {
+public:
+    double area() { return 3.14 * r_ * r_; }   // 少了 const！
+private:
+    double r_;
+};</code></pre>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　加 const 和 override：</p>
+<p class="note">解析：签名不完全一致（少 const）就不是覆盖，而是新增了一个隐藏函数。override 关键字能帮编译器检查出来。</p>
+<pre><code class="language-cpp">    double area() const override { return 3.14 * r_ * r_; }</code></pre></details>
+      </section>
+      <section class="ex" id="q-5-3-D1">
+      <div class="ex-head"><span class="ex-id">D1</span><span class="badge lv-d">创造</span><span class="ex-title">写程序：定义 Student 结构体（name、score），重载 operator&lt;（按分数降序），把 3 个学生放进 vector 排序并输出。</span></div>
+      <p>提示：std::sort 需要 operator&lt; 或自定义比较器。</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　参考答案：</p>
+<p class="note">解析：operator&lt; 返回 score &gt; o.score 实现降序；记住严格弱序要求。</p>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+struct Student {
+    std::string name;
+    int score;
+    bool operator&lt;(const Student&amp; o) const { return score &gt; o.score; }
+};
+int main() {
+    std::vector&lt;Student&gt; v{{"Ann", 90}, {"Bob", 95}, {"Cid", 88}};
+    std::sort(v.begin(), v.end());
+    for (const auto&amp; s : v) { std::cout &lt;&lt; s.name &lt;&lt; ' ' &lt;&lt; s.score &lt;&lt; '\n'; }
+    return 0;
+}
+// 输出：Bob 95 / Ann 90 / Cid 88</code></pre></details>
+      </section>
+      <div class="tip"><b>📚 相关概念：</b><a href="../../../knowledge/index.html#cpp-compile-link">编译与链接</a> · <a href="../../../knowledge/index.html#stl">STL</a> · <a href="../../../knowledge/index.html#map-set">map / set</a> · <a href="../../../knowledge/index.html#iterator">迭代器</a></div>
+      <div class="lesson-nav"><a href="04-practice.html">← 第 4 章</a><a href="06-practice.html">第 6 章 →</a></div>
+    </article>
+
+  <script src="../../../assets/highlight.min.js"></script>
+  <script src="../../../assets/article.js"></script>
+  <script src="../../../assets/interact.js"></script>
+  <script src="../../../assets/search.js"></script>
+  <script src="../../../assets/giscus-config.js"></script>
+  <script src="../../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

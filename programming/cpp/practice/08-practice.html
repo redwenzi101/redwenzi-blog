@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C++ 练习册 第 8 章 STL 算法 · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../../assets/article.css">
+  <link rel="stylesheet" href="../../../assets/theme.css">
+  <link rel="stylesheet" href="../../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="index.html">← 练习册目录</a>
+      <h1>第 8 章　STL 算法</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · C++ · 练习册 · 10 题</div>
+    </header>
+
+    <article>
+<div class="tip">📝 <b>本章练习：</b>10 题（A 识别 / B 理解 / C 改错 / D 写程序）。先自己做完再看答案——A、B 档不翻书做，C、D 档必须真的编译运行。</div>
+      <h2 id="s-8-1">8.1 排序与 lambda</h2>
+      <section class="ex" id="q-8-1-A1">
+      <div class="ex-head"><span class="ex-id">A1</span><span class="badge lv-a">识别</span><span class="ex-title">判断题：std::sort 需要随机访问迭代器，所以不能直接给 std::list 排序。</span></div>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　对</p>
+<p class="note">解析：list 只有双向迭代器，要排序用它的成员函数 l.sort()。</p></details>
+      </section>
+      <section class="ex" id="q-8-1-A2">
+      <div class="ex-head"><span class="ex-id">A2</span><span class="badge lv-a">识别</span><span class="ex-title">判断题：lambda 里 [&amp;] 表示按引用捕获外部变量。</span></div>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　对</p>
+<p class="note">解析：[&amp;] 引用捕获，[=] 值捕获，[x] 只捕获 x，[] 不捕获。引用捕获能修改外部变量。</p></details>
+      </section>
+      <section class="ex" id="q-8-1-B1">
+      <div class="ex-head"><span class="ex-id">B1</span><span class="badge lv-b">理解</span><span class="ex-title">选择题：写排序比较器时，相等元素必须返回什么？</span></div>
+      <p>true</p>
+      <p>false</p>
+      <p>随便</p>
+      <p>抛出异常</p>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　B</p>
+<p class="note">解析：严格弱序要求相等时返回 false。写成 a.score &gt;= b.score 会让 sort 行为未定义。</p></details>
+      </section>
+      <section class="ex" id="q-8-1-C1">
+      <div class="ex-head"><span class="ex-id">C1</span><span class="badge lv-c">应用</span><span class="ex-title">改错题：下面的比较器破坏了严格弱序。</span></div>
+      <pre><code class="language-cpp">std::sort(v.begin(), v.end(),
+          [](const Student&amp; a, const Student&amp; b) {
+              return a.score &gt;= b.score;   // 相等时返回 true，破坏严格弱序
+          });</code></pre>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　return a.score &gt; b.score;   // 相等时返回 false</p>
+<p class="note">解析：严格弱序：相等必须 false。&gt;= 会导致 sort 段错误或元素丢失。</p></details>
+      </section>
+      <section class="ex" id="q-8-1-D1">
+      <div class="ex-head"><span class="ex-id">D1</span><span class="badge lv-d">创造</span><span class="ex-title">写程序：定义 Student（name、score），用 lambda 按分数降序、分数相同按名字升序排序，输出结果。</span></div>
+      <p>提示：lambda 里先比 score，相等再比 name。</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　参考答案：</p>
+<p class="note">解析：比较器必须是严格弱序；lambda 就近写比较规则比具名函数省事。</p>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+struct Student { std::string name; int score; };
+int main() {
+    std::vector&lt;Student&gt; v{{"Ann", 90}, {"Bob", 95}, {"Cid", 90}};
+    std::sort(v.begin(), v.end(), [](const Student&amp; a, const Student&amp; b) {
+        if (a.score != b.score) { return a.score &gt; b.score; }
+        return a.name &lt; b.name;
+    });
+    for (const auto&amp; s : v) { std::cout &lt;&lt; s.name &lt;&lt; ' ' &lt;&lt; s.score &lt;&lt; '\n'; }
+    return 0;
+}
+// 输出：Bob 95 / Ann 90 / Cid 90</code></pre></details>
+      </section>
+      <h2 id="s-8-2">8.2 erase-remove 与二分查找</h2>
+      <section class="ex" id="q-8-2-A1">
+      <div class="ex-head"><span class="ex-id">A1</span><span class="badge lv-a">识别</span><span class="ex-title">判断题：std::remove 并不会真正删除元素，只是把要保留的元素往前挪，并返回新的逻辑结尾。</span></div>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　对</p>
+<p class="note">解析：std::remove 名字有误导性：真正删除要靠 v.erase(remove(...), v.end()) 组合。</p></details>
+      </section>
+      <section class="ex" id="q-8-2-B1">
+      <div class="ex-head"><span class="ex-id">B1</span><span class="badge lv-b">理解</span><span class="ex-title">选择题：std::lower_bound(v.begin(), v.end(), x)（v 已有序）返回什么？</span></div>
+      <p>第一个 &gt; x 的位置</p>
+      <p>第一个 &gt;= x 的位置</p>
+      <p>x 出现的次数</p>
+      <p>最后一个 x 的位置</p>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　B</p>
+<p class="note">解析：lower_bound 找第一个不小于 x（左边界）；upper_bound 找第一个大于 x（右边界后一位）。</p></details>
+      </section>
+      <section class="ex" id="q-8-2-B2">
+      <div class="ex-head"><span class="ex-id">B2</span><span class="badge lv-b">理解</span><span class="ex-title">选择题：upper_bound - lower_bound 得到什么？</span></div>
+      <p>x 在数组中出现的次数</p>
+      <p>数组长度</p>
+      <p>x 的下标</p>
+      <p>x 的平方</p>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　A</p>
+<p class="note">解析：两个迭代器相减就是 x 的出现次数。</p></details>
+      </section>
+      <section class="ex" id="q-8-2-C1">
+      <div class="ex-head"><span class="ex-id">C1</span><span class="badge lv-c">应用</span><span class="ex-title">改错题：只调了 std::remove，元素没有被真正删掉。</span></div>
+      <pre><code class="language-cpp">std::vector&lt;int&gt; v{1, 2, 3, 2, 4};
+std::remove(v.begin(), v.end(), 2);   // 只是挪动元素，size 没变</code></pre>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　v.erase(std::remove(v.begin(), v.end(), 2), v.end());</p>
+<p class="note">解析：erase-remove 惯用法：remove 把保留元素前移并返回新逻辑结尾，erase 从那里删到真正末尾。</p></details>
+      </section>
+      <section class="ex" id="q-8-2-D1">
+      <div class="ex-head"><span class="ex-id">D1</span><span class="badge lv-d">创造</span><span class="ex-title">写程序：先读 n 个数存 vector，删除所有偶数（用 erase-remove），再排序，最后用 lower_bound 输出第一个 &gt;= 3 的元素下标（没有则输出 -1）。</span></div>
+      <p>提示：删除用 v.erase(std::remove_if(...), v.end())。</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　参考答案：</p>
+<p class="note">解析：remove_if 按条件前移；迭代器相减得下标。</p>
+<pre><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+int main() {
+    int n;
+    std::cin &gt;&gt; n;
+    std::vector&lt;int&gt; v(n);
+    for (int i = 0; i &lt; n; ++i) { std::cin &gt;&gt; v[i]; }
+    v.erase(std::remove_if(v.begin(), v.end(),
+                           [](int x) { return x % 2 == 0; }), v.end());
+    std::sort(v.begin(), v.end());
+    auto it = std::lower_bound(v.begin(), v.end(), 3);
+    if (it == v.end()) { std::cout &lt;&lt; -1 &lt;&lt; '\n'; }
+    else { std::cout &lt;&lt; (it - v.begin()) &lt;&lt; '\n'; }
+    return 0;
+}</code></pre></details>
+      </section>
+      <div class="tip"><b>📚 相关概念：</b><a href="../../../knowledge/index.html#cpp-compile-link">编译与链接</a> · <a href="../../../knowledge/index.html#stl">STL</a> · <a href="../../../knowledge/index.html#map-set">map / set</a> · <a href="../../../knowledge/index.html#iterator">迭代器</a></div>
+      <div class="lesson-nav"><a href="07-practice.html">← 第 7 章</a><a href="09-practice.html">第 9 章 →</a></div>
+    </article>
+
+  <script src="../../../assets/highlight.min.js"></script>
+  <script src="../../../assets/article.js"></script>
+  <script src="../../../assets/interact.js"></script>
+  <script src="../../../assets/search.js"></script>
+  <script src="../../../assets/giscus-config.js"></script>
+  <script src="../../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

@@ -22,6 +22,12 @@ article h3 { color:#1f3a5f; }
 .badge { font-size:12px; border-radius:980px; padding:2px 10px; white-space:nowrap; }
 .badge.easy { background:#e9f6ee; color:#1f7a45; border:1px solid #c3e5d1; }
 .badge.hard { background:#fdf6e6; color:#9a6a10; border:1px solid #f0e0b8; }
+/* 练习册四档：A 识别 / B 理解 / C 应用 / D 创造 */
+.badge.lv-a { background:#eef4ff; color:#1f4e8c; border:1px solid #cfe0f7; }
+.badge.lv-b { background:#e9f6ee; color:#1f7a45; border:1px solid #c3e5d1; }
+.badge.lv-c { background:#fdf6e6; color:#9a6a10; border:1px solid #f0e0b8; }
+.badge.lv-d { background:#fbeaea; color:#9c2727; border:1px solid #efc9c9; }
+.answer-line { margin:4px 0 10px !important; }
 .ex-title { font-size:17px; font-weight:600; color:#2f2f2f; }
 
 /* 输入输出说明与样例 */

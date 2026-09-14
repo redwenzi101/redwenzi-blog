@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C++ 练习册 第 10 章 动手写数据结构 · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../../assets/article.css">
+  <link rel="stylesheet" href="../../../assets/theme.css">
+  <link rel="stylesheet" href="../../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="index.html">← 练习册目录</a>
+      <h1>第 10 章　动手写数据结构</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · C++ · 练习册 · 12 题</div>
+    </header>
+
+    <article>
+<div class="tip">📝 <b>本章练习：</b>12 题（A 识别 / B 理解 / C 改错 / D 写程序）。先自己做完再看答案——A、B 档不翻书做，C、D 档必须真的编译运行。</div>
+      <h2 id="s-10-1">10.1 顺序表</h2>
+      <section class="ex" id="q-10-1-A1">
+      <div class="ex-head"><span class="ex-id">A1</span><span class="badge lv-a">识别</span><span class="ex-title">判断题：vector 的 push_back 平摊复杂度是 O(1)。</span></div>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　对</p>
+<p class="note">解析：因为扩容按 1.5~2 倍指数增长，平摊到每次 push_back 是 O(1)。</p></details>
+      </section>
+      <section class="ex" id="q-10-1-B1">
+      <div class="ex-head"><span class="ex-id">B1</span><span class="badge lv-b">理解</span><span class="ex-title">选择题：顺序表在头部 insert 一个元素的时间复杂度是？</span></div>
+      <p>O(1)</p>
+      <p>O(log n)</p>
+      <p>O(n)</p>
+      <p>O(n^2)</p>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　C</p>
+<p class="note">解析：插入位置之后的元素要整体后移，所以是 O(n)。</p></details>
+      </section>
+      <section class="ex" id="q-10-1-C1">
+      <div class="ex-head"><span class="ex-id">C1</span><span class="badge lv-c">应用</span><span class="ex-title">改错题：下面 pop_back 在空表上调用，会越界或崩溃。</span></div>
+      <pre><code class="language-cpp">void pop_back() {
+    data_.pop_back();   // 空表时未定义行为
+}</code></pre>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　先检查再操作：</p>
+<p class="note">解析：对外的接口用异常或返回值报告错误；内部实现用 assert 暴露 bug。</p>
+<pre><code class="language-cpp">void pop_back() {
+    if (empty()) { throw std::out_of_range("pop_back on empty list"); }
+    data_.pop_back();
+}</code></pre></details>
+      </section>
+      <section class="ex" id="q-10-1-D1">
+      <div class="ex-head"><span class="ex-id">D1</span><span class="badge lv-d">创造</span><span class="ex-title">写程序：手写一个简化 ArrayList（基于 std::vector&lt;T&gt;），实现 push_back、insert(pos, value)（越界抛异常）、size，main 里插入 3 个数输出。</span></div>
+      <p>提示：insert 前检查 pos &gt; size() 就抛 out_of_range。</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　参考答案：</p>
+<p class="note">解析：用 std::vector 做底层就自动获得正确的拷贝/析构行为（零法则）。</p>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+#include &lt;vector&gt;
+template &lt;typename T&gt;
+class ArrayList {
+public:
+    void push_back(const T&amp; v) { data_.push_back(v); }
+    void insert(std::size_t pos, const T&amp; v) {
+        if (pos &gt; size()) { throw std::out_of_range("insert position"); }
+        data_.insert(data_.begin() + static_cast&lt;std::ptrdiff_t&gt;(pos), v);
+    }
+    std::size_t size() const { return data_.size(); }
+    T&amp; operator[](std::size_t i) { return data_[i]; }
+private:
+    std::vector&lt;T&gt; data_;
+};
+int main() {
+    ArrayList&lt;int&gt; list;
+    list.push_back(1);
+    list.push_back(3);
+    list.insert(1, 2);           // 1 2 3
+    for (std::size_t i = 0; i &lt; list.size(); ++i) { std::cout &lt;&lt; list[i] &lt;&lt; ' '; }
+    std::cout &lt;&lt; '\n';           // 1 2 3
+    return 0;
+}</code></pre></details>
+      </section>
+      <h2 id="s-10-2">10.2 单链表</h2>
+      <section class="ex" id="q-10-2-A1">
+      <div class="ex-head"><span class="ex-id">A1</span><span class="badge lv-a">识别</span><span class="ex-title">判断题：单链表删除节点时，删除头节点要特殊处理。</span></div>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　对</p>
+<p class="note">解析：删头 = 让 head_ 指向第二个节点；删中间需要维护 prev 指针。更优雅：用带头节点（哨兵节点）统一两种情况。</p></details>
+      </section>
+      <section class="ex" id="q-10-2-B1">
+      <div class="ex-head"><span class="ex-id">B1</span><span class="badge lv-b">理解</span><span class="ex-title">选择题：就地反转单链表需要几个指针（前驱、当前、后继）？</span></div>
+      <p>1 个</p>
+      <p>2 个</p>
+      <p>3 个</p>
+      <p>4 个</p>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　C</p>
+<p class="note">解析：经典三指针：prev、cur、next。先存 next，再改 cur-&gt;next = prev，然后整体前进。</p></details>
+      </section>
+      <section class="ex" id="q-10-2-C1">
+      <div class="ex-head"><span class="ex-id">C1</span><span class="badge lv-c">应用</span><span class="ex-title">改错题：下面析构只删了头节点，其余节点全部泄漏。</span></div>
+      <pre><code class="language-cpp">~LinkedList() { delete head_; }   // 只删了一个节点</code></pre>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　遍历释放全部节点：</p>
+<p class="note">解析：先存 next 再 delete 当前节点，逐个走完整条链。</p>
+<pre><code class="language-cpp">~LinkedList() { clear(); }
+void clear() {
+    while (head_ != nullptr) {
+        Node* next = head_-&gt;next;
+        delete head_;
+        head_ = next;
+    }
+    size_ = 0;
+}</code></pre></details>
+      </section>
+      <section class="ex" id="q-10-2-D1">
+      <div class="ex-head"><span class="ex-id">D1</span><span class="badge lv-d">创造</span><span class="ex-title">写程序：实现单链表（裸指针版）的 pushFront、print、clear，main 里头插 3 个数并打印。</span></div>
+      <p>提示：Node 结构含 value 和 next；头插新节点指向旧 head。</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　参考答案：</p>
+<p class="note">解析：头插 O(1)；析构必须遍历释放所有节点，否则泄漏。</p>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+template &lt;typename T&gt;
+class LinkedList {
+public:
+    ~LinkedList() { clear(); }
+    void pushFront(const T&amp; v) {
+        head_ = new Node{v, head_};
+        ++size_;
+    }
+    void clear() {
+        while (head_ != nullptr) {
+            Node* next = head_-&gt;next;
+            delete head_;
+            head_ = next;
+        }
+        size_ = 0;
+    }
+    void print() const {
+        for (Node* cur = head_; cur != nullptr; cur = cur-&gt;next) {
+            std::cout &lt;&lt; cur-&gt;value &lt;&lt; " -&gt; ";
+        }
+        std::cout &lt;&lt; "null\n";
+    }
+private:
+    struct Node { T value; Node* next; };
+    Node* head_ = nullptr;
+    std::size_t size_ = 0;
+};
+int main() {
+    LinkedList&lt;int&gt; list;
+    list.pushFront(1);
+    list.pushFront(2);
+    list.pushFront(3);
+    list.print();   // 3 -&gt; 2 -&gt; 1 -&gt; null
+    return 0;
+}</code></pre></details>
+      </section>
+      <h2 id="s-10-3">10.3 调试与对拍</h2>
+      <section class="ex" id="q-10-3-A1">
+      <div class="ex-head"><span class="ex-id">A1</span><span class="badge lv-a">识别</span><span class="ex-title">判断题：g++ -fsanitize=address,undefined 能精确定位越界、泄漏和未定义行为。</span></div>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　对</p>
+<p class="note">解析：AddressSanitizer 直接告诉你“第 27 行越界写 4 字节”“第 15 行申请的内存泄漏了”，写数据结构作业前先跑一遍。</p></details>
+      </section>
+      <section class="ex" id="q-10-3-B1">
+      <div class="ex-head"><span class="ex-id">B1</span><span class="badge lv-b">理解</span><span class="ex-title">选择题：编译时加哪个宏可以关闭 assert？</span></div>
+      <p>-DNDEBUG</p>
+      <p>-DDEBUG</p>
+      <p>-O0</p>
+      <p>-Werror</p>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　A</p>
+<p class="note">解析：-DNDEBUG 定义 NDEBUG，assert 全部失效，用于发布版本。</p></details>
+      </section>
+      <section class="ex" id="q-10-3-C1">
+      <div class="ex-head"><span class="ex-id">C1</span><span class="badge lv-c">应用</span><span class="ex-title">改错题：下面代码越界访问，sanitizer 会立刻报错。</span></div>
+      <pre><code class="language-cpp">int a[5]{1, 2, 3, 4, 5};
+for (int i = 0; i &lt;= 5; ++i) { std::cout &lt;&lt; a[i]; }   // i=5 越界！</code></pre>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　for (int i = 0; i &lt; 5; ++i) { std::cout &lt;&lt; a[i]; }   // 改成 &lt; 5</p>
+<p class="note">解析：数组下标合法范围是 0..4。写 &lt;= 5 就会越界读。</p></details>
+      </section>
+      <section class="ex" id="q-10-3-D1">
+      <div class="ex-head"><span class="ex-id">D1</span><span class="badge lv-d">创造</span><span class="ex-title">写程序：写一个“随机对拍”骨架——固定种子生成 1000 个随机数，你的函数（比如手写 max）和标准答案比较，不一致就报错。</span></div>
+      <p>提示：std::mt19937 gen(12345); 固定种子保证可复现。</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　参考答案：</p>
+<p class="note">解析：对拍 = 把你的实现和标准实现跑同样输入再比较。固定种子可复现，是验证数据结构正确性最有效的手段。</p>
+<pre><code class="language-cpp">#include &lt;cassert&gt;
+#include &lt;iostream&gt;
+#include &lt;random&gt;
+int myMax(int a, int b) { return a &gt; b ? a : b; }
+int main() {
+    std::mt19937 gen(12345);
+    std::uniform_int_distribution&lt;int&gt; dist(-100, 100);
+    for (int step = 0; step &lt; 1000; ++step) {
+        int a = dist(gen), b = dist(gen);
+        int got = myMax(a, b);
+        int expect = (a &gt; b ? a : b);
+        assert(got == expect);   // 不一致立刻停下
+    }
+    std::cout &lt;&lt; "stress test passed\n";
+    return 0;
+}</code></pre></details>
+      </section>
+      <div class="tip"><b>📚 相关概念：</b><a href="../../../knowledge/index.html#cpp-compile-link">编译与链接</a> · <a href="../../../knowledge/index.html#stl">STL</a> · <a href="../../../knowledge/index.html#map-set">map / set</a> · <a href="../../../knowledge/index.html#iterator">迭代器</a></div>
+      <div class="lesson-nav"><a href="09-practice.html">← 第 9 章</a><a href="11-practice.html">第 11 章 →</a></div>
+    </article>
+
+  <script src="../../../assets/highlight.min.js"></script>
+  <script src="../../../assets/article.js"></script>
+  <script src="../../../assets/interact.js"></script>
+  <script src="../../../assets/search.js"></script>
+  <script src="../../../assets/giscus-config.js"></script>
+  <script src="../../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

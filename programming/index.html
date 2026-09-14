@@ -40,49 +40,42 @@
     <header>
       <a class="back" href="../index.html">← 返回博客主页</a>
       <h1>编程语言分享</h1>
-      <div class="meta">red wenzi · 2026-09-15 · 学习路线 · 4 门语言全部上线 · 共 37 章 146 道练习</div>
+      <div class="meta">red wenzi · 2026-09-15 · 学习路线 · 4 门语言 · C++ 已上线</div>
     </header>
 
     <article>
-<div class="tip">🎯 <b>这条线是什么：</b>把每门编程语言的学习资料整理成能直接照着学的教材——有讲解、有示例、有练习、有答案，所有代码都经过真实的编译器 / 解释器验证。</div>
-      <div class="tip">🗺️ <b>推荐路线：</b>C（底层直觉）→ C++（系统 + 算法）→ Java（面向对象生态）→ Python（脚本 + 数据）。也可以按已有基础跳着学：学过 C 就直接进 C++；只想做数据处理就先看 Python。</div>
+<div class="tip">🎯 <b>这条线是什么：</b>把每门编程语言的学习资料整理成能直接照着学的教材——有概念、有示例、有练习、有答案，全部代码实测可编译。</div>
+      <div class="tip">🗺️ <b>推荐路线：</b>C（底层直觉）→ <b>C++</b>（系统 + 算法）→ Java（面向对象生态）→ Python（脚本 + 数据）。也可以按已有基础跳着学，每门语言都可以单独看。</div>
 
       <h2>四门语言，按这个顺序走</h2>
       <div class="cards">
-        <div class="card"><h3>C 语言 <span style="font-size:13px;color:#6a6a6a">✅ 已上线 · 8 章 16 题</span></h3><p>把内存讲明白的语言。指针、数组、结构体、动态内存，以及 gcc 编译与多文件工程。</p><p style="color:#6a6a6a;font-size:14px">🎯 完全零基础，或想补“底层直觉”再学 C++ / 数据结构的人。</p><p style="color:#6a6a6a;font-size:13px">🔧 配套：编译命令统一 gcc -std=c17 -Wall -Wextra · 全部代码实测</p><p style="margin-top:10px"><a href="c/index.html">进入学习路线 →</a></p></div><div class="card"><h3>C++ <span style="font-size:13px;color:#6a6a6a">✅ 已上线 · 13 章 98 题</span></h3><p>从第一个程序讲到模板、STL、手写数据结构与十种算法思想；每节有练习、每题有参考代码、每章有综合练习。</p><p style="color:#6a6a6a;font-size:14px">🎯 有 C 或 Java 基础、想系统补齐 C++ 到“能写数据结构”的人。</p><p style="color:#6a6a6a;font-size:13px">🔧 配套：13 章 + 全部练习索引 · 6 张示意图 · 166 个代码块零警告编译</p><p style="margin-top:10px"><a href="cpp/index.html">进入学习路线 →</a></p></div><div class="card"><h3>Java <span style="font-size:13px;color:#6a6a6a">✅ 已上线 · 8 章 16 题</span></h3><p>JVM 与字节码、类型与字符串、类与对象、继承与接口、集合框架、异常与文件、Stream 与实战。</p><p style="color:#6a6a6a;font-size:14px">🎯 学过 C/C++ 想换生态，或课程 / 实习需要 Java 的人。</p><p style="color:#6a6a6a;font-size:13px">🔧 配套：JDK 21 实测（含 record、switch 表达式、Stream）</p><p style="margin-top:10px"><a href="java/index.html">进入学习路线 →</a></p></div><div class="card"><h3>Python <span style="font-size:13px;color:#6a6a6a">✅ 已上线 · 8 章 16 题</span></h3><p>脚本与 REPL、动态类型与字符串、四种内置容器、函数与模块、文件异常、面向对象、pandas 数据处理。</p><p style="color:#6a6a6a;font-size:14px">🎯 想快速把想法跑起来、做数据处理与自动化的人。</p><p style="color:#6a6a6a;font-size:13px">🔧 配套：CPython 3.12 实测 · 第 8 章接入 pandas</p><p style="margin-top:10px"><a href="python/index.html">进入学习路线 →</a></p></div>
+        <div class="card"><h3>C <span style="font-size:13px;color:#6a6a6a">🚧 整理中</span></h3><p>把 C 语言的核心（指针、内存、结构体、预处理器）单独讲一遍，作为 C++ 的前置。</p><p style="color:#6a6a6a;font-size:14px">🎯 适合完全零基础或想补“底层直觉”的人。</p><p class="soon" style="margin-top:10px;color:#9a9a9a">内容整理中，先看 C++ 那条线 →</p></div><div class="card"><h3>C++ <span style="font-size:13px;color:#6a6a6a">✅ 已上线 · 13 章 98 题</span></h3><p>从第一个程序讲到模板、STL、数据结构与算法思想，每节有练习、每题有参考代码。</p><p style="color:#6a6a6a;font-size:14px">🎯 适合有 C 或 Java 基础、想系统补 C++ 的人。</p><p style="margin-top:10px"><a href="cpp/index.html">进入 C++ 教材目录 →</a> · <a href="cpp/problems.html">全部 98 道练习 →</a></p></div><div class="card"><h3>Java <span style="font-size:13px;color:#6a6a6a">🚧 规划中</span></h3><p>面向对象、集合框架、JVM 与并发入门；和 C++ 对照讲，两边都能更清楚。</p><p style="color:#6a6a6a;font-size:14px">🎯 适合学过 C++ 想换生态，或课程需要 Java 的人。</p><p class="soon" style="margin-top:10px;color:#9a9a9a">内容整理中，先看 C++ 那条线 →</p></div><div class="card"><h3>Python <span style="font-size:13px;color:#6a6a6a">🚧 规划中</span></h3><p>语法速通 + 数据分析方向（pandas / matplotlib），衔接博客里的数据科学线。</p><p style="color:#6a6a6a;font-size:14px">🎯 适合想快速上手做数据、做脚本的人。</p><p class="soon" style="margin-top:10px;color:#9a9a9a">内容整理中，先看 C++ 那条线 →</p></div>
       </div>
 
-      <h2>怎么选：一张对照表</h2>
-      <table>
-        <thead><tr><th>#</th><th>语言 / 适合谁</th><th>状态</th></tr></thead>
-        <tbody><tr><td style="width:40px">1</td><td><a href="c/index.html"><b>C 语言</b></a><br><span style="font-size:13px;color:#6a6a6a">完全零基础，或想补“底层直觉”再学 C++ / 数据结构的人。</span></td><td style="width:150px;color:#1f3a5f;font-size:13px">✅ 已上线 · 8 章 16 题</td></tr><tr><td style="width:40px">2</td><td><a href="cpp/index.html"><b>C++</b></a><br><span style="font-size:13px;color:#6a6a6a">有 C 或 Java 基础、想系统补齐 C++ 到“能写数据结构”的人。</span></td><td style="width:150px;color:#1f3a5f;font-size:13px">✅ 已上线 · 13 章 98 题</td></tr><tr><td style="width:40px">3</td><td><a href="java/index.html"><b>Java</b></a><br><span style="font-size:13px;color:#6a6a6a">学过 C/C++ 想换生态，或课程 / 实习需要 Java 的人。</span></td><td style="width:150px;color:#1f3a5f;font-size:13px">✅ 已上线 · 8 章 16 题</td></tr><tr><td style="width:40px">4</td><td><a href="python/index.html"><b>Python</b></a><br><span style="font-size:13px;color:#6a6a6a">想快速把想法跑起来、做数据处理与自动化的人。</span></td><td style="width:150px;color:#1f3a5f;font-size:13px">✅ 已上线 · 8 章 16 题</td></tr></tbody>
-      </table>
-
-      <h2>三条线的关系</h2>
-      <ul>
-        <li><b>C → C++：</b>C++ 的指针、数组、结构体、编译链接这些概念都来自 C。先学 C 再学 C++，你会知道每层抽象下面是什么。</li>
-        <li><b>C++ → Java：</b>Java 去掉了指针和手动内存管理，代之以引用和垃圾回收。学过 C++ 之后，Java 的“为什么没有析构函数”“为什么对象一定在堆上”都能秒懂。</li>
-        <li><b>Java → Python：</b>两者的面向对象写法相似，但 Python 更短、更灵活：动态类型、推导式、内置容器。Java 的工程化经验（包、异常、集合）反过来让你写 Python 时更规范。</li>
-        <li><b>Python 与 C/C++ 的分工：</b>要跑得快、要控制内存、要写数据结构——用 C/C++；要处理数据、写脚本、做实验——用 Python。真实项目里常常两者混用。</li>
-      </ul>
+      <h2>现在可以从这里开始</h2>
+      <div class="post" style="background:linear-gradient(135deg,#eef6ff,#f5fbf9);border:1px solid rgba(0,113,227,.2);border-radius:22px;padding:22px 26px">
+        <div>
+          <h3 style="margin-bottom:6px"><a href="cpp/index.html">C++ 新手进阶教材（边学边练）</a></h3>
+          <p style="color:#3d4552">13 章 · 98 道练习 · 6 张示意图。覆盖：程序怎么跑起来 → 类型与流程 → 函数与引用 → 指针与内存 → 类与对象 → 模板 → STL 容器与算法 → 现代 C++ → 手写数据结构 → 十种算法思想 → 调试构建测试 → 数据结构与算法补遗。</p>
+          <p><a href="cpp/index.html">阅读教材目录 →</a></p>
+        </div>
+      </div>
 
       <h2>这套资料怎么用</h2>
       <ul>
-        <li><b>先看语言目录页</b>：每门语言的首页都有章节导航和环境准备。</li>
-        <li><b>边读边敲</b>：示例代码都写全了（含需要的 include / import），复制就能编译运行。</li>
-        <li><b>先做后看</b>：练习的答案默认折叠，先自己写，再展开对照。</li>
-        <li><b>卡住查概念</b>：文中出现的术语都在 <a href="../knowledge/index.html">📚 知识大全</a> 里有词条。</li>
+        <li><b>先看目录页</b>：里面有四周学习计划、每章练习数量和推荐顺序。</li>
+        <li><b>边读边敲</b>：示例代码都补齐了 <code>#include</code>，复制到 <code>app.cpp</code> 就能编译。</li>
+        <li><b>先做后看</b>：练习的答案默认折叠着，先自己写，再展开对照。</li>
+        <li><b>卡住了查概念</b>：文中出现的术语都在 <a href="../knowledge/index.html">📚 知识大全</a> 里有词条。</li>
       </ul>
 
-      <div class="warn">⚙️ 验证环境：C 用 gcc 16（-std=c17 -Wall -Wextra -Wpedantic）、C++ 用 g++ 16（-std=c++17）、Java 用 JDK 21、Python 用 CPython 3.12。所有示例与参考答案都跑过并通过了输出比对；Windows 终端下 <code>.\app.exe</code> 对应 macOS / Linux 的 <code>./app</code>。</div>
+      <div class="warn">⚙️ 环境约定：代码用 <code>g++ -std=c++17 -Wall -Wextra -Wpedantic</code> 实测通过；示例以 Windows PowerShell 为主，macOS / Linux 把 <code>.\app.exe</code> 换成 <code>./app</code>。</div>
 
       <div class="tip"><b>📚 本文概念都在知识大全：</b>
-      <p style="margin-top:6px"><a href="../knowledge/index.html#c-language">C 语言</a> ·
-      <a href="../knowledge/index.html#cpp-compile-link">编译与链接</a> ·
-      <a href="../knowledge/index.html#jvm">JVM 与字节码</a> ·
-      <a href="../knowledge/index.html#java-collections">集合框架</a> ·
-      <a href="../knowledge/index.html#python">Python</a> ·
-      <a href="../knowledge/index.html#pandas">pandas</a></p></div>
+      <p style="margin-top:6px"><a href="../knowledge/index.html#cpp-compile-link">编译与链接</a> ·
+      <a href="../knowledge/index.html#stl">STL</a> ·
+      <a href="../knowledge/index.html#raii">RAII</a> ·
+      <a href="../knowledge/index.html#complexity">时间复杂度</a></p></div>
     </article>
 
   <script src="../assets/highlight.min.js"></script>

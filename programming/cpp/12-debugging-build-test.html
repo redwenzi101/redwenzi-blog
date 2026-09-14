@@ -50,11 +50,11 @@
       <h2 id="s-12-1">12.1 三件套：警告、断言、sanitizer</h2>
       <p>新手最常见的损失是：程序“看起来能跑”，结果悄悄错了。下面三件工具专门抓这类问题，而且都是免费的。</p>
       <h3>第一件：把警告全开</h3>
-      <pre><code class="language-cpp">g++ -std=c++17 -Wall -Wextra -Wpedantic -Wshadow -Wconversion -o app app.cpp</code></pre>
+      <pre><code class="language-bash">g++ -std=c++17 -Wall -Wextra -Wpedantic -Wshadow -Wconversion -o app app.cpp</code></pre>
       <p>-Wall -Wextra 打开绝大多数常用警告；-Wpedantic 拒绝非标准扩展；-Wshadow 提示变量遮蔽外层同名变量；-Wconversion 提示会丢精度的隐式转换（会和 size_t/迭代器混用冲突，可按需开）。</p>
       <div class="warn"><b>⚠️ 易错点</b>　“改了警告还能跑”是最贵的心态。C++ 里未初始化变量、类型截断、漏 return，很多时候只是警告。</div>
       <h3>第二件：sanitizer 抓内存错误</h3>
-      <pre><code class="language-cpp">g++ -std=c++17 -g -fsanitize=address,undefined -o app app.cpp</code></pre>
+      <pre><code class="language-bash">g++ -std=c++17 -g -fsanitize=address,undefined -o app app.cpp</code></pre>
       <p>MSVC 上的对应写法是 cl /fsanitize=address /Zi app.cpp。开了之后，越界读写、释放后使用、双重释放、整数溢出等会直接在出错的那一行报错并中止。</p>
       <pre><code class="language-cpp">int a[3]{};
 int i{3};
@@ -89,10 +89,10 @@ int main() {
       </section>
       <h2 id="s-12-2">12.2 调试器：断点、单步、看变量</h2>
       <p>打印调试（到处插 cout）在程序小的时候够用，但一旦是几百行的多文件工程，调试器能省掉大量来回。</p>
-      <pre><code class="language-cpp">g++ -std=c++17 -g -O0 -o app app.cpp     # -g 保留调试信息，-O0 关优化</code></pre>
+      <pre><code class="language-bash">g++ -std=c++17 -g -O0 -o app app.cpp     # -g 保留调试信息，-O0 关优化</code></pre>
       <p>然后用 gdb ./app 进入调试器。最常用的命令只有这几个：</p>
       <table><thead><tr><th>命令</th><th>作用</th></tr></thead><tbody><tr><td>break 行号 / 函数名</td><td>下断点（b main、b app.cpp:42）</td></tr><tr><td>run</td><td>开始运行，命中断点停下</td></tr><tr><td>next / n</td><td>单步执行，不进入函数内部</td></tr><tr><td>step / s</td><td>单步执行，进入函数内部</td></tr><tr><td>print 变量 / p</td><td>查看变量的值</td></tr><tr><td>bt（backtrace）</td><td>打印调用栈，看是谁调用了当前函数</td></tr><tr><td>watch 变量</td><td>变量变化时自动停下</td></tr><tr><td>continue / c</td><td>继续运行到下一个断点</td></tr><tr><td>quit</td><td>退出</td></tr></tbody></table>
-      <pre><code class="language-cpp"># 一个典型会话
+      <pre><code class="language-bash"># 一个典型会话
 $ gdb ./app
 (gdb) break app.cpp:12
 (gdb) run
@@ -140,7 +140,7 @@ int main() {
       </section>
       <h2 id="s-12-3">12.3 CMake：把多文件工程管起来</h2>
       <p>文件一多，“编译命令”就开始变成负担：加了新 .cpp 要改命令、想开 sanitizer 要改命令、换台电脑路径又不一样。CMake 的作用是把这些写进一个配置文件。</p>
-      <pre><code class="language-cpp"># CMakeLists.txt
+      <pre><code class="language-cmake"># CMakeLists.txt
 cmake_minimum_required(VERSION 3.16)
 project(cpp_learn CXX)
 
@@ -174,7 +174,7 @@ cmake --build build</code></pre>
       <div class="samples"><div><div class="io-cap">样例输入</div><pre class="io-pre"><code>（本题无输入）</code></pre></div><div><div class="io-cap">样例输出</div><pre class="io-pre"><code>9</code></pre></div></div>
       <p class="hint">💡 <b>提示</b>　把三个文件都列进 add_executable；头文件不用列（会被自动跟踪）。</p>
       <details class="ans"><summary>✅ 查看参考答案与解析</summary>
-<pre><code class="language-cpp">cmake_minimum_required(VERSION 3.16)
+<pre><code class="language-cmake">cmake_minimum_required(VERSION 3.16)
 project(square_demo CXX)
 
 set(CMAKE_CXX_STANDARD 17)

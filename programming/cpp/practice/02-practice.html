@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C++ 练习册 第 2 章 变量、类型与流程控制 · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../../assets/article.css">
+  <link rel="stylesheet" href="../../../assets/theme.css">
+  <link rel="stylesheet" href="../../../assets/course.css?v=20260915">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="index.html">← 练习册目录</a>
+      <h1>第 2 章　变量、类型与流程控制</h1>
+      <div class="meta">red wenzi · 2026-09-15 · 编程语言 · C++ · 练习册 · 19 题</div>
+    </header>
+
+    <article>
+<div class="tip">📝 <b>本章练习：</b>19 题（A 识别 / B 理解 / C 改错 / D 写程序）。先自己做完再看答案——A、B 档不翻书做，C、D 档必须真的编译运行。</div>
+      <h2 id="s-2-1">2.1 变量与初始化</h2>
+      <section class="ex" id="q-2-1-A1">
+      <div class="ex-head"><span class="ex-id">A1</span><span class="badge lv-a">识别</span><span class="ex-title">判断题：int a; 不初始化就读取它的值，是未定义行为。</span></div>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　对</p>
+<p class="note">解析：C++ 不强制初始化局部变量，但不初始化就读是未定义行为。最省事的保证有值写法：int x{};（得到 0）。</p></details>
+      </section>
+      <section class="ex" id="q-2-1-A2">
+      <div class="ex-head"><span class="ex-id">A2</span><span class="badge lv-a">识别</span><span class="ex-title">判断题：int n{3.14}; 会编译报错。</span></div>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　对</p>
+<p class="note">解析：花括号初始化禁止窄化转换，3.14 塞进 int 会丢小数，编译器直接拦住。而 int n = 3.14; 只是警告，静默变成 3。</p></details>
+      </section>
+      <section class="ex" id="q-2-1-B1">
+      <div class="ex-head"><span class="ex-id">B1</span><span class="badge lv-b">理解</span><span class="ex-title">选择题：std::vector&lt;int&gt; v{5}; 创建的是什么？</span></div>
+      <p>5 个 0</p>
+      <p>1 个元素，值是 5</p>
+      <p>5 个 5</p>
+      <p>编译错误</p>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　B</p>
+<p class="note">解析：v{5} 是列表初始化：一个元素 5。而 v(5) 是构造函数：5 个 0。这是 vector 的经典误会，记住 {} 和 () 不一样。</p></details>
+      </section>
+      <section class="ex" id="q-2-1-C1">
+      <div class="ex-head"><span class="ex-id">C1</span><span class="badge lv-c">应用</span><span class="ex-title">改错题：下面代码静默丢掉小数部分，要求改成“要么编译报错、要么明确告诉编译器我要转换”。</span></div>
+      <pre><code class="language-cpp">double d = 3.9;
+int i = d;      // 静默截断成 3，编译器可能只给警告</code></pre>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　int i = static_cast&lt;int&gt;(d);  // 显式转换，语义清楚</p>
+<p class="note">解析：C++ 里推荐用四种命名转换（static_cast 等），别用 C 风格 (int)d，它把四种转换混在一起，出问题难查。</p>
+<pre><code class="language-cpp">// 或者如果希望编译器拦住：int i{d};（窄化报错）</code></pre></details>
+      </section>
+      <section class="ex" id="q-2-1-D1">
+      <div class="ex-head"><span class="ex-id">D1</span><span class="badge lv-d">创造</span><span class="ex-title">写程序：声明一个 int、一个 double、一个 std::string，分别初始化后输出它们的值。</span></div>
+      <p>提示：用花括号初始化；string 要 #include &lt;string&gt;。</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　参考答案：</p>
+<p class="note">解析：输出：7 3.5 hi。</p>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+int main() {
+    int n{7};
+    double d{3.5};
+    std::string s{"hi"};
+    std::cout &lt;&lt; n &lt;&lt; ' ' &lt;&lt; d &lt;&lt; ' ' &lt;&lt; s &lt;&lt; '\n';
+    return 0;
+}</code></pre></details>
+      </section>
+      <h2 id="s-2-2">2.2 基本类型与溢出</h2>
+      <section class="ex" id="q-2-2-A1">
+      <div class="ex-head"><span class="ex-id">A1</span><span class="badge lv-a">识别</span><span class="ex-title">判断题：C++ 里有符号整数溢出是未定义行为，编译器优化后结果可能完全无法预测。</span></div>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　对</p>
+<p class="note">解析：Java 里 int 溢出是回绕成确定的数；C++ 里溢出是未定义行为，必须主动避免。</p></details>
+      </section>
+      <section class="ex" id="q-2-2-A2">
+      <div class="ex-head"><span class="ex-id">A2</span><span class="badge lv-a">识别</span><span class="ex-title">判断题：Windows 64 位下，long 是 4 字节；Linux 64 位下是 8 字节。</span></div>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　对</p>
+<p class="note">解析：C++ 只保证 long 不小于 int。要精确宽度用 &lt;cstdint&gt; 的 int32_t / int64_t。</p></details>
+      </section>
+      <section class="ex" id="q-2-2-B1">
+      <div class="ex-head"><span class="ex-id">B1</span><span class="badge lv-b">理解</span><span class="ex-title">选择题：累加、乘法、下标计算一旦可能超过约 21 亿（2^31-1），应该用什么类型？</span></div>
+      <p>int</p>
+      <p>long long</p>
+      <p>short</p>
+      <p>bool</p>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　B</p>
+<p class="note">解析：int 最大约 21 亿；long long 至少 64 位，是算法题里的默认选择。</p></details>
+      </section>
+      <section class="ex" id="q-2-2-C1">
+      <div class="ex-head"><span class="ex-id">C1</span><span class="badge lv-c">应用</span><span class="ex-title">改错题：下面位运算在 int 上溢出，要求改成安全的写法。</span></div>
+      <pre><code class="language-cpp">int mask = 1 &lt;&lt; 31;   // 对 int 是溢出（未定义行为）</code></pre>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　long long mask = 1LL &lt;&lt; 31;   // 先把 1 提升成 long long 再移位</p>
+<p class="note">解析：1 &lt;&lt; 31 已经越过 int 的最高位。加 LL 后缀让字面量成为 long long，移位结果安全。</p></details>
+      </section>
+      <section class="ex" id="q-2-2-D1">
+      <div class="ex-head"><span class="ex-id">D1</span><span class="badge lv-d">创造</span><span class="ex-title">写程序：读入两个整数（可能很大），输出它们的乘积。</span></div>
+      <p>提示：读入用 long long 类型。</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　参考答案：</p>
+<p class="note">解析：两数相乘可能超过 int 范围，用 long long 保险。</p>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+int main() {
+    long long a, b;
+    std::cin &gt;&gt; a &gt;&gt; b;
+    std::cout &lt;&lt; a * b &lt;&lt; '\n';
+    return 0;
+}</code></pre></details>
+      </section>
+      <h2 id="s-2-3">2.3 运算符与流程控制</h2>
+      <section class="ex" id="q-2-3-A1">
+      <div class="ex-head"><span class="ex-id">A1</span><span class="badge lv-a">识别</span><span class="ex-title">判断题：C++ 里 5 / 2 的结果是 2。</span></div>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　对</p>
+<p class="note">解析：整数除法向零取整，和 Java 相同。要小数结果必须让一边是浮点：5.0 / 2。</p></details>
+      </section>
+      <section class="ex" id="q-2-3-A2">
+      <div class="ex-head"><span class="ex-id">A2</span><span class="badge lv-a">识别</span><span class="ex-title">判断题：0.1 + 0.2 == 0.3 在 C++ 里结果为 true。</span></div>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　错</p>
+<p class="note">解析：浮点数二进制不精确，0.1+0.2 不等于 0.3。判等要用 fabs(a-b) &lt; 1e-9 这类容差写法。</p></details>
+      </section>
+      <section class="ex" id="q-2-3-B1">
+      <div class="ex-head"><span class="ex-id">B1</span><span class="badge lv-b">理解</span><span class="ex-title">选择题：if (x = 5) 会怎么样？</span></div>
+      <p>编译错误</p>
+      <p>等价于 if (x == 5)</p>
+      <p>永远为真</p>
+      <p>永远为假</p>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　C</p>
+<p class="note">解析：= 是赋值，把 5 赋给 x，非零即真，所以永远为真。想比较要用 ==。编译器通常只给个警告。</p></details>
+      </section>
+      <section class="ex" id="q-2-3-C1">
+      <div class="ex-head"><span class="ex-id">C1</span><span class="badge lv-c">应用</span><span class="ex-title">改错题：下面的 switch 输入 '+' 时结果不对，找出原因。</span></div>
+      <pre><code class="language-cpp">switch (op) {
+    case '+': result += v;
+    case '-': result -= v;
+    default: break;
+}</code></pre>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　case '+' 和 case '-' 都缺 break，会“贯穿”执行。给每个 case 补 break。</p>
+<p class="note">解析：不加 break 会贯穿到下一个 case，这是 C 系语言的传统，也是经典 bug。</p></details>
+      </section>
+      <section class="ex" id="q-2-3-D1">
+      <div class="ex-head"><span class="ex-id">D1</span><span class="badge lv-d">创造</span><span class="ex-title">写程序：读入一个整数 n，输出它是奇数还是偶数。</span></div>
+      <p>提示：用 n % 2 判断。</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　参考答案：</p>
+<p class="note">解析：条件必须是能转成 bool 的表达式。</p>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+int main() {
+    int n;
+    std::cin &gt;&gt; n;
+    if (n % 2 == 0) { std::cout &lt;&lt; "even\n"; }
+    else { std::cout &lt;&lt; "odd\n"; }
+    return 0;
+}</code></pre></details>
+      </section>
+      <h2 id="s-2-4">2.4 const 与 constexpr</h2>
+      <section class="ex" id="q-2-4-A1">
+      <div class="ex-head"><span class="ex-id">A1</span><span class="badge lv-a">识别</span><span class="ex-title">判断题：constexpr 函数可以在编译期就算出结果。</span></div>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　对</p>
+<p class="note">解析：constexpr int square(int x) { return x*x; } 用编译期常量调用时，编译器直接算出结果，还能配 static_assert 做编译期断言。</p></details>
+      </section>
+      <section class="ex" id="q-2-4-B1">
+      <div class="ex-head"><span class="ex-id">B1</span><span class="badge lv-b">理解</span><span class="ex-title">选择题：定义常量时，优先级正确的顺序是？</span></div>
+      <p>宏 &gt; constexpr &gt; const</p>
+      <p>constexpr &gt; const &gt; 宏</p>
+      <p>const &gt; constexpr &gt; 宏</p>
+      <p>三者一样</p>
+      <p>答：______________</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　B</p>
+<p class="note">解析：宏是纯文本替换，没有类型和作用域，能不用就不用；constexpr 能做编译期计算，优先于 const。</p></details>
+      </section>
+      <section class="ex" id="q-2-4-C1">
+      <div class="ex-head"><span class="ex-id">C1</span><span class="badge lv-c">应用</span><span class="ex-title">改错题：下面用宏定义常量和函数，要求改成现代 C++ 写法。</span></div>
+      <pre><code class="language-cpp">#define PI 3.14159
+#define MAXN 100005
+#define SQUARE(x) ((x) * (x))</code></pre>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　constexpr double PI = 3.14159;</p>
+<p class="note">解析：宏不参与类型检查、没有作用域；constexpr 编译期计算且类型安全。</p>
+<pre><code class="language-cpp">constexpr int MAXN = 100005;
+constexpr int square(int x) { return x * x; }</code></pre></details>
+      </section>
+      <section class="ex" id="q-2-4-D1">
+      <div class="ex-head"><span class="ex-id">D1</span><span class="badge lv-d">创造</span><span class="ex-title">写程序：用 constexpr 定义数组长度，并写一个 constexpr 平方函数，用 static_assert 验证 5 的平方等于 25。</span></div>
+      <p>提示：static_assert(square(5) == 25); 写在 main 外面。</p>
+      <details class="ans"><summary>✅ 查看答案与解析 </summary>
+<p class="answer-line"><b>答案</b>　参考答案：</p>
+<p class="note">解析：static_assert 在编译期检查，不满足直接编译失败。</p>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+constexpr int square(int x) { return x * x; }
+static_assert(square(5) == 25);
+int main() {
+    constexpr int N = 100;
+    int a[N]{};   // 编译期常量可以当数组长度
+    std::cout &lt;&lt; square(3) &lt;&lt; '\n';   // 9
+    return 0;
+}</code></pre></details>
+      </section>
+      <div class="tip"><b>📚 相关概念：</b><a href="../../../knowledge/index.html#cpp-compile-link">编译与链接</a> · <a href="../../../knowledge/index.html#stl">STL</a> · <a href="../../../knowledge/index.html#map-set">map / set</a> · <a href="../../../knowledge/index.html#iterator">迭代器</a></div>
+      <div class="lesson-nav"><a href="01-practice.html">← 第 1 章</a><a href="03-practice.html">第 3 章 →</a></div>
+    </article>
+
+  <script src="../../../assets/highlight.min.js"></script>
+  <script src="../../../assets/article.js"></script>
+  <script src="../../../assets/interact.js"></script>
+  <script src="../../../assets/search.js"></script>
+  <script src="../../../assets/giscus-config.js"></script>
+  <script src="../../../assets/comments.js"></script>
+  <footer>
+      <p>© 2026 red wenzi · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>
