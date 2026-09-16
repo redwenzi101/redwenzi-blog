@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>red wenzi · 主页</title>
+  <meta name="description" content="red wenzi 的数字花园：编程语言学习路线、计算机基础、工程实践、AI 与数据实验；数据科学专业在读，记录学与做的过程。">
   <style>
     :root {
       --bg:#fbfbfd;
@@ -52,6 +53,7 @@
     .typed { margin-top:12px; font-size:16px; color:var(--sub); min-height:26px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
 
     section { padding:64px 0; }
+    section[id] { scroll-margin-top:70px; }
     .sec-head { margin-bottom:40px; }
     .sec-title { font-size:clamp(26px,4vw,34px); font-weight:700; letter-spacing:-.015em; color:var(--text); }
     .sec-sub { color:var(--sub); font-size:16px; margin-top:8px; }
@@ -72,11 +74,12 @@
     .card h3 { font-size:19px; font-weight:600; margin:18px 0 8px; color:var(--text); }
     .card p { color:var(--sub); font-size:15px; }
     .card a { position:relative; z-index:1; display:inline-block; margin-top:14px; font-size:14px; }
-    .card .soon { display:inline-block; margin-top:14px; color:var(--sub); font-size:13px; }
 
     .chips { display:flex; flex-wrap:wrap; gap:12px; }
     .chip { background:var(--surface); border:1px solid var(--line); color:var(--text); padding:9px 18px; border-radius:980px; font-size:14px; box-shadow:var(--shadow); transition:.3s var(--ease); }
     .chip:hover { transform:translateY(-2px); border-color:var(--accent); color:var(--accent); }
+    .chip-label { font-size:13px; font-weight:600; color:var(--sub); margin:20px 0 10px; letter-spacing:.02em; }
+    .chip-label:first-child { margin-top:0; }
 
     .post { display:flex; gap:24px; align-items:flex-start; background:var(--surface); border:1px solid var(--line); border-radius:22px; padding:26px 30px; margin-bottom:16px; box-shadow:var(--shadow); transition:transform .4s var(--ease); }
     .post:hover { transform:translateX(4px); }
@@ -84,6 +87,14 @@
     .post h3 { font-size:18px; font-weight:600; color:var(--text); }
     .post p { color:var(--sub); font-size:14px; margin-top:4px; }
     .post .tag { color:var(--accent); font-size:12px; margin-left:8px; }
+
+    .dir { margin-top:22px; }
+    .dir h3 { margin-top:0; }
+    .dir p { color:var(--sub); font-size:15px; margin:0 0 12px; }
+    .dir p:last-child { margin-bottom:0; }
+    .dir b { color:var(--text); }
+    .dir .none { color:#9a9a9a; }
+    .more { margin-top:18px; font-size:14px; color:var(--sub); }
 
     .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; align-items:start; }
     .stats-grid > div { background:var(--surface); border-radius:18px; padding:12px; box-shadow:var(--shadow); border:1px solid var(--line); }
@@ -100,11 +111,22 @@
     .reveal { opacity:0; transform:translateY(24px); transition:opacity .7s var(--ease),transform .7s var(--ease); }
     .reveal.show { opacity:1; transform:none; }
     @media (prefers-reduced-motion:reduce) { * { animation:none !important; transition:none !important; } .reveal { opacity:1; transform:none; } }
-    @media (max-width:640px){ header{padding:80px 0 56px} nav ul{gap:16px} }
+
+    /* 手机端：导航从「一行挤六个」改成「上标题 + 下换行菜单」，不再横向溢出 */
+    @media (max-width:640px){
+      header { padding:72px 0 48px; }
+      nav .wrap { height:auto; flex-direction:column; gap:10px; padding:10px 20px; }
+      nav ul { gap:14px; flex-wrap:wrap; justify-content:center; }
+      nav ul a { font-size:13px; }
+      .post { flex-direction:column; gap:6px; padding:20px 22px; }
+      .post .date { min-width:auto; }
+      .strip { grid-template-columns:1fr; }
+    }
   </style>
   <link rel="stylesheet" href="assets/theme.css">
 </head>
-<body>
+
+<body id="top">
   <div class="blobs"><div class="blob b1" data-parallax></div><div class="blob b2" data-parallax></div><div class="blob b3" data-parallax></div></div>
   <div id="progress"></div>
 
@@ -112,12 +134,12 @@
     <div class="wrap">
       <div class="logo">red<span>wenzi</span></div>
       <ul>
-        <li><a href="#about">关于</a></li>
-        <li><a href="#skills">技能</a></li>
-        <li><a href="#projects">项目</a></li>
+        <li><a href="#top">首页</a></li>
+        <li><a href="roadmap/index.html">学习路线</a></li>
         <li><a href="#blog">博客</a></li>
-        <li><a href="knowledge/index.html">知识</a></li>
-        <li><a href="tags/index.html">标签</a></li>
+        <li><a href="#projects">项目</a></li>
+        <li><a href="knowledge/index.html">知识大全</a></li>
+        <li><a href="#about">关于</a></li>
       </ul>
     </div>
   </nav>
@@ -126,54 +148,88 @@
     <div class="wrap">
       <span class="kicker">Personal Site</span>
       <h1>hi，我是 <span class="grad">red wenzi</span></h1>
-      <p class="lead">数据科学 · AI · 服务器 —— 让数据「说话」</p>
+      <p class="lead">数据科学 · AI · 服务器 —— 山东大学数据科学在读，让数据「说话」</p>
       <div class="typed" id="typed"></div>
     </div>
   </header>
 
   <main class="wrap">
-    <section id="about">
-      <div class="sec-head reveal">
-        <h2 class="sec-title">关于我</h2>
-        <p class="sec-sub">Data Alchemist · Code Artisan</p>
-        <div class="rule"></div>
-      </div>
-      <div class="strip">
-        <div class="stat reveal"><div class="num">🎓</div><div class="lab">山东大学 · 数据科学</div></div>
-        <div class="stat reveal"><div class="num">📍</div><div class="lab">现居济南</div></div>
-        <div class="stat reveal"><div class="num">⚡</div><div class="lab">「你跑不过我信不信」</div></div>
-        <div class="stat reveal"><div class="num">✨</div><div class="lab">保持热爱，持续折腾</div></div>
-      </div>
-      <div class="card reveal" style="margin-top:16px">
-        <p style="color:var(--sub)">除了数据分析，我也会在云上配 API、做接口接入，折腾本地大模型部署，让 AI 真正跑起来。</p>
-      </div>
-    </section>
 
-    <section id="skills">
+    <section id="blog">
       <div class="sec-head reveal">
-        <h2 class="sec-title">技术</h2>
-        <p class="sec-sub">平时在用的东西</p>
+        <h2 class="sec-title">🌱 最近在折腾</h2>
+        <p class="sec-sub">最新学的和做的，按日期倒序；做完的东西才写在这里</p>
         <div class="rule"></div>
       </div>
-      <div class="card reveal">
-        <div class="chips">
-          <span class="chip">C / C++</span>
-          <span class="chip">Java</span>
-          <span class="chip">Python</span>
-          <span class="chip">Web 开发</span>
-          <span class="chip">数据与 AI</span>
-          <span class="chip">Linux · 服务器</span>
-          <span class="chip">Git · GitHub</span>
-          <span class="chip">云端 API · 本地模型部署</span>
-          <span class="chip">Claude · GPT · DeepSeek 等主流大模型</span>
+
+      <div class="post reveal">
+        <div class="date">2026-09-16</div>
+        <div>
+          <h3>🔄 开始做「数据结构与算法」线</h3>
+          <p>从链表起步：每个数据结构和算法都用 C / C++ / Java / Python 四种语言各写一份完整可运行代码，变量命名对齐方便横向对照，并标注时间与空间复杂度。</p>
         </div>
       </div>
+
+      <div class="post reveal">
+        <div class="date">2026-09-15</div>
+        <div>
+          <h3><a href="programming/index.html">✅ 四门语言线全部上线 <span class="tag">37 章 · 146 题</span></a></h3>
+          <p>C 8 章 · C++ 13 章 · Java 8 章 · Python 8 章。每节有示例、每题有可运行参考代码，代码实测可编译。</p>
+          <p><a href="programming/index.html">进入编程语言分享 →</a></p>
+        </div>
+      </div>
+
+      <div class="post reveal">
+        <div class="date">2026-09-15</div>
+        <div>
+          <h3><a href="programming/cpp/practice/index.html">✅ C++ 教材补齐配套练习 <span class="tag">181 题练习册 + 98 题索引</span></a></h3>
+          <p>练习册按 A 识别 / B 理解 / C 改错 / D 写程序 四档编排，每题带答案与解析；想按题目顺序刷就进 98 题索引。</p>
+          <p><a href="programming/cpp/practice/index.html">打开 181 题练习册 →</a> · <a href="programming/cpp/problems.html">98 题索引 →</a></p>
+        </div>
+      </div>
+
+      <div class="post reveal">
+        <div class="date">2026-09-10</div>
+        <div>
+          <h3><a href="posts/build-blog-guide.html">✅ 建站与运维 2 篇 <span class="tag">域名 → 上线</span></a></h3>
+          <p>从「网站、网址、域名、服务器到底是什么」讲到「博客从买域名到配好 HTTPS 上线」，敏感信息全部用占位符示范。</p>
+          <p><a href="posts/web-domain-server-guide.html">域名与服务器科普 →</a> · <a href="posts/build-blog-guide.html">博客搭建指南 →</a></p>
+        </div>
+      </div>
+
+      <div class="post reveal">
+        <div class="date">2026-09-10</div>
+        <div>
+          <h3><a href="posts/ai-agent-guide.html">✅ AI 与大模型 3 篇 <span class="tag">入门 → 实操</span></a></h3>
+          <p>从「AI 是什么、能做什么」讲到「App / 命令行 / API 几种用法」，再到最小 Agent 与 RAG 的完整跑通流程。</p>
+          <p><a href="posts/what-is-ai.html">AI 是什么 →</a> · <a href="posts/ways-to-use-ai.html">怎么用 AI →</a> · <a href="posts/ai-agent-guide.html">Agent 与 RAG 实操 →</a></p>
+        </div>
+      </div>
+
+      <div class="post reveal">
+        <div class="date">2026-09-10</div>
+        <div>
+          <h3><a href="knowledge/index.html">✅ 知识大全 112 条词条 <span class="tag">随时可查</span></a></h3>
+          <p>网络与建站、AI 与大模型、编程语言三类概念，每条按「是什么 → 什么时候用 → 怎么用 → 相关词条」组织。</p>
+          <p><a href="knowledge/index.html">进入知识大全 →</a></p>
+        </div>
+      </div>
+
+      <div class="card reveal dir">
+        <h3>📚 按主题找</h3>
+        <p>💻 <b>编程语言线</b> · ✅ 37 章 146 题 —— <a href="programming/index.html">C / C++ / Java / Python 四门全上线 →</a></p>
+        <p>🧮 <b>计算机基础线</b> · 🔄 正在做 —— 数据结构与算法，从链表起步，四种语言对照</p>
+        <p>🏗️ <b>工程实践线</b> · 🔄 正在扩充 · 已上线 2 篇 —— <a href="posts/web-domain-server-guide.html">域名与服务器</a> · <a href="posts/build-blog-guide.html">博客搭建上线</a></p>
+        <p>🤖 <b>AI 与数据</b> · ✅ 3 篇 —— <a href="posts/what-is-ai.html">AI 是什么</a> · <a href="posts/ways-to-use-ai.html">怎么用 AI</a> · <a href="posts/ai-agent-guide.html">Agent 与 RAG</a></p>
+        <p>✍️ <b>随笔</b> · 1 篇 —— <span class="none">用数据讲一个故事（这篇还没有正文页）</span></p>
+      </div>
+      <p class="more">🏷️ <a href="tags/index.html">全部标签归档 →</a>　·　🗺️ <a href="roadmap/index.html">完整的依赖关系与规划 →</a></p>
     </section>
 
     <section id="projects">
       <div class="sec-head reveal">
         <h2 class="sec-title">项目</h2>
-        <p class="sec-sub">正在做和想做的事</p>
+        <p class="sec-sub">能点开的放这里，做完了才上来</p>
         <div class="rule"></div>
       </div>
       <div class="cards">
@@ -189,160 +245,50 @@
           <p>高校智库系统：资讯、知识库、评论与用户管理。</p>
           <a href="projects/think-tank.html">🔒 代码不公开 · 项目介绍 →</a>
         </div>
-        <div class="card reveal">
-          <div class="ico">📊</div>
-          <h3>DataViz Playground</h3>
-          <p>用 Python 把复杂数据变成一眼能看懂的图。</p>
-          <span class="soon">🚧 开发中</span>
-        </div>
-        <div class="card reveal">
-          <div class="ico">🤖</div>
-          <h3>CodeMate Bot</h3>
-          <p>智能学习助手：整理笔记、提醒打卡、陪你写代码。</p>
-          <span class="soon">🚧 开发中</span>
+      </div>
+
+      <div class="post reveal" style="margin-top:22px">
+        <div class="date" style="min-width:auto">🧪</div>
+        <div>
+          <h3>实验台 · 2 个项目开发中</h3>
+          <p>DataViz Playground（用 Python 把复杂数据变成一眼能看懂的图）与 CodeMate Bot（帮你整理笔记、提醒打卡、陪你写代码）。</p>
+          <p><a href="roadmap/index.html">看它们做到哪了 →</a></p>
         </div>
       </div>
     </section>
 
-    <section id="blog">
+    <section id="about">
       <div class="sec-head reveal">
-        <h2 class="sec-title">博客</h2>
-        <p class="sec-sub">文章按主题整理，遇到陌生词去「知识大全」查</p>
+        <h2 class="sec-title">关于我</h2>
+        <p class="sec-sub">Data Alchemist · Code Artisan</p>
         <div class="rule"></div>
       </div>
-      <div class="post reveal" style="background:linear-gradient(135deg,#eef6ff,#f5fbf9);border-color:rgba(0,113,227,.2)">
-        <div class="date" style="min-width:auto">📚</div>
-        <div>
-          <h3><a href="knowledge/index.html">知识大全 · 工具指南 <span class="tag">持续更新</span></a></h3>
-          <p>文章里出现的陌生概念，都收在这里：一条一个词条，随时补充。</p>
-          <p><a href="knowledge/index.html">进入知识大全 →</a></p>
-        </div>
-      </div>
-      <div class="post reveal" style="background:linear-gradient(135deg,#fff,#f7fbff);border-color:rgba(0,113,227,.15)">
-        <div class="date" style="min-width:auto">📌</div>
-        <div>
-          <h3>学习路径 <span class="tag">7 个板块</span></h3>
-          <p style="color:var(--sub)">已完成标 ✅，进行中/规划标 🚧。按需挑一条线读，遇到陌生词去「知识大全」。</p>
-        </div>
+      <div class="strip">
+        <div class="stat reveal"><div class="num">🎓</div><div class="lab">山东大学 · 数据科学</div></div>
+        <div class="stat reveal"><div class="num">📍</div><div class="lab">现居济南</div></div>
+        <div class="stat reveal"><div class="num">✨</div><div class="lab">保持热爱，持续折腾</div></div>
       </div>
 
-      <h3 style="margin:30px 0 14px;font-size:16px;color:var(--sub)">🧠 计算机基础线 <span style="color:#9a9a9a">· 主线 · 当前重点</span></h3>
-      <div class="post reveal">
-        <div class="date" style="min-width:auto">🗺️</div>
-        <div>
-          <p style="margin:0;color:var(--sub)">路线图：① 数据结构 🚧 → ② 计算机组成原理 🚧</p>
-          <p style="margin:6px 0 0;color:var(--sub)">当前主攻方向，正在更新中（计划每周一篇）。</p>
+      <div class="card reveal" style="margin-top:22px">
+        <p style="color:var(--sub)">除了数据分析，我也会在云上配 API、做接口接入，折腾本地大模型部署，让 AI 真正跑起来。</p>
+        <p class="chip-label">💻 语言</p>
+        <div class="chips">
+          <span class="chip">C / C++</span>
+          <span class="chip">Java</span>
+          <span class="chip">Python</span>
         </div>
-      </div>
-      <div class="cards">
-        <div class="soon-card reveal"><b>🚧 数据结构</b><p>递归 → 链表 → 栈队列 → 树 → 图 · 即将上线</p></div>
-        <div class="soon-card reveal"><b>🚧 计算机组成原理</b><p>进制 → 补码 → 流水线 → Cache · 即将上线</p></div>
-      </div>
-
-      <h3 style="margin:30px 0 14px;font-size:16px;color:var(--sub)">💻 编程语言分享 <span style="color:#9a9a9a">· C / C++ / Java / Python</span></h3>
-      <div class="post reveal" style="background:linear-gradient(135deg,#eef6ff,#f5fbf9);border-color:rgba(0,113,227,.2)">
-        <div class="date" style="min-width:auto">🗺️</div>
-        <div>
-          <p style="margin:0;color:var(--sub)">路线图：① C ✅ 已上线（8 章）→ ② C++ ✅ 已上线（13 章）→ ③ Java ✅ 已上线（8 章）→ ④ Python ✅ 已上线（8 章）· 共 37 章 146 道练习</p>
-          <p style="margin:6px 0 0"><a href="programming/index.html">进入编程语言分享 →</a></p>
+        <p class="chip-label">🏗️ 工程</p>
+        <div class="chips">
+          <span class="chip">Linux · 服务器</span>
+          <span class="chip">Git · GitHub</span>
+          <span class="chip">Web 开发</span>
         </div>
-      </div>
-      <div class="post reveal">
-        <div class="date">2026-09-15</div>
-        <div>
-          <h3><a href="programming/c/index.html">C 语言学习路线 <span class="tag">8 章 · 16 题</span></a></h3>
-          <p>指针、数组、结构体、动态内存与多文件工程；gcc 编译命令一次讲清。</p>
-          <p><a href="programming/c/index.html">阅读学习路线 →</a></p>
-        </div>
-      </div>
-      <div class="post reveal">
-        <div class="date">2026-09-15</div>
-        <div>
-          <h3><a href="programming/cpp/index.html">C++ 新手进阶教材（边学边练） <span class="tag">13 章 · 98 题</span></a></h3>
-          <p>从第一个程序讲到模板、STL、手写数据结构与十种算法思想；每题都有可运行参考代码。</p>
-          <p><a href="programming/cpp/index.html">阅读教材目录 →</a></p>
-        </div>
-      </div>
-      <div class="post reveal">
-        <div class="date">2026-09-15</div>
-        <div>
-          <h3><a href="programming/java/index.html">Java 学习路线 <span class="tag">8 章 · 16 题</span></a></h3>
-          <p>JVM 与字节码、类与对象、继承与接口、集合框架、异常与文件、Stream 与实战。</p>
-          <p><a href="programming/java/index.html">阅读学习路线 →</a></p>
-        </div>
-      </div>
-      <div class="post reveal">
-        <div class="date">2026-09-15</div>
-        <div>
-          <h3><a href="programming/python/index.html">Python 学习路线 <span class="tag">8 章 · 16 题</span></a></h3>
-          <p>容器与推导式、函数与模块、文件与异常、面向对象，最后一章用 pandas 做数据处理。</p>
-          <p><a href="programming/python/index.html">阅读学习路线 →</a></p>
-        </div>
-      </div>
-
-      <h3 style="margin:30px 0 14px;font-size:16px;color:var(--sub)">🏗️ 建站与运维线</h3>
-      <div class="post reveal">
-        <div class="date">2026-09-10</div>
-        <div>
-          <h3><a href="posts/web-domain-server-guide.html">网站、网址、域名、服务器：一次讲清楚 <span class="tag">科普</span></a></h3>
-          <p>不止做博客——个人主页、网盘、机器人、API、游戏服务器都能玩。</p>
-          <p><a href="posts/web-domain-server-guide.html">阅读全文 →</a></p>
-        </div>
-      </div>
-      <div class="post reveal">
-        <div class="date">2026-09-10</div>
-        <div>
-          <h3><a href="posts/build-blog-guide.html">博客搭建指南：从域名到上线 <span class="tag">指南</span></a></h3>
-          <p>域名、服务器、备案、HTTPS，一篇讲清楚我是怎么做的。</p>
-          <p><a href="posts/build-blog-guide.html">阅读完整指南 →</a></p>
-        </div>
-      </div>
-
-      <h3 style="margin:30px 0 14px;font-size:16px;color:var(--sub)">🤖 AI 与大模型线</h3>
-      <div class="post reveal">
-        <div class="date">2026-09-10</div>
-        <div>
-          <h3><a href="posts/what-is-ai.html">AI 是什么？它能做什么？ <span class="tag">入门</span></a></h3>
-          <p>从“会判断”到“会生成”，五大类能力、真实例子和边界，零基础也看得懂。</p>
-          <p><a href="posts/what-is-ai.html">阅读第一讲 →</a></p>
-        </div>
-      </div>
-      <div class="post reveal">
-        <div class="date">2026-09-10</div>
-        <div>
-          <h3><a href="posts/ways-to-use-ai.html">用 AI 的几种方式：App / 命令行 / API / 中转站 <span class="tag">AI</span></a></h3>
-          <p>官方网页、第三方客户端、终端、代码调 API、中转站和本地模型，怎么接一次讲清。</p>
-          <p><a href="posts/ways-to-use-ai.html">阅读实操教程 →</a></p>
-        </div>
-      </div>
-      <div class="post reveal">
-        <div class="date">2026-09-10</div>
-        <div>
-          <h3><a href="posts/ai-agent-guide.html">AI Agent 上手实操：从调 API 到最小 Agent <span class="tag">AI</span></a></h3>
-          <p>跟着代码跑：云端调用 → 本地模型 → 最小 Agent → RAG → 部署。</p>
-          <p><a href="posts/ai-agent-guide.html">阅读实操教程 →</a></p>
-        </div>
-      </div>
-
-      <h3 style="margin:30px 0 14px;font-size:16px;color:var(--sub)">📐 大学基础知识 <span style="color:#9a9a9a">· 🚧 规划中</span></h3>
-      <div class="cards">
-        <div class="soon-card reveal"><b>🚧 线性代数</b><p>从 AI / 数据场景倒推概念 · 规划中</p></div>
-        <div class="soon-card reveal"><b>🚧 高等数学</b><p>期末急救 + 应用视角 · 规划中</p></div>
-      </div>
-
-      <h3 style="margin:30px 0 14px;font-size:16px;color:var(--sub)">📊 数据科学线 <span style="color:#9a9a9a">· 🚧 规划中</span></h3>
-      <div class="cards">
-        <div class="soon-card reveal"><b>🚧 Python 数据分析</b><p>专业护城河 · 即将上线</p></div>
-        <div class="soon-card reveal"><b>🚧 数据可视化</b><p>让数据说话 · 即将上线</p></div>
-        <div class="soon-card reveal"><b>🚧 机器学习基础</b><p>从模型到应用 · 即将上线</p></div>
-      </div>
-
-      <h3 style="margin:30px 0 14px;font-size:16px;color:var(--sub)">✍️ 随笔</h3>
-      <div class="post reveal">
-        <div class="date">2026-09-10</div>
-        <div>
-          <h3>用数据讲一个故事 <span class="tag">数据</span></h3>
-          <p>为什么我痴迷数据可视化 —— 让数字开口说话。</p>
+        <p class="chip-label">🤖 AI 与数据</p>
+        <div class="chips">
+          <span class="chip">数据分析</span>
+          <span class="chip">云端 API</span>
+          <span class="chip">本地模型部署</span>
+          <span class="chip">Claude · GPT · DeepSeek 等主流大模型</span>
         </div>
       </div>
     </section>
@@ -354,9 +300,9 @@
         <div class="rule"></div>
       </div>
       <div class="stats-grid reveal">
-        <div><img src="https://dev-stats.mintimate.cn/api?username=redwenzi101&show_icons=true&count_private=true&title_color=0071e3&icon_color=00c7be&text_color=24292f&bg_color=ffffff&border_color=e1e4e8" alt="GitHub"></div>
-        <div><img src="https://streak-stats.demolab.com?user=redwenzi101&theme=default&hide_border=true&border_radius=8" alt="Streak"></div>
-        <div><img src="https://dev-stats.mintimate.cn/api/top-langs?username=redwenzi101&layout=compact&title_color=0071e3&text_color=24292f&bg_color=ffffff&border_color=e1e4e8&langs_count=8" alt="Languages"></div>
+        <div><img src="https://dev-stats.mintimate.cn/api?username=redwenzi101&show_icons=true&count_private=true&title_color=0071e3&icon_color=00c7be&text_color=24292f&bg_color=ffffff&border_color=e1e4e8" alt="GitHub 统计"></div>
+        <div><img src="https://streak-stats.demolab.com?user=redwenzi101&theme=default&hide_border=true&border_radius=8" alt="连续提交天数"></div>
+        <div><img src="https://dev-stats.mintimate.cn/api/top-langs?username=redwenzi101&layout=compact&title_color=0071e3&text_color=24292f&bg_color=ffffff&border_color=e1e4e8&langs_count=8" alt="常用语言"></div>
       </div>
     </section>
 
@@ -372,7 +318,7 @@
   <script src="assets/search.js"></script>
   <script>
     // typing
-    const lines=["Data Alchemist · Code Artisan","让数据「说话」","「你跑不过我信不信」"];
+    const lines=["Data Alchemist · Code Artisan","让数据「说话」"];
     let li=0,ci=0,del=false; const el=document.getElementById('typed');
     function type(){ const cur=lines[li]; el.textContent=cur.slice(0,ci);
       if(!del){ ci++; if(ci>cur.length){ del=true; setTimeout(type,1600); return; } }

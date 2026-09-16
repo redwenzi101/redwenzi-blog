@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>编程语言分享 · C / C++ / Java / Python · red wenzi</title>
+  <meta name="description" content="C / C++ / Java / Python 四门语言学习路线，共 37 章 146 道练习，全部已上线；每节有示例、每题有可运行参考代码，代码实测通过。">
   <style>
     :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
     * { margin:0; padding:0; box-sizing:border-box; }
@@ -28,38 +29,61 @@
     table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
     th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
     th { background:#f6f8fa; }
+    /* 用 !important 盖过 theme.css 里 @media(max-width:1024px) 的 .cards{grid-template-columns:1fr}，
+       否则四张入口卡在桌面端会被压成竖排；手机端由下方媒体查询锁成单列。 */
+    .cards { display:grid !important; grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr)) !important; gap:18px; margin-top:14px; }
+    .card .fit { color:#6a6a6a; font-size:14px; margin:6px 0 0; }
+    .card .go { margin:12px 0 0; font-size:14px; }
+    .doing { margin:14px 0 0; color:var(--sub); font-size:14px; }
     footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:660px){ .cards{ grid-template-columns:1fr !important; } }
     @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
   </style>
   <link rel="stylesheet" href="../assets/article.css">
   <link rel="stylesheet" href="../assets/theme.css">
   <link rel="stylesheet" href="../assets/course.css?v=20260915">
 </head>
+
 <body>
   <div class="wrap">
     <header>
       <a class="back" href="../index.html">← 返回博客主页</a>
       <h1>编程语言分享</h1>
-      <div class="meta">red wenzi · 2026-09-15 · 学习路线 · 4 门语言 · C++ 已上线</div>
+      <div class="meta">red wenzi · 2026-09-16 · 学习路线 · 4 门语言 · 37 章 146 题 · 全部已上线</div>
     </header>
 
     <article>
-<div class="tip">🎯 <b>这条线是什么：</b>把每门编程语言的学习资料整理成能直接照着学的教材——有概念、有示例、有练习、有答案，全部代码实测可编译。</div>
-      <div class="tip">🗺️ <b>推荐路线：</b>C（底层直觉）→ <b>C++</b>（系统 + 算法）→ Java（面向对象生态）→ Python（脚本 + 数据）。也可以按已有基础跳着学，每门语言都可以单独看。</div>
+      <div class="tip">🎯 <b>这条线是什么：</b>把每门编程语言整理成能直接照着学的教材——有概念、有示例、有练习、有答案，代码实测可编译。<b>四门随便挑，也可以按 C → C++ → Java → Python 的顺序走</b>：零基础从 C 起步，冲一线大厂暑期实习直接进 C++，课程或项目需要就学 Java，数据方向用 Python。</div>
 
-      <h2>四门语言，按这个顺序走</h2>
+      <h2>四门语言，全部已上线</h2>
       <div class="cards">
-        <div class="card"><h3>C <span style="font-size:13px;color:#6a6a6a">🚧 整理中</span></h3><p>把 C 语言的核心（指针、内存、结构体、预处理器）单独讲一遍，作为 C++ 的前置。</p><p style="color:#6a6a6a;font-size:14px">🎯 适合完全零基础或想补“底层直觉”的人。</p><p class="soon" style="margin-top:10px;color:#9a9a9a">内容整理中，先看 C++ 那条线 →</p></div><div class="card"><h3>C++ <span style="font-size:13px;color:#6a6a6a">✅ 已上线 · 13 章 98 题</span></h3><p>从第一个程序讲到模板、STL、数据结构与算法思想，每节有练习、每题有参考代码。</p><p style="color:#6a6a6a;font-size:14px">🎯 适合有 C 或 Java 基础、想系统补 C++ 的人。</p><p style="margin-top:10px"><a href="cpp/index.html">进入 C++ 教材目录 →</a> · <a href="cpp/problems.html">全部 98 道练习 →</a></p></div><div class="card"><h3>Java <span style="font-size:13px;color:#6a6a6a">🚧 规划中</span></h3><p>面向对象、集合框架、JVM 与并发入门；和 C++ 对照讲，两边都能更清楚。</p><p style="color:#6a6a6a;font-size:14px">🎯 适合学过 C++ 想换生态，或课程需要 Java 的人。</p><p class="soon" style="margin-top:10px;color:#9a9a9a">内容整理中，先看 C++ 那条线 →</p></div><div class="card"><h3>Python <span style="font-size:13px;color:#6a6a6a">🚧 规划中</span></h3><p>语法速通 + 数据分析方向（pandas / matplotlib），衔接博客里的数据科学线。</p><p style="color:#6a6a6a;font-size:14px">🎯 适合想快速上手做数据、做脚本的人。</p><p class="soon" style="margin-top:10px;color:#9a9a9a">内容整理中，先看 C++ 那条线 →</p></div>
-      </div>
-
-      <h2>现在可以从这里开始</h2>
-      <div class="post" style="background:linear-gradient(135deg,#eef6ff,#f5fbf9);border:1px solid rgba(0,113,227,.2);border-radius:22px;padding:22px 26px">
-        <div>
-          <h3 style="margin-bottom:6px"><a href="cpp/index.html">C++ 新手进阶教材（边学边练）</a></h3>
-          <p style="color:#3d4552">13 章 · 98 道练习 · 6 张示意图。覆盖：程序怎么跑起来 → 类型与流程 → 函数与引用 → 指针与内存 → 类与对象 → 模板 → STL 容器与算法 → 现代 C++ → 手写数据结构 → 十种算法思想 → 调试构建测试 → 数据结构与算法补遗。</p>
-          <p><a href="cpp/index.html">阅读教材目录 →</a></p>
+        <div class="card">
+          <h3>C <span class="tag">✅ 8 章 16 题</span></h3>
+          <p>指针、动态内存、结构体、多文件工程：把「变量在内存里长什么样」讲透。</p>
+          <p class="fit">🎯 零基础首选</p>
+          <p class="go"><a href="c/index.html">进入 C 语言路线 →</a></p>
+        </div>
+        <div class="card">
+          <h3>C++ <span class="tag">✅ 13 章 98 题</span></h3>
+          <p>从第一个程序讲到模板、STL 与现代 C++，另配 181 题练习册与四周学习计划。</p>
+          <p class="fit">🎯 冲一线大厂暑期实习的主力语言</p>
+          <p class="go"><a href="cpp/index.html">进入教材目录 →</a> · <a href="cpp/problems.html">98 题索引</a> · <a href="cpp/practice/index.html">181 题练习册</a></p>
+        </div>
+        <div class="card">
+          <h3>Java <span class="tag">✅ 8 章 16 题</span></h3>
+          <p>JVM 与字节码、类与对象、继承与接口、集合框架、异常与文件、Stream 实战。</p>
+          <p class="fit">🎯 课程或项目需要，或想和 C++ 对照看另一套生态</p>
+          <p class="go"><a href="java/index.html">进入 Java 路线 →</a></p>
+        </div>
+        <div class="card">
+          <h3>Python <span class="tag">✅ 8 章 16 题</span></h3>
+          <p>容器与推导式、函数与模块、面向对象，最后一章用 csv 与 pandas 处理真实数据。</p>
+          <p class="fit">🎯 数据科学方向的第一门语言</p>
+          <p class="go"><a href="python/index.html">进入 Python 路线 →</a></p>
         </div>
       </div>
+
+      <p class="doing">🔄 数据结构与算法（计算机基础线）正在做：从链表开始，四种语言对照，标注时间与空间复杂度。</p>
 
       <h2>这套资料怎么用</h2>
       <ul>

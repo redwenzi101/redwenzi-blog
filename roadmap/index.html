@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>学习路线 · 全站地图 · red wenzi</title>
+  <meta name="description" content="red wenzi 的学习路线总览：编程语言线、计算机基础线、工程实践线、AI 与数据实验区的全部内容与前置依赖关系，已上线、正在做、规划中一目了然。">
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --accent2:#00c7be; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:48px 0 22px; }
+    .navrow { display:flex; gap:18px; font-size:14px; color:var(--sub); flex-wrap:wrap; }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:36px 0 12px; font-size:22px; font-weight:700; }
+    h2:first-of-type { margin-top:8px; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+
+    /* 状态图例 */
+    .legend { display:flex; flex-wrap:wrap; gap:10px; margin:16px 0 4px; }
+    .legend span { font-size:13px; padding:5px 13px; border-radius:999px; border:1px solid var(--line); color:var(--sub); background:#fff; }
+
+    /* 线卡片 */
+    .line { background:#fff; border:1px solid var(--line); border-radius:20px; padding:24px 26px; box-shadow:var(--shadow); margin:18px 0; }
+    .line h3 { margin:0 0 4px; font-size:19px; }
+    .line .sub { color:var(--sub); font-size:14px; margin:0 0 12px; }
+    .line .tail { color:var(--sub); font-size:13px; margin:14px 0 0; padding-top:12px; border-top:1px dashed var(--line); }
+    .row { display:flex; gap:12px; align-items:flex-start; padding:11px 0; border-top:1px dashed var(--line); }
+    .row:first-of-type { border-top:none; padding-top:2px; }
+    .row .st { flex:none; width:22px; font-size:14px; line-height:1.7; }
+    .row .body { font-size:14px; color:#3d4552; }
+    .row .body b { color:var(--text); }
+    .row .body .n { color:#9a9a9a; }
+
+    /* 依赖关系图 */
+    .dep { background:#fff; border:1px solid var(--line); border-radius:20px; padding:22px 24px; box-shadow:var(--shadow); margin:18px 0; }
+    .chain { display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:14px 0; border-top:1px dashed var(--line); }
+    .chain:first-child { border-top:none; padding-top:2px; }
+    .chain:last-child { padding-bottom:2px; }
+    .node { display:inline-block; padding:5px 14px; border-radius:999px; font-size:14px; border:1px solid var(--line); background:#fff; color:var(--sub); }
+    .node.done { border-color:rgba(0,113,227,.4); color:var(--accent); background:#f2f7fd; }
+    .node.doing { border-color:#e2cf8f; color:#8a6f13; background:#faf3e0; }
+    .node.plan { border-style:dashed; color:#9a9a9a; }
+    .node.goal { border-color:#00524d; color:#00524d; background:#eefaf9; font-weight:600; }
+    .arrow { color:#b6b6bb; font-size:14px; }
+    .plus { color:#b6b6bb; font-size:14px; }
+    .chain-note { flex-basis:100%; color:var(--sub); font-size:13px; margin-top:2px; }
+
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){
+      article { padding:24px 18px; }
+      .line, .dep { padding:18px 16px; }
+      .row .st { width:20px; }
+      .node { padding:4px 11px; font-size:13px; }
+    }
+  </style>
+  <link rel="stylesheet" href="../assets/article.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="navrow">
+        <a href="../index.html">⌂ 返回主页</a>
+        <a href="../programming/index.html">💻 编程语言分享</a>
+        <a href="../knowledge/index.html">📚 知识大全</a>
+      </div>
+      <h1>🗺️ 学习路线</h1>
+      <div class="meta">red wenzi · 2026-09-16 · 全站地图 · ✅ 7 项已上线 · 🔄 2 项正在做 · 📅 17 项在计划里</div>
+    </header>
+
+    <article>
+      <div class="tip">🎯 <b>这页是什么：</b>把全站所有内容放在一张图上看清楚——哪些已经能读、哪些正在写、哪些还在计划里。规划中的条目只出现在这一页，做完了才会进首页。</div>
+      <div class="legend">
+        <span>✅ 已上线 · 能点开读</span>
+        <span>🔄 正在做 · 全站只有 2 项</span>
+        <span>📅 规划中 · 做完才上首页</span>
+      </div>
+
+      <h2>三条主线</h2>
+
+      <div class="line">
+        <h3>💻 编程语言线</h3>
+        <p class="sub">C → C++ → Java → Python · 共 37 章 146 题，四门全部已上线</p>
+        <div class="row">
+          <div class="st">✅</div>
+          <div class="body"><b>C 语言</b> · 8 章 16 题 · <a href="../programming/c/index.html">指针、动态内存、结构体、多文件工程 →</a></div>
+        </div>
+        <div class="row">
+          <div class="st">✅</div>
+          <div class="body"><b>C++</b> · 13 章 98 题 · <a href="../programming/cpp/index.html">教材目录 →</a> · <a href="../programming/cpp/problems.html">98 题索引</a> · <a href="../programming/cpp/practice/index.html">181 题练习册</a></div>
+        </div>
+        <div class="row">
+          <div class="st">✅</div>
+          <div class="body"><b>Java</b> · 8 章 16 题 · <a href="../programming/java/index.html">JVM、集合框架、异常、Stream →</a></div>
+        </div>
+        <div class="row">
+          <div class="st">✅</div>
+          <div class="body"><b>Python</b> · 8 章 16 题 · <a href="../programming/python/index.html">容器、模块、面向对象、pandas →</a></div>
+        </div>
+        <p class="tail">这条线只讲语言的语法、语言特性和标准库；数据结构和算法已经抽出去，放在下面「计算机基础线」里，四门语言并排对照。</p>
+      </div>
+
+      <div class="line">
+        <h3>🧮 计算机基础线</h3>
+        <p class="sub">语言无关 · 每个结构用 C / C++ / Java / Python 四份可运行代码对照</p>
+        <div class="row">
+          <div class="st">🔄</div>
+          <div class="body"><b>数据结构与算法</b> · 正在做 · 从链表起步 → 栈队列 → 树 → 排序 → 回溯 → 贪心 → 动态规划 → 图论；每个结构都给出四语言完整代码，变量命名对齐，标注时间与空间复杂度。<span class="n">（做完的章节会在这里挂上入口）</span></div>
+        </div>
+        <div class="row">
+          <div class="st">📅</div>
+          <div class="body"><b>计算机组成原理</b> · 规划中 · 进制 → 补码 → 浮点表示 → 流水线 → Cache 与内存层次。<span class="n">看懂「程序到底跑在哪」</span></div>
+        </div>
+        <div class="row">
+          <div class="st">📅</div>
+          <div class="body"><b>操作系统</b> · 规划中 · 进程与线程 → 调度 → 内存管理 → 文件系统 → 死锁。<span class="n">面试里和并发、性能挂钩的高频区</span></div>
+        </div>
+        <div class="row">
+          <div class="st">📅</div>
+          <div class="body"><b>计算机网络</b> · 规划中 · 分层模型 → TCP / UDP → HTTP → DNS → HTTPS。<span class="n">和「工程实践线」的建站内容互相印证</span></div>
+        </div>
+        <p class="tail">顺序建议：先把数据结构与算法写熟，再补组成原理与操作系统——前者决定你能不能通过笔试，后两者决定你能不能答出「为什么」。</p>
+      </div>
+
+      <div class="line">
+        <h3>🏗️ 工程实践线</h3>
+        <p class="sub">🔄 正在扩充 · 语言无关 · 调试、构建、测试、版本控制、部署</p>
+        <div class="row">
+          <div class="st">✅</div>
+          <div class="body"><b>建站与运维 2 篇</b> · <a href="../posts/web-domain-server-guide.html">网站、网址、域名、服务器：一次讲清楚</a> · <a href="../posts/build-blog-guide.html">博客搭建指南：从域名到上线</a></div>
+        </div>
+        <div class="row">
+          <div class="st">📅</div>
+          <div class="body"><b>调试、构建与测试</b> · 规划中 · 编译器警告与 sanitizer、GDB 断点与调用栈、CMake 组织多文件工程、单元测试怎么写。<span class="n">这部分内容会从 C++ 教材第 12 章抽出来，改写成与语言无关的写法，C / Java / Python 也会有对照命令</span></div>
+        </div>
+        <div class="row">
+          <div class="st">📅</div>
+          <div class="body"><b>Git 与 GitHub</b> · 规划中 · 提交、分支、合并与冲突、rebase、回滚、PR 与代码评审流程</div>
+        </div>
+        <div class="row">
+          <div class="st">📅</div>
+          <div class="body"><b>CI 自动化</b> · 规划中 · 用 GitHub Actions 做到「推送即编译、跑测试、检查链接」</div>
+        </div>
+        <div class="row">
+          <div class="st">📅</div>
+          <div class="body"><b>Linux 与自托管</b> · 规划中 · 命令行、权限与环境变量、进程管理、备份与监控、把自己的服务跑在服务器上</div>
+        </div>
+        <p class="tail">这条线已经有 2 篇，其余按上面的顺序往下做。所有示例里的服务器地址、账号、密钥一律用占位符。</p>
+      </div>
+
+      <div class="line">
+        <h3>📚 查 · 知识大全</h3>
+        <p class="sub">不是学习线，是随时可查的词典</p>
+        <div class="row">
+          <div class="st">✅</div>
+          <div class="body"><b>112 条词条</b> · 网络与建站、AI 与大模型、编程语言三类；每条按「是什么 → 什么时候用 → 怎么用 → 相关词条」组织。<a href="../knowledge/index.html">进入知识大全 →</a></div>
+        </div>
+      </div>
+
+      <h2>AI 与数据实验区</h2>
+      <div class="line">
+        <h3>🤖 已经有 3 篇，后面还有一串</h3>
+        <p class="sub">边做边写，做出成品再上线</p>
+        <div class="row">
+          <div class="st">✅</div>
+          <div class="body"><b>AI 与大模型 3 篇</b> · <a href="../posts/what-is-ai.html">AI 是什么</a> · <a href="../posts/ways-to-use-ai.html">用 AI 的几种方式</a> · <a href="../posts/ai-agent-guide.html">AI Agent 上手实操（含 RAG）</a></div>
+        </div>
+        <div class="row">
+          <div class="st">📅</div>
+          <div class="body"><b>AI 摘要</b> · 规划中 · 把长文自动压成要点，接在自己的写作流程里</div>
+        </div>
+        <div class="row">
+          <div class="st">📅</div>
+          <div class="body"><b>RAG 知识库</b> · 规划中 · 把自己的笔记和文章做成分块检索的知识库，问它问题能带出处</div>
+        </div>
+        <div class="row">
+          <div class="st">📅</div>
+          <div class="body"><b>AI bot</b> · 规划中 · 把摘要与知识库接成能对话的机器人，挂在网站上</div>
+        </div>
+        <div class="row">
+          <div class="st">📅</div>
+          <div class="body"><b>Python 数据分析</b> · 规划中 · 从原始表格到结论：清洗、分组、透视、统计推断</div>
+        </div>
+        <div class="row">
+          <div class="st">📅</div>
+          <div class="body"><b>数据可视化</b> · 规划中 · 让图说人话：选图型、配色、标注与讲故事</div>
+        </div>
+        <div class="row">
+          <div class="st">📅</div>
+          <div class="body"><b>机器学习基础</b> · 规划中 · 从线性回归到分类与评估指标，每个模型都配一份能跑的数据实验</div>
+        </div>
+        <p class="tail">这一区的规矩：先做出能跑的东西，再写文章。做不出来的想法不会挂在这里。</p>
+      </div>
+
+      <h2>大学基础（不单独占位）</h2>
+      <div class="line">
+        <h3>📐 线性代数 / 高等数学</h3>
+        <p class="sub">作为机器学习的前置，写进下面的依赖图，不单独开线</p>
+        <div class="row">
+          <div class="st">📅</div>
+          <div class="body"><b>线性代数</b> · 规划中 · 向量与矩阵、特征值与特征向量、投影——从 AI 和数据场景倒推着讲</div>
+        </div>
+        <div class="row">
+          <div class="st">📅</div>
+          <div class="body"><b>高等数学</b> · 规划中 · 极限、导数、梯度、最优化——机器学习里真正用得上的那部分</div>
+        </div>
+        <p class="tail">它们不是独立的一条线，而是「机器学习基础」的前置：不挂在这里占位，是因为学它们的目的就是为 ML 服务。</p>
+      </div>
+
+      <h2>🧪 实验台</h2>
+      <div class="line">
+        <h3>做完了才上首页</h3>
+        <p class="sub">现在都在开发中，所以只在这页出现</p>
+        <div class="row">
+          <div class="st">📅</div>
+          <div class="body"><b>DataViz Playground</b> · 开发中 · 用 Python 把复杂数据变成一眼能看懂的图；做完会有一批可交互的例子</div>
+        </div>
+        <div class="row">
+          <div class="st">📅</div>
+          <div class="body"><b>CodeMate Bot</b> · 开发中 · 智能学习助手：整理笔记、提醒打卡、陪你写代码</div>
+        </div>
+        <p class="tail">已经上线的两个项目在首页「项目」区：Yourself-Skill 与 Think Tank 智库平台。</p>
+      </div>
+
+      <h2>前置依赖关系图</h2>
+      <div class="dep">
+        <div class="chain">
+          <span class="node done">C</span><span class="arrow">→</span>
+          <span class="node done">C++</span><span class="arrow">→</span>
+          <span class="node done">Java</span><span class="arrow">→</span>
+          <span class="node done">Python</span>
+          <span class="chain-note">语言线顺序。四门可以单独学，但按这个顺序最省力：先懂内存，再学抽象，再换生态，最后用它做数据。</span>
+        </div>
+        <div class="chain">
+          <span class="node done">编程语言（任一）</span><span class="arrow">→</span>
+          <span class="node doing">数据结构与算法</span><span class="arrow">→</span>
+          <span class="node plan">计算机组成原理</span><span class="arrow">→</span>
+          <span class="node plan">操作系统</span><span class="plus">/</span><span class="node plan">计算机网络</span>
+          <span class="chain-note">算法不绑定语言，但得先会写代码才谈得上复杂度；组成原理和操作系统解释「为什么这样写更快」，是面试的区分度所在。</span>
+        </div>
+        <div class="chain">
+          <span class="node plan">线性代数</span><span class="plus">+</span>
+          <span class="node plan">高等数学</span><span class="arrow">→</span>
+          <span class="node plan">机器学习基础</span><span class="arrow">→</span>
+          <span class="node plan">数据科学应用</span>
+          <span class="chain-note">线代和高数不是独立占位，是机器学习的地基；先补地基，模型才不是背公式。</span>
+        </div>
+        <div class="chain">
+          <span class="node done">建站与运维</span><span class="arrow">→</span>
+          <span class="node plan">Git 与 CI</span><span class="arrow">→</span>
+          <span class="node plan">Linux 与自托管</span>
+          <span class="chain-note">工程实践的进阶路线：先会把自己的东西发布出去，再学会规范地管版本、自动化验证，最后自己运维。</span>
+        </div>
+        <div class="chain">
+          <span class="node done">C++</span><span class="plus">+</span>
+          <span class="node doing">数据结构与算法</span><span class="plus">+</span>
+          <span class="node plan">Git 与 CI</span><span class="arrow">→</span>
+          <span class="node goal">一线大厂暑期实习的笔试与面试</span>
+          <span class="chain-note">这是我自己当前的路线：语言打底、算法刷题、工程实践让简历有东西可讲，三条一起走。</span>
+        </div>
+      </div>
+
+      <h2>这页怎么用</h2>
+      <ul>
+        <li><b>按目标挑线</b>：想冲一线大厂暑期实习，就按「C++ + 数据结构与算法 + 工程实践」三条一起走；想做数据方向，走「Python + 数据分析 → 机器学习」。</li>
+        <li><b>只看能点开的</b>：标 ✅ 的都能直接读；标 🔄 的还没写完，标 📅 的还在计划里，不要在这里等。</li>
+        <li><b>概念不懂就查</b>：路上遇到的术语，直接去 <a href="../knowledge/index.html">📚 知识大全</a>，112 条词条按「是什么 → 什么时候用 → 怎么用 → 相关词条」排好。</li>
+      </ul>
+
+      <div class="warn">⚠️ 安全提醒：所有教程与示例里都不会出现真实的服务器 IP、SSH 账号、API Key、数据库密码，一律用占位符。你自己照着做的时候，也别把这些写进代码仓库。</div>
+
+      <div class="tip"><b>📌 状态会更新：</b>每做完一个 📅 条目，它就会从这页挪到首页的「🌱 最近在折腾」里。反过来，首页出现的东西一定是已经能读的。</div>
+
+      <div class="tip"><b>📚 本文概念都在知识大全：</b>
+      <p style="margin-top:6px"><a href="../knowledge/index.html#complexity">时间复杂度</a> ·
+      <a href="../knowledge/index.html#sanitizer">内存检查 Sanitizer</a> ·
+      <a href="../knowledge/index.html#gdb">调试器 GDB</a> ·
+      <a href="../knowledge/index.html#cmake">CMake</a> ·
+      <a href="../knowledge/index.html#unit-test">单元测试</a> ·
+      <a href="../knowledge/index.html#rag">RAG</a> ·
+      <a href="../knowledge/index.html#agent">Agent</a> ·
+      <a href="../knowledge/index.html#domain">域名</a> ·
+      <a href="../knowledge/index.html#ssl">HTTPS</a></p></div>
+    </article>
+
+    <footer>
+      <p>© 2026 red wenzi · <a href="../index.html">返回主页</a> · <a href="https://github.com/redwenzi101">GitHub</a> · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>
