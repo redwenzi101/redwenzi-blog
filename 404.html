@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>找不到这个页面 · red wenzi</title>
+  <meta name="robots" content="noindex">
+  <style>
+    :root {
+      --bg:#faf7f2;
+      --surface:#ffffff;
+      --text:#2b2b2b;
+      --sub:#6a6a6a;
+      --line:#ece6da;
+      --accent:#1f3a5f;
+      --accent-gold:#c9a227;
+      --shadow:0 1px 3px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.04);
+      --ease:cubic-bezier(.22,.61,.36,1);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:720px; margin:0 auto; padding:0 24px; }
+
+    .box { background:var(--surface); border:1px solid var(--line); border-radius:22px; box-shadow:var(--shadow); margin:72px 0 32px; padding:46px 38px; text-align:center; }
+    .code { font-size:66px; font-weight:700; letter-spacing:-.03em; line-height:1;
+            background:linear-gradient(135deg,#1f3a5f,#c9a227); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    h1 { font-size:22px; font-weight:600; margin:14px 0 10px; }
+    .box > p { color:var(--sub); font-size:15px; }
+
+    .links { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-top:28px; text-align:left; }
+    .links a { display:block; padding:14px 16px; border:1px solid var(--line); border-radius:14px; background:var(--surface); color:var(--text); transition:border-color .3s var(--ease),color .3s var(--ease),transform .3s var(--ease); }
+    .links a:hover { border-color:var(--accent); color:var(--accent); transform:translateY(-2px); }
+    .links b { display:block; font-size:15px; font-weight:600; color:inherit; }
+    .links span { display:block; font-size:13px; color:var(--sub); margin-top:2px; }
+
+    footer { text-align:center; padding:8px 24px 64px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){
+      .box { margin-top:40px; padding:34px 22px; }
+      .code { font-size:54px; }
+      .links { grid-template-columns:1fr; }
+    }
+  </style>
+  <link rel="stylesheet" href="/assets/theme.css">
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="box">
+      <div class="code">404</div>
+      <h1>这个页面不在这里</h1>
+      <p>地址可能敲错了，或者这个页面还没写。下面几个入口都是通的：</p>
+
+      <div class="links">
+        <a href="/"><b>⌂ 首页</b><span>最近在折腾</span></a>
+        <a href="/roadmap/"><b>🗺️ 学习路线</b><span>全站地图与前置依赖</span></a>
+        <a href="/programming/"><b>💻 编程语言分享</b><span>C / C++ / Java / Python · 37 章 146 题</span></a>
+        <a href="/knowledge/"><b>📚 知识大全</b><span>112 条词条，按主题查概念</span></a>
+        <a href="/tags/"><b>🏷️ 标签归档</b><span>按主题浏览所有文章</span></a>
+        <a href="/index.html#blog"><b>✍️ 博客</b><span>AI 与大模型 / 建站与运维 / 随笔</span></a>
+      </div>
+    </div>
+
+    <footer>
+      <p>© 2026 red wenzi · <a href="/">返回主页</a> · <a href="https://github.com/redwenzi101">GitHub</a></p>
+    </footer>
+  </div>
+</body>
+</html>
