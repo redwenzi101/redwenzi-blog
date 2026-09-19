@@ -55,9 +55,11 @@ document.addEventListener("DOMContentLoaded", function () {
     var LINKS = [
       ["/", "⌂ 首页"],
       ["/roadmap/", "🗺️ 学习路线"],
+      ["/programming/dsa/", "🧮 数据结构与算法"],
+      ["/programming/", "💻 编程语言"],
+      ["/knowledge/", "📚 知识大全"],
       ["/index.html#blog", "✍️ 博客"],
       ["/index.html#projects", "🧪 项目"],
-      ["/knowledge/", "📚 知识大全"],
       ["/index.html#about", "🙋 关于"]
     ];
 
@@ -78,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
         '<span class="island-caret">▼</span>' +
       '</button>' +
       '<div class="island-body">' +
-        '<div class="island-live">🔄 正在做：<b>数据结构与算法</b> · 从链表开始，四种语言对照</div>' +
+        '<div class="island-live">🔄 正在做：<b>数据结构与算法</b> · 第 1 章 链表 已上线</div>' +
         '<div class="island-track"><i></i></div>' +
         '<div class="island-links">' +
           LINKS.map(function (l) { return '<a href="' + l[0] + '">' + l[1] + "</a>"; }).join("") +

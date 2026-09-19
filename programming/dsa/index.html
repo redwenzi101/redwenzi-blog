@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数据结构与算法 · 四语言对照 · red wenzi</title>
+  <meta name="description" content="数据结构与算法学习线：语言无关，每个结构用 C / C++ / Java / Python 四种语言各给一份完整可运行代码，先标准库写法再手写底层实现，全部标注时间与空间复杂度。">
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    .back + .back { margin-left:14px; }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../assets/article.css">
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/course.css?v=20260915">
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="../../roadmap/index.html">← 学习路线</a>
+      <a class="back" href="../index.html">💻 编程语言分享</a>
+      <h1>数据结构与算法</h1>
+      <div class="meta">red wenzi · 2026-09-19 · 计算机基础 · 语言无关 · 12 章 · 四语言对照 · 第 1 章已上线</div>
+    </header>
+
+    <article>
+      <p>这条线把数据结构与算法<b>从语言教材里抽出来</b>：概念本身不绑定语言，但代码必须能跑。所以每个结构都给你<b>两版</b>——先用语言自带的标准库把功能跑通，再手写一遍底层实现。</p>
+      <p>只学标准库，面试手写题会卡住；只学手写，工程里会重复造轮子。两版并排放在一起，你才知道标准库替你到底做了什么。</p>
+
+      <div class="tip">🎯 <b>这条线的规矩：</b><br>
+      ① 每个结构 / 算法都给 <b>C / C++ / Java / Python 四份完整可运行代码</b>，函数名、变量名、打印格式全部对齐，方便横向对照；<br>
+      ② 每份代码都在 <code>gcc 16.1 / g++ 16.1 / javac 21 / Python 3.14</code> 下实测编译运行通过，四份输出逐字节一致；<br>
+      ③ 每个操作都标注<b>时间 / 空间复杂度</b>；<br>
+      ④ 每章末尾有能直接照抄的运行命令。</div>
+
+      <h2>🗂️ 章节导航（12 章）</h2>
+      <table>
+        <tr><th>章</th><th>标题</th><th>状态</th></tr>
+        <tr><td>第 1 章</td><td><a href="01-linked-list.html">链表</a> · 标准库与手写两版、反转、判环、找中点、合并有序链表</td><td>✅ 已上线</td></tr>
+        <tr><td>第 2 章</td><td>复杂度与算法分析基础 · 大 O、均摊分析、读题反推算法</td><td>📅 规划中</td></tr>
+        <tr><td>第 3 章</td><td>数组、字符串与二分查找 · 前缀和、差分、二分三写法</td><td>📅 规划中</td></tr>
+        <tr><td>第 4 章</td><td>双指针与滑动窗口 · 对撞、快慢、变长窗口</td><td>📅 规划中</td></tr>
+        <tr><td>第 5 章</td><td>哈希表 · 散列、冲突、扩容，与哈希加速套路</td><td>📅 规划中</td></tr>
+        <tr><td>第 6 章</td><td>栈与队列 · 循环队列、单调栈、单调队列</td><td>📅 规划中</td></tr>
+        <tr><td>第 7 章</td><td>树、二叉树与堆 · 遍历、BST、堆、Trie</td><td>📅 规划中</td></tr>
+        <tr><td>第 8 章</td><td>排序与查找 · 十种排序、稳定性、快选</td><td>📅 规划中</td></tr>
+        <tr><td>第 9 章</td><td>递归、分治与回溯 · 回溯模板、剪枝与去重</td><td>📅 规划中</td></tr>
+        <tr><td>第 10 章</td><td>贪心 · 区间调度、跳跃游戏与反例辨析</td><td>📅 规划中</td></tr>
+        <tr><td>第 11 章</td><td>动态规划 · 背包、子序列、区间 DP</td><td>📅 规划中</td></tr>
+        <tr><td>第 12 章</td><td>图论与高级结构 · 拓扑排序、最短路、并查集</td><td>📅 规划中</td></tr>
+      </table>
+      <p style="color:#6a6a6a;font-size:14px">章节顺序按「从具体到抽象」排：先写最基础的链式结构，再回头补复杂度分析这套工具，然后一路走到图论。</p>
+
+      <h2>📌 第 1 章 链表：你会看到什么</h2>
+      <table>
+        <tr><th>内容</th><th>说明</th></tr>
+        <tr><td>链表 vs 数组</td><td>内存布局、随机访问、插入删除、缓存友好度，一张表说清取舍</td></tr>
+        <tr><td>复杂度速查</td><td>头插 / 尾插 / 查找 / 删除 / 反转 / 找中点 / 判环 / 合并，逐项标时间与空间</td></tr>
+        <tr><td>标准库写法</td><td>C++ <code>std::list</code>、Java <code>LinkedList</code>、Python <code>collections.deque</code> 三段完整代码</td></tr>
+        <tr><td>手写底层实现</td><td>C 结构体 + malloc/free、C++ new/delete、Java 类、Python 类 + <code>__slots__</code>，四段完整代码</td></tr>
+        <tr><td>面试高频四件套</td><td>反转（三指针）、判环（Floyd）、找中点（快慢指针）、合并有序链表（哑结点）</td></tr>
+        <tr><td>易错点清单</td><td>七条真实会踩的坑：断链、漏删头结点、忘释放、造环没拆、判空顺序反了等</td></tr>
+        <tr><td>练习</td><td>5 题，从「讲清复杂度」到「找入环点」「合并 K 条有序链表」</td></tr>
+      </table>
+      <p><a href="01-linked-list.html">👉 进入第 1 章 链表 →</a></p>
+
+      <h2>🧭 学这条线之前</h2>
+      <p>这条线<b>不要求你先精通某一门语言</b>，但需要你至少能读懂指针 / 引用和结构体 / 类：</p>
+      <table>
+        <tr><th>前置</th><th>在哪学</th></tr>
+        <tr><td>C 的指针与结构体</td><td><a href="../c/06-pointers-memory.html">C 第 6 章 指针与动态内存</a> · <a href="../c/07-structs-enums.html">第 7 章 结构体与枚举</a></td></tr>
+        <tr><td>C++ 的指针与内存模型</td><td><a href="../cpp/04-pointers-and-memory.html">C++ 第 4 章 指针、数组与内存模型</a></td></tr>
+        <tr><td>Java 的类与对象</td><td><a href="../java/04-classes-objects.html">Java 第 4 章 类与对象</a></td></tr>
+        <tr><td>Python 的类</td><td><a href="../python/07-object-oriented.html">Python 第 7 章 面向对象</a></td></tr>
+      </table>
+      <div class="warn">⚠️ <b>代码里的内存安全：</b>C / C++ 手写链表要自己 <code>free</code> / <code>delete</code>，忘记释放就是内存泄漏；Java / Python 交给 GC，但要注意「造了环」会让引用计数型回收器（如 C++ 的 <code>shared_ptr</code>）无法回收。本章代码里演示造环之后都会立刻把环拆掉。</div>
+
+      <div class="tip"><b>📚 这条线的概念都在知识大全：</b>
+      <p style="margin-top:6px"><a href="../../knowledge/index.html#linked-list">链表</a> ·
+      <a href="../../knowledge/index.html#complexity">时间复杂度</a> ·
+      <a href="../../knowledge/index.html#pointer">指针</a> ·
+      <a href="../../knowledge/index.html#malloc-free">动态内存 malloc/free</a> ·
+      <a href="../../knowledge/index.html#stl">STL</a> ·
+      <a href="../../knowledge/index.html#java-collections">Java 集合框架</a> ·
+      <a href="../../knowledge/index.html#python-container">Python 容器</a></p></div>
+    </article>
+
+    <script src="../../assets/highlight.min.js"></script>
+    <script src="../../assets/article.js"></script>
+    <script src="../../assets/interact.js"></script>
+    <script src="../../assets/search.js"></script>
+    <script src="../../assets/giscus-config.js"></script>
+    <script src="../../assets/comments.js"></script>
+    <footer>
+      <p>© 2026 red wenzi · <a href="../../roadmap/index.html">学习路线</a> · <a href="../index.html">编程语言分享</a> · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

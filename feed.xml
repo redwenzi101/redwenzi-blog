@@ -8,6 +8,21 @@
   <author><name>red wenzi</name></author>
 
   <entry>
+    <title>数据结构与算法 · 第 1 章 链表（四语言对照）</title>
+    <link href="https://redwenzi-blog.pages.dev/programming/dsa/01-linked-list.html"/>
+    <id>https://redwenzi-blog.pages.dev/programming/dsa/01-linked-list.html</id>
+    <updated>2026-09-19T00:00:00Z</updated>
+    <summary>链表：C / C++ / Java / Python 四语言对照，标准库写法（std::list / LinkedList / deque）与手写底层实现各一版，代码实测编译运行、输出逐字节一致，并标注每个操作的时间与空间复杂度。</summary>
+  </entry>
+  <entry>
+    <title>数据结构与算法 学习路线（四语言对照）</title>
+    <link href="https://redwenzi-blog.pages.dev/programming/dsa/index.html"/>
+    <id>https://redwenzi-blog.pages.dev/programming/dsa/index.html</id>
+    <updated>2026-09-19T00:00:00Z</updated>
+    <summary>语言无关的数据结构与算法线，共 12 章。每个结构都给 C / C++ / Java / Python 四份完整可运行代码，先标准库写法再手写底层实现。</summary>
+  </entry>
+
+  <entry>
     <title>C 语言学习路线（8 章 · 16 题）</title>
     <link href="https://redwenzi-blog.pages.dev/programming/c/index.html"/>
     <id>https://redwenzi-blog.pages.dev/programming/c/index.html</id>

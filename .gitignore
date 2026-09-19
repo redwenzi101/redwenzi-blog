@@ -2,6 +2,12 @@
 node_modules/
 /pagefind/
 
+# 代码示例的编译产物（源码在 programming/dsa/code/，产物不入库）
+*.exe
+*.class
+__pycache__/
+programming/**/code/**/app
+
 # 环境与密钥（绝不提交）
 .env
 .env.*
