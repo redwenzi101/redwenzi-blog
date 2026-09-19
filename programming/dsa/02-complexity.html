@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第 2 章 复杂度与算法分析 · 数据结构与算法（2/12） · red wenzi</title>
+  <meta name="description" content="复杂度与算法分析：大 O 怎么来的、常见量级对照、均摊分析、递归栈与空间复杂度、主定理速查、读题反推算法；C / C++ / Java / Python 四语言实测操作次数，输出逐字节一致。">
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    .back + .back { margin-left:14px; }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../assets/article.css">
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/course.css?v=20260915">
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="index.html">← 数据结构与算法（共 12 章）</a>
+      <a class="back" href="../../roadmap/index.html">🗺️ 学习路线</a>
+      <h1>第 2 章　复杂度与算法分析</h1>
+      <div class="meta">red wenzi · 2026-09-20 · 计算机基础 · 数据结构与算法 · 📖 预计阅读 30 分钟 · 四语言对照 · 代码实测编译运行</div>
+    </header>
+
+    <article>
+      <div class="tip">🎯 <b>本章你会学到：</b>大 O 到底在描述什么、怎么看两段代码谁更快、均摊分析为什么能说「push_back 是 O(1)」、递归的空间复杂度为什么要算调用栈、主定理怎么套、以及<b>拿到题目时怎么从 n 的范围反推出该用什么算法</b>。</div>
+      <p>这一章不给具体数据结构，给的是后面 10 章都要用的<b>尺子</b>。你会在每一章里反复看到「O(n log n)」「均摊 O(1)」「空间换时间」这些词，先把它们讲清楚。</p>
+      <p>本章的两段程序是<b>测量工具</b>，所以四门语言用的是同一套手写逻辑——这样数出来的操作次数才能逐行对照。程序输出在 <code>gcc 16.1 / g++ 16.1 / javac 21 / Python 3.14</code> 下实测，四份逐字节一致。</p>
+
+      <h2 id="s-2-1">2.1 为什么不能只看秒表</h2>
+      <p>「这段代码跑起来要几秒」听起来最直观，但它不能用来比较算法，因为三个变量你控制不了：</p>
+      <ul>
+        <li><b>机器不同</b>：同一段代码在笔记本和服务器上差好几倍；</li>
+        <li><b>编译器不同</b>：<code>-O0</code> 和 <code>-O2</code> 能差出十倍，优化器还可能把整个循环优化掉；</li>
+        <li><b>输入不同</b>：n=10 和 n=100000 完全是两个故事，而复杂度关心的恰恰是「n 变大时会发生什么」。</li>
+      </ul>
+      <p>所以复杂度分析换了一个问法：<b>不测时间，数操作次数；不看绝对值，看增长速度。</b></p>
+      <div class="tip">📌 一句话记住：<b>复杂度描述的是「数据规模翻倍时，代价怎么变」，不是「跑得快不快」。</b>两个都是 O(n²) 的算法，一个可能比另一个快 5 倍（常数不同），但它们随 n 增长的趋势是一样的。</div>
+
+      <h2 id="s-2-2">2.2 大 O 是什么：只留最高阶，丢掉系数</h2>
+      <p>大 O 表示的是<b>增长量级的上界</b>。推导时做两件事：</p>
+      <ol>
+        <li><b>留下最高阶项</b>：<code>3n² + 5n + 100</code> 里，n 变大后 n² 压倒一切；</li>
+        <li><b>丢掉常数系数</b>：<code>3n²</code> 和 <code>n²</code> 的增长趋势一样，都记作 O(n²)。</li>
+      </ol>
+      <p>所以 <code>3n² + 5n + 100</code> 的复杂度是 <b>O(n²)</b>。这不是「不精确」，而是故意模糊掉不随规模变化的部分。</p>
+      <table>
+        <tr><th>写法</th><th>含义</th><th>例子</th></tr>
+        <tr><td>O(1)</td><td>常数时间，和 n 无关</td><td>数组按下标取值、哈希表查找（平均）</td></tr>
+        <tr><td>O(log n)</td><td>每次把问题砍一半</td><td>二分查找、平衡树查找</td></tr>
+        <tr><td>O(n)</td><td>每个元素处理一次</td><td>一次遍历、前缀和预处理</td></tr>
+        <tr><td>O(n log n)</td><td>分治 + 线性合并</td><td>归并排序、堆排序、快排平均</td></tr>
+        <tr><td>O(n²)</td><td>两两配对</td><td>双重循环、冒泡排序、暴力去重</td></tr>
+        <tr><td>O(2ⁿ)</td><td>每个元素「选或不选」</td><td>子集枚举、朴素递归斐波那契</td></tr>
+        <tr><td>O(n!)</td><td>所有排列</td><td>全排列暴力、旅行商暴力</td></tr>
+      </table>
+
+      <h2 id="s-2-3">2.3 实测：n = 1000 时各量级到底差多少</h2>
+      <p>下面这张表的第二列不是估的，是本章程序<b>真的数出来的</b>（n = 1000）：</p>
+      <table>
+        <tr><th>量级</th><th>n=1000 时的操作次数（实测）</th><th>直观感受</th><th>通常能扛住多大的 n</th></tr>
+        <tr><td>O(1)</td><td>1</td><td>一步到位</td><td>任意</td></tr>
+        <tr><td>O(log n)</td><td>10 次比较（二分查找）</td><td>1000 个元素只问 10 次</td><td>几乎任意</td></tr>
+        <tr><td>O(n)</td><td>1000 次（遍历累加）</td><td>每个元素看一眼</td><td>约 10⁸</td></tr>
+        <tr><td>O(n log n)</td><td>8722 次比较（归并排序）</td><td>排序 1000 个数要八千多次比较</td><td>约 10⁷</td></tr>
+        <tr><td>O(n²)</td><td>499500 次（双重循环）</td><td>1000 个数两两比一遍</td><td>约 10⁴</td></tr>
+        <tr><td>O(2ⁿ)</td><td>2¹⁰⁰⁰ ≈ 10³⁰¹（约 302 位十进制数）</td><td>指数爆炸：可观测宇宙的原子数只有约 10⁸⁰，2²⁶⁶ 就已超过它</td><td>约 20</td></tr>
+      </table>
+      <p style="color:#6a6a6a;font-size:14px">最后一列的「能扛住多大的 n」是经验值，按 C++ 每秒约 10⁸ 次简单操作估算；Python 要往下调一到两个数量级。同一道题用 C++ 能过、用 Python 超时，往往就差在这里。</p>
+
+      <h2 id="s-2-4">2.4 两条法则：加法取大，乘法相乘</h2>
+      <h3>加法法则：两段代码顺序执行，取大的那个</h3>
+      <pre><code class="language-text">先做一次 O(n) 的遍历，再做一次 O(n^2) 的双重循环 → 总复杂度 O(n + n^2) = O(n^2)，只留最大项</code></pre>
+      <h3>乘法法则：循环嵌套，复杂度相乘</h3>
+      <pre><code class="language-text">外层 n 次 × 内层 n 次 × 每次 O(1) → 总复杂度 O(n × n) = O(n^2)</code></pre>
+      <p>但如果内层循环的次数随外层变化，就不能直接相乘。比如冒泡排序的内层是 <code>n - i</code> 次，总数是 <code>n + (n-1) + ... + 1 = n(n+1)/2</code>，仍然是 O(n²)——因为最高阶项还是 n²。</p>
+      <div class="warn">⚠️ <b>别把「循环层数」当复杂度。</b>下面三段代码都是双层循环，复杂度却各不相同：<br>
+      ① 内层固定跑 10 次 → O(n)；<br>
+      ② 内层从 i 到 n → O(n²)；<br>
+      ③ 内层每次把范围减半（<code>j *= 2</code>）→ O(n log n)。<br>
+      判断依据永远是<b>「最内层那一句到底执行了多少次」</b>，不是缩进有几层。</div>
+
+      <h2 id="s-2-5">2.5 程序一：把操作次数数出来（四语言对照）</h2>
+      <p>这段程序用固定种子的伪随机数生成 1000 个数据（保证每次运行、每门语言的数据完全一样），然后分别统计：</p>
+      <ul>
+        <li>O(1)：一次常数操作；</li>
+        <li>O(log n)：在有序副本里二分查找最大值，数比较次数；</li>
+        <li>O(n)：一次遍历求和；</li>
+        <li>O(n log n)：手写归并排序，数比较次数；</li>
+        <li>O(n²)：双重循环数所有数对；</li>
+        <li>去重三种策略：暴力 O(n²)、排序后相邻比较 O(n log n)、哈希表 O(n)，比较各自的代价与额外空间；</li>
+        <li>递归深度：递归求和 100 层 vs 迭代 1 层。</li>
+      </ul>
+
+      <h3>C</h3>
+      <div class="code-label">count_ops.c</div>
+<pre><code class="language-c">/* =====================================================================
+   数据结构与算法 · 第 2 章 复杂度与算法分析 · 操作次数实测（C）
+   编译运行： gcc -std=c17 -Wall -Wextra -o app count_ops.c &amp;&amp; ./app
+
+   为什么要数「操作次数」而不是看秒表：
+   运行时间受机器、编译器、缓存影响，换个环境就变了；操作次数只和算法本身有关，
+   四门语言用同一套逻辑写，数出来的次数应当完全一样——这才是复杂度的本意。
+
+   本章涉及的复杂度（时间 / 空间）
+     常数        O(1)       / O(1)
+     二分查找    O(log n)   / O(1)
+     一次遍历    O(n)       / O(1)
+     归并排序    O(n log n) / O(n)
+     双重循环    O(n^2)     / O(1)
+     递归求和    O(n)       / O(n)  ← 递归栈占了 n 层
+   ===================================================================== */
+
+#include &lt;stdio.h&gt;
+
+#define N 1000
+#define HASH_SIZE 1024            /* 2^10；故意取小，让冲突真的发生，才看得到探测次数 */
+
+static int data[N];
+static int sorted_arr[N];
+static int tmp[N];
+static int hash_table[HASH_SIZE];
+
+static long cmp_count = 0;        /* 归并排序的比较次数 */
+static long probe_count = 0;      /* 哈希表的探测次数 */
+
+/* 固定种子的伪随机数列：保证每次运行、每门语言拿到的数据完全一样 */
+static void lcg_fill(int *a, int n) {
+    unsigned long long x = 12345ULL;
+    for (int i = 0; i &lt; n; ++i) {
+        x = (x * 1103515245ULL + 12345ULL) % 2147483648ULL;
+        a[i] = (int)(x % 2000ULL);
+    }
+}
+
+/* 归并排序：顺手统计比较次数，O(n log n)，额外空间 O(n) */
+static void merge_sort(int *a, int *tmp2, int l, int r) {
+    if (r - l &lt;= 1) return;
+    int mid = l + (r - l) / 2;
+    merge_sort(a, tmp2, l, mid);
+    merge_sort(a, tmp2, mid, r);
+    int i = l, j = mid, k = l;
+    while (i &lt; mid &amp;&amp; j &lt; r) {
+        cmp_count++;
+        if (a[i] &lt;= a[j]) tmp2[k++] = a[i++];
+        else tmp2[k++] = a[j++];
+    }
+    while (i &lt; mid) tmp2[k++] = a[i++];
+    while (j &lt; r) tmp2[k++] = a[j++];
+    for (int t = l; t &lt; r; ++t) a[t] = tmp2[t];
+}
+
+/* 二分查找：返回比较次数，O(log n) */
+static int binary_search_compares(const int *a, int n, int target) {
+    int lo = 0, hi = n - 1, count = 0;
+    while (lo &lt;= hi) {
+        count++;
+        int mid = lo + (hi - lo) / 2;
+        if (a[mid] == target) break;
+        if (a[mid] &lt; target) lo = mid + 1;
+        else hi = mid - 1;
+    }
+    return count;
+}
+
+/* 简单开放寻址哈希表：插入成功返回 1（新元素），已存在返回 0 */
+static void hash_clear(void) {
+    for (int i = 0; i &lt; HASH_SIZE; ++i) hash_table[i] = -1;
+}
+
+static int hash_insert(int v) {
+    unsigned h = (unsigned)v &amp; (HASH_SIZE - 1);
+    for (;;) {
+        probe_count++;
+        if (hash_table[h] == -1) { hash_table[h] = v; return 1; }
+        if (hash_table[h] == v) return 0;
+        h = (h + 1) &amp; (HASH_SIZE - 1);
+    }
+}
+
+/* 递归求和：返回值一路带出递归深度，用来看「空间复杂度里的递归栈」 */
+static int rec_sum_depth(int n, int depth) {
+    if (n == 0) return depth;
+    return rec_sum_depth(n - 1, depth + 1);
+}
+
+int main(void) {
+    lcg_fill(data, N);
+
+    /* O(n^2)：不重复地数所有数对 */
+    long pairs = 0;
+    for (int i = 0; i &lt; N; ++i)
+        for (int j = i + 1; j &lt; N; ++j) pairs++;
+
+    /* O(n)：一次遍历求和 */
+    long sum = 0;
+    for (int i = 0; i &lt; N; ++i) sum += data[i];
+
+    /* O(n log n)：排序一份副本，顺便拿到比较次数 */
+    for (int i = 0; i &lt; N; ++i) sorted_arr[i] = data[i];
+    cmp_count = 0;
+    merge_sort(sorted_arr, tmp, 0, N);
+    long sort_compares = cmp_count;
+
+    /* O(log n)：在有序副本里找最大值，走的是最坏路径 */
+    int logn = binary_search_compares(sorted_arr, N, sorted_arr[N - 1]);
+
+    /* 去重策略一：暴力双重循环，O(n^2) 时间、O(1) 额外空间 */
+    long brute_compares = 0;
+    int unique_brute = 0;
+    for (int i = 0; i &lt; N; ++i) {
+        int seen = 0;
+        for (int j = 0; j &lt; i; ++j) {
+            brute_compares++;
+            if (data[j] == data[i]) { seen = 1; break; }
+        }
+        if (!seen) unique_brute++;
+    }
+
+    /* 去重策略二：排序后比较相邻元素，O(n log n) 时间、O(n) 额外空间 */
+    int unique_sorted = 1;
+    long adjacent_compares = 0;
+    for (int i = 1; i &lt; N; ++i) {
+        adjacent_compares++;
+        if (sorted_arr[i] != sorted_arr[i - 1]) unique_sorted++;
+    }
+
+    /* 去重策略三：哈希表，O(n) 时间、O(n) 额外空间 */
+    hash_clear();
+    probe_count = 0;
+    int unique_hash = 0;
+    for (int i = 0; i &lt; N; ++i) unique_hash += hash_insert(data[i]);
+    long probes = probe_count;
+
+    printf("[计数] 数据规模 n = %d\n", N);
+    printf("[计数] O(1)       常数操作: 1 次\n");
+    printf("[计数] O(log n)   二分查找比较: %d 次\n", logn);
+    printf("[计数] O(n)       遍历累加: %d 次, 和 = %ld\n", N, sum);
+    printf("[计数] O(n log n) 归并排序比较: %ld 次\n", sort_compares);
+    printf("[计数] O(n^2)     双重循环: %ld 次\n", pairs);
+    printf("[计数] 增长对比: O(n^2) 是 O(n log n) 的 %.1f 倍, 是 O(n) 的 %.1f 倍\n",
+           (double)pairs / (double)sort_compares, (double)pairs / (double)N);
+    printf("[去重] 不重复元素: %d 个（暴力 %d / 排序 %d / 哈希 %d，三种结果一致）\n",
+           unique_hash, unique_brute, unique_sorted, unique_hash);
+    printf("[去重] 暴力双重循环: %ld 次比较, 额外空间 O(1)\n", brute_compares);
+    printf("[去重] 排序后相邻比较: %ld 次（不含排序的 %ld 次）, 额外空间 O(n)\n",
+           adjacent_compares, sort_compares);
+    printf("[去重] 哈希表: %ld 次探测 = %d 次插入 + %ld 次冲突, 额外空间 O(n)\n",
+           probes, N, probes - N);
+    printf("[递归] 递归求和 n=100: 栈深度 %d 层；迭代版: 1 层\n", rec_sum_depth(100, 0));
+    return 0;
+}</code></pre>
+
+      <h3>C++</h3>
+      <div class="code-label">count_ops.cpp</div>
+<pre><code class="language-cpp">// =====================================================================
+// 数据结构与算法 · 第 2 章 复杂度与算法分析 · 操作次数实测（C++）
+// 编译运行： g++ -std=c++17 -Wall -Wextra -Wpedantic -o app count_ops.cpp &amp;&amp; ./app
+//
+// 本章的代码是「测量工具」，所以四门语言用同一套手写逻辑，
+// 数出来的操作次数完全一致，方便横向对照。
+//
+// 复杂度（时间 / 空间）
+//   常数 O(1)/O(1)  二分 O(log n)/O(1)  遍历 O(n)/O(1)
+//   归并排序 O(n log n)/O(n)  双重循环 O(n^2)/O(1)  递归求和 O(n)/O(n)
+// =====================================================================
+
+#include &lt;cstdio&gt;
+
+constexpr int N = 1000;
+constexpr int HASH_SIZE = 1024;     // 2^10；故意取小，让冲突真的发生，才看得到探测次数
+
+int data_[N];
+int sorted_arr[N];
+int tmp[N];
+int hash_table[HASH_SIZE];
+
+long cmp_count = 0;
+long probe_count = 0;
+
+// 固定种子的伪随机数列：保证每次运行、每门语言拿到的数据完全一样
+void lcg_fill(int *a, int n) {
+    unsigned long long x = 12345ULL;
+    for (int i = 0; i &lt; n; ++i) {
+        x = (x * 1103515245ULL + 12345ULL) % 2147483648ULL;
+        a[i] = static_cast&lt;int&gt;(x % 2000ULL);
+    }
+}
+
+// 归并排序：顺手统计比较次数，O(n log n)，额外空间 O(n)
+void merge_sort(int *a, int *buffer, int l, int r) {
+    if (r - l &lt;= 1) return;
+    int mid = l + (r - l) / 2;
+    merge_sort(a, buffer, l, mid);
+    merge_sort(a, buffer, mid, r);
+    int i = l, j = mid, k = l;
+    while (i &lt; mid &amp;&amp; j &lt; r) {
+        ++cmp_count;
+        if (a[i] &lt;= a[j]) buffer[k++] = a[i++];
+        else buffer[k++] = a[j++];
+    }
+    while (i &lt; mid) buffer[k++] = a[i++];
+    while (j &lt; r) buffer[k++] = a[j++];
+    for (int t = l; t &lt; r; ++t) a[t] = buffer[t];
+}
+
+// 二分查找：返回比较次数，O(log n)
+int binary_search_compares(const int *a, int n, int target) {
+    int lo = 0, hi = n - 1, count = 0;
+    while (lo &lt;= hi) {
+        ++count;
+        int mid = lo + (hi - lo) / 2;
+        if (a[mid] == target) break;
+        if (a[mid] &lt; target) lo = mid + 1;
+        else hi = mid - 1;
+    }
+    return count;
+}
+
+// 简单开放寻址哈希表：插入成功返回 1（新元素），已存在返回 0
+void hash_clear() {
+    for (int i = 0; i &lt; HASH_SIZE; ++i) hash_table[i] = -1;
+}
+
+int hash_insert(int v) {
+    unsigned h = static_cast&lt;unsigned&gt;(v) &amp; (HASH_SIZE - 1);
+    for (;;) {
+        ++probe_count;
+        if (hash_table[h] == -1) { hash_table[h] = v; return 1; }
+        if (hash_table[h] == v) return 0;
+        h = (h + 1) &amp; (HASH_SIZE - 1);
+    }
+}
+
+// 递归求和：返回值一路带出递归深度，用来看「空间复杂度里的递归栈」
+int rec_sum_depth(int n, int depth) {
+    if (n == 0) return depth;
+    return rec_sum_depth(n - 1, depth + 1);
+}
+
+int main() {
+    lcg_fill(data_, N);
+
+    long pairs = 0;                                    // O(n^2)
+    for (int i = 0; i &lt; N; ++i)
+        for (int j = i + 1; j &lt; N; ++j) ++pairs;
+
+    long sum = 0;                                      // O(n)
+    for (int i = 0; i &lt; N; ++i) sum += data_[i];
+
+    for (int i = 0; i &lt; N; ++i) sorted_arr[i] = data_[i];
+    cmp_count = 0;
+    merge_sort(sorted_arr, tmp, 0, N);                  // O(n log n)
+    long sort_compares = cmp_count;
+
+    int logn = binary_search_compares(sorted_arr, N, sorted_arr[N - 1]);   // O(log n)
+
+    long brute_compares = 0;
+    int unique_brute = 0;
+    for (int i = 0; i &lt; N; ++i) {
+        int seen = 0;
+        for (int j = 0; j &lt; i; ++j) {
+            ++brute_compares;
+            if (data_[j] == data_[i]) { seen = 1; break; }
+        }
+        if (!seen) ++unique_brute;
+    }
+
+    int unique_sorted = 1;
+    long adjacent_compares = 0;
+    for (int i = 1; i &lt; N; ++i) {
+        ++adjacent_compares;
+        if (sorted_arr[i] != sorted_arr[i - 1]) ++unique_sorted;
+    }
+
+    hash_clear();
+    probe_count = 0;
+    int unique_hash = 0;
+    for (int i = 0; i &lt; N; ++i) unique_hash += hash_insert(data_[i]);
+    long probes = probe_count;
+
+    std::printf("[计数] 数据规模 n = %d\n", N);
+    std::printf("[计数] O(1)       常数操作: 1 次\n");
+    std::printf("[计数] O(log n)   二分查找比较: %d 次\n", logn);
+    std::printf("[计数] O(n)       遍历累加: %d 次, 和 = %ld\n", N, sum);
+    std::printf("[计数] O(n log n) 归并排序比较: %ld 次\n", sort_compares);
+    std::printf("[计数] O(n^2)     双重循环: %ld 次\n", pairs);
+    std::printf("[计数] 增长对比: O(n^2) 是 O(n log n) 的 %.1f 倍, 是 O(n) 的 %.1f 倍\n",
+                static_cast&lt;double&gt;(pairs) / static_cast&lt;double&gt;(sort_compares),
+                static_cast&lt;double&gt;(pairs) / static_cast&lt;double&gt;(N));
+    std::printf("[去重] 不重复元素: %d 个（暴力 %d / 排序 %d / 哈希 %d，三种结果一致）\n",
+                unique_hash, unique_brute, unique_sorted, unique_hash);
+    std::printf("[去重] 暴力双重循环: %ld 次比较, 额外空间 O(1)\n", brute_compares);
+    std::printf("[去重] 排序后相邻比较: %ld 次（不含排序的 %ld 次）, 额外空间 O(n)\n",
+                adjacent_compares, sort_compares);
+    std::printf("[去重] 哈希表: %ld 次探测 = %d 次插入 + %ld 次冲突, 额外空间 O(n)\n",
+                probes, N, probes - N);
+    std::printf("[递归] 递归求和 n=100: 栈深度 %d 层；迭代版: 1 层\n", rec_sum_depth(100, 0));
+    return 0;
+}</code></pre>
+
+      <h3>Java</h3>
+      <div class="code-label">CountOps.java</div>
+<pre><code class="language-java">// =====================================================================
+// 数据结构与算法 · 第 2 章 复杂度与算法分析 · 操作次数实测（Java）
+// 编译运行： javac -encoding UTF-8 CountOps.java
+//            java -Dstdout.encoding=UTF-8 CountOps
+//
+// 本章的代码是「测量工具」，所以四门语言用同一套手写逻辑，
+// 数出来的操作次数完全一致，方便横向对照。
+//
+// 复杂度（时间 / 空间）
+//   常数 O(1)/O(1)  二分 O(log n)/O(1)  遍历 O(n)/O(1)
+//   归并排序 O(n log n)/O(n)  双重循环 O(n^2)/O(1)  递归求和 O(n)/O(n)
+// =====================================================================
+
+import java.util.Locale;
+
+public class CountOps {
+
+    static final int N = 1000;
+    static final int HASH_SIZE = 1024;     // 2^10；故意取小，让冲突真的发生，才看得到探测次数
+
+    static int[] data = new int[N];
+    static int[] sortedArr = new int[N];
+    static int[] tmp = new int[N];
+    static int[] hashTable = new int[HASH_SIZE];
+
+    static long cmpCount = 0;
+    static long probeCount = 0;
+
+    // 固定种子的伪随机数列：保证每次运行、每门语言拿到的数据完全一样
+    static void lcgFill(int[] a, int n) {
+        long x = 12345L;
+        for (int i = 0; i &lt; n; ++i) {
+            x = (x * 1103515245L + 12345L) % 2147483648L;
+            a[i] = (int) (x % 2000L);
+        }
+    }
+
+    // 归并排序：顺手统计比较次数，O(n log n)，额外空间 O(n)
+    static void mergeSort(int[] a, int[] buffer, int l, int r) {
+        if (r - l &lt;= 1) return;
+        int mid = l + (r - l) / 2;
+        mergeSort(a, buffer, l, mid);
+        mergeSort(a, buffer, mid, r);
+        int i = l, j = mid, k = l;
+        while (i &lt; mid &amp;&amp; j &lt; r) {
+            ++cmpCount;
+            if (a[i] &lt;= a[j]) buffer[k++] = a[i++];
+            else buffer[k++] = a[j++];
+        }
+        while (i &lt; mid) buffer[k++] = a[i++];
+        while (j &lt; r) buffer[k++] = a[j++];
+        for (int t = l; t &lt; r; ++t) a[t] = buffer[t];
+    }
+
+    // 二分查找：返回比较次数，O(log n)
+    static int binarySearchCompares(int[] a, int n, int target) {
+        int lo = 0, hi = n - 1, count = 0;
+        while (lo &lt;= hi) {
+            ++count;
+            int mid = lo + (hi - lo) / 2;
+            if (a[mid] == target) break;
+            if (a[mid] &lt; target) lo = mid + 1;
+            else hi = mid - 1;
+        }
+        return count;
+    }
+
+    // 简单开放寻址哈希表：插入成功返回 1（新元素），已存在返回 0
+    static void hashClear() {
+        for (int i = 0; i &lt; HASH_SIZE; ++i) hashTable[i] = -1;
+    }
+
+    static int hashInsert(int v) {
+        int h = v &amp; (HASH_SIZE - 1);
+        for (;;) {
+            ++probeCount;
+            if (hashTable[h] == -1) { hashTable[h] = v; return 1; }
+            if (hashTable[h] == v) return 0;
+            h = (h + 1) &amp; (HASH_SIZE - 1);
+        }
+    }
+
+    // 递归求和：返回值一路带出递归深度，用来看「空间复杂度里的递归栈」
+    static int recSumDepth(int n, int depth) {
+        if (n == 0) return depth;
+        return recSumDepth(n - 1, depth + 1);
+    }
+
+    public static void main(String[] args) {
+        lcgFill(data, N);
+
+        long pairs = 0;                                    // O(n^2)
+        for (int i = 0; i &lt; N; ++i)
+            for (int j = i + 1; j &lt; N; ++j) ++pairs;
+
+        long sum = 0;                                      // O(n)
+        for (int i = 0; i &lt; N; ++i) sum += data[i];
+
+        for (int i = 0; i &lt; N; ++i) sortedArr[i] = data[i];
+        cmpCount = 0;
+        mergeSort(sortedArr, tmp, 0, N);                    // O(n log n)
+        long sortCompares = cmpCount;
+
+        int logn = binarySearchCompares(sortedArr, N, sortedArr[N - 1]);   // O(log n)
+
+        long bruteCompares = 0;
+        int uniqueBrute = 0;
+        for (int i = 0; i &lt; N; ++i) {
+            boolean seen = false;
+            for (int j = 0; j &lt; i; ++j) {
+                ++bruteCompares;
+                if (data[j] == data[i]) { seen = true; break; }
+            }
+            if (!seen) ++uniqueBrute;
+        }
+
+        int uniqueSorted = 1;
+        long adjacentCompares = 0;
+        for (int i = 1; i &lt; N; ++i) {
+            ++adjacentCompares;
+            if (sortedArr[i] != sortedArr[i - 1]) ++uniqueSorted;
+        }
+
+        hashClear();
+        probeCount = 0;
+        int uniqueHash = 0;
+        for (int i = 0; i &lt; N; ++i) uniqueHash += hashInsert(data[i]);
+        long probes = probeCount;
+
+        System.out.println("[计数] 数据规模 n = " + N);
+        System.out.println("[计数] O(1)       常数操作: 1 次");
+        System.out.println("[计数] O(log n)   二分查找比较: " + logn + " 次");
+        System.out.println("[计数] O(n)       遍历累加: " + N + " 次, 和 = " + sum);
+        System.out.println("[计数] O(n log n) 归并排序比较: " + sortCompares + " 次");
+        System.out.println("[计数] O(n^2)     双重循环: " + pairs + " 次");
+        System.out.println(String.format(Locale.ROOT,
+                "[计数] 增长对比: O(n^2) 是 O(n log n) 的 %.1f 倍, 是 O(n) 的 %.1f 倍",
+                (double) pairs / (double) sortCompares, (double) pairs / (double) N));
+        System.out.println("[去重] 不重复元素: " + uniqueHash + " 个（暴力 " + uniqueBrute
+                + " / 排序 " + uniqueSorted + " / 哈希 " + uniqueHash + "，三种结果一致）");
+        System.out.println("[去重] 暴力双重循环: " + bruteCompares + " 次比较, 额外空间 O(1)");
+        System.out.println("[去重] 排序后相邻比较: " + adjacentCompares + " 次（不含排序的 "
+                + sortCompares + " 次）, 额外空间 O(n)");
+        System.out.println("[去重] 哈希表: " + probes + " 次探测 = " + N + " 次插入 + "
+                + (probes - N) + " 次冲突, 额外空间 O(n)");
+        System.out.println("[递归] 递归求和 n=100: 栈深度 " + recSumDepth(100, 0) + " 层；迭代版: 1 层");
+    }
+}</code></pre>
+
+      <h3>Python</h3>
+      <div class="code-label">count_ops.py</div>
+<pre><code class="language-python"># =====================================================================
+# 数据结构与算法 · 第 2 章 复杂度与算法分析 · 操作次数实测（Python）
+# 运行： python count_ops.py
+#
+# 本章的代码是「测量工具」，所以四门语言用同一套手写逻辑，
+# 数出来的操作次数完全一致，方便横向对照。
+#
+# 复杂度（时间 / 空间）
+#   常数 O(1)/O(1)  二分 O(log n)/O(1)  遍历 O(n)/O(1)
+#   归并排序 O(n log n)/O(n)  双重循环 O(n^2)/O(1)  递归求和 O(n)/O(n)
+# =====================================================================
+
+import sys
+
+N = 1000
+HASH_SIZE = 1024            # 2^10；故意取小，让冲突真的发生，才看得到探测次数
+
+data = [0] * N
+sorted_arr = [0] * N
+tmp = [0] * N
+hash_table = [-1] * HASH_SIZE
+
+cmp_count = 0
+probe_count = 0
+
+
+def lcg_fill(a, n):
+    """固定种子的伪随机数列：保证每次运行、每门语言拿到的数据完全一样"""
+    x = 12345
+    for i in range(n):
+        x = (x * 1103515245 + 12345) % 2147483648
+        a[i] = x % 2000
+
+
+def merge_sort(a, buffer, l, r):
+    """归并排序：顺手统计比较次数，O(n log n)，额外空间 O(n)"""
+    global cmp_count
+    if r - l &lt;= 1:
+        return
+    mid = l + (r - l) // 2
+    merge_sort(a, buffer, l, mid)
+    merge_sort(a, buffer, mid, r)
+    i, j, k = l, mid, l
+    while i &lt; mid and j &lt; r:
+        cmp_count += 1
+        if a[i] &lt;= a[j]:
+            buffer[k] = a[i]
+            i += 1
+        else:
+            buffer[k] = a[j]
+            j += 1
+        k += 1
+    while i &lt; mid:
+        buffer[k] = a[i]
+        i += 1
+        k += 1
+    while j &lt; r:
+        buffer[k] = a[j]
+        j += 1
+        k += 1
+    for t in range(l, r):
+        a[t] = buffer[t]
+
+
+def binary_search_compares(a, n, target):
+    """二分查找：返回比较次数，O(log n)"""
+    lo, hi, count = 0, n - 1, 0
+    while lo &lt;= hi:
+        count += 1
+        mid = lo + (hi - lo) // 2
+        if a[mid] == target:
+            break
+        if a[mid] &lt; target:
+            lo = mid + 1
+        else:
+            hi = mid - 1
+    return count
+
+
+def hash_clear():
+    for i in range(HASH_SIZE):
+        hash_table[i] = -1
+
+
+def hash_insert(v):
+    """简单开放寻址哈希表：插入成功返回 1（新元素），已存在返回 0"""
+    global probe_count
+    h = v &amp; (HASH_SIZE - 1)
+    while True:
+        probe_count += 1
+        if hash_table[h] == -1:
+            hash_table[h] = v
+            return 1
+        if hash_table[h] == v:
+            return 0
+        h = (h + 1) &amp; (HASH_SIZE - 1)
+
+
+def rec_sum_depth(n, depth):
+    """递归求和：返回值一路带出递归深度，用来看「空间复杂度里的递归栈」"""
+    if n == 0:
+        return depth
+    return rec_sum_depth(n - 1, depth + 1)
+
+
+def main():
+    global cmp_count, probe_count
+
+    lcg_fill(data, N)
+
+    pairs = 0                                   # O(n^2)
+    for i in range(N):
+        for j in range(i + 1, N):
+            pairs += 1
+
+    total = 0                                   # O(n)
+    for i in range(N):
+        total += data[i]
+
+    for i in range(N):
+        sorted_arr[i] = data[i]
+    cmp_count = 0
+    merge_sort(sorted_arr, tmp, 0, N)            # O(n log n)
+    sort_compares = cmp_count
+
+    logn = binary_search_compares(sorted_arr, N, sorted_arr[N - 1])   # O(log n)
+
+    brute_compares = 0
+    unique_brute = 0
+    for i in range(N):
+        seen = False
+        for j in range(i):
+            brute_compares += 1
+            if data[j] == data[i]:
+                seen = True
+                break
+        if not seen:
+            unique_brute += 1
+
+    unique_sorted = 1
+    adjacent_compares = 0
+    for i in range(1, N):
+        adjacent_compares += 1
+        if sorted_arr[i] != sorted_arr[i - 1]:
+            unique_sorted += 1
+
+    hash_clear()
+    probe_count = 0
+    unique_hash = 0
+    for i in range(N):
+        unique_hash += hash_insert(data[i])
+    probes = probe_count
+
+    print("[计数] 数据规模 n = %d" % N)
+    print("[计数] O(1)       常数操作: 1 次")
+    print("[计数] O(log n)   二分查找比较: %d 次" % logn)
+    print("[计数] O(n)       遍历累加: %d 次, 和 = %d" % (N, total))
+    print("[计数] O(n log n) 归并排序比较: %d 次" % sort_compares)
+    print("[计数] O(n^2)     双重循环: %d 次" % pairs)
+    print("[计数] 增长对比: O(n^2) 是 O(n log n) 的 %.1f 倍, 是 O(n) 的 %.1f 倍"
+          % (pairs / sort_compares, pairs / N))
+    print("[去重] 不重复元素: %d 个（暴力 %d / 排序 %d / 哈希 %d，三种结果一致）"
+          % (unique_hash, unique_brute, unique_sorted, unique_hash))
+    print("[去重] 暴力双重循环: %d 次比较, 额外空间 O(1)" % brute_compares)
+    print("[去重] 排序后相邻比较: %d 次（不含排序的 %d 次）, 额外空间 O(n)"
+          % (adjacent_compares, sort_compares))
+    print("[去重] 哈希表: %d 次探测 = %d 次插入 + %d 次冲突, 额外空间 O(n)"
+          % (probes, N, probes - N))
+    print("[递归] 递归求和 n=100: 栈深度 %d 层；迭代版: 1 层" % rec_sum_depth(100, 0))
+
+
+if __name__ == "__main__":
+    sys.setrecursionlimit(10000)
+    main()</code></pre>
+
+      <h3>实测输出（四份逐字节一致）</h3>
+      <div class="code-label">运行结果</div>
+<pre><code>[计数] 数据规模 n = 1000
+[计数] O(1)       常数操作: 1 次
+[计数] O(log n)   二分查找比较: 10 次
+[计数] O(n)       遍历累加: 1000 次, 和 = 993660
+[计数] O(n log n) 归并排序比较: 8722 次
+[计数] O(n^2)     双重循环: 499500 次
+[计数] 增长对比: O(n^2) 是 O(n log n) 的 57.3 倍, 是 O(n) 的 499.5 倍
+[去重] 不重复元素: 794 个（暴力 794 / 排序 794 / 哈希 794，三种结果一致）
+[去重] 暴力双重循环: 426586 次比较, 额外空间 O(1)
+[去重] 排序后相邻比较: 999 次（不含排序的 8722 次）, 额外空间 O(n)
+[去重] 哈希表: 1704 次探测 = 1000 次插入 + 704 次冲突, 额外空间 O(n)
+[递归] 递归求和 n=100: 栈深度 100 层；迭代版: 1 层</code></pre>
+      <div class="tip">🔍 <b>从这份输出里能读出三件事：</b><br>
+      ① 同样是 n=1000，O(n²) 的 499500 次是 O(n log n) 的 <b>57.3 倍</b>、O(n) 的 <b>499.5 倍</b>——量级的差距在 n=1000 时就已经很明显；<br>
+      ② 二分查找只问了 <b>10 次</b>：1000 个元素，10 次就能定位（2¹⁰ = 1024），这就是「每次砍一半」的威力；<br>
+      ③ 三种去重策略算出的不重复元素个数<b>完全一致（794）</b>，说明它们结果相同、只是代价不同——这正是「空间换时间」要讨论的场景。</div>
+
+      <h2 id="s-2-6">2.6 程序二：均摊分析（为什么 push_back 是 O(1)）</h2>
+      <p>一个常见疑问：动态数组插入元素时，容量满了要重新分配内存、把旧数据全部搬过去，那岂不是每次插入都很贵？</p>
+      <p>答案是「偶尔很贵，但平均下来很便宜」。容量<b>按倍数增长</b>时，n 次插入的总拷贝次数是 <code>1 + 2 + 4 + ... + n/2 = n - 1</code>，也就是 O(n)；摊到每次插入就是 <b>O(1)</b>。这种「算长期平均」的分析方法叫<b>均摊分析</b>。</p>
+      <p>反过来，如果容量<b>每次只加 1</b>，总拷贝就变成 <code>1 + 2 + ... + (n-1) = n(n-1)/2</code>，也就是 O(n²)，均摊到每次是 O(n)——这就是为什么所有标准库的动态数组都用倍数增长。</p>
+
+      <h3>C</h3>
+      <div class="code-label">amortized.c</div>
+<pre><code class="language-c">/* =====================================================================
+   数据结构与算法 · 第 2 章 复杂度与算法分析 · 均摊分析（C）
+   编译运行： gcc -std=c17 -Wall -Wextra -o app amortized.c &amp;&amp; ./app
+
+   要回答的问题：动态数组（vector / ArrayList / list）每次插入都要扩容吗？
+   答案：不。容量翻倍时，n 次插入的总拷贝次数是 O(n)，平均到每次是 O(1)，
+        这个「最坏情况偶尔很贵、平均下来很便宜」的分析方法就叫均摊分析。
+
+   复杂度（时间 / 空间）
+     翻倍扩容：总拷贝 O(n)，均摊到每次插入 O(1)，额外空间 O(1)
+     每次加 1：总拷贝 O(n^2)，均摊到每次插入 O(n)，额外空间 O(1)
+   ===================================================================== */
+
+#include &lt;stdio.h&gt;
+
+/* 容量翻倍：容量满时扩容并拷贝旧数据，返回 n 次插入的总拷贝次数 */
+static long simulate_doubling(int n) {
+    int cap = 1, size = 0;
+    long copies = 0;
+    for (int i = 0; i &lt; n; ++i) {
+        if (size == cap) { copies += size; cap *= 2; }
+        size++;
+    }
+    return copies;
+}
+
+/* 每次只加 1：容量满时只多扩一个位置，返回总拷贝次数 */
+static long simulate_plus_one(int n) {
+    int cap = 1, size = 0;
+    long copies = 0;
+    for (int i = 0; i &lt; n; ++i) {
+        if (size == cap) { copies += size; cap += 1; }
+        size++;
+    }
+    return copies;
+}
+
+static void report(int n) {
+    long doubling = simulate_doubling(n);
+    long plusone = simulate_plus_one(n);
+    printf("[均摊] n = %d\n", n);
+    printf("[均摊]   翻倍扩容: 总拷贝 %ld 次, 平均 %.2f 次/插入\n",
+           doubling, (double)doubling / (double)n);
+    printf("[均摊]   每次加 1: 总拷贝 %ld 次, 平均 %.2f 次/插入\n",
+           plusone, (double)plusone / (double)n);
+}
+
+int main(void) {
+    report(16);
+    report(1024);
+    printf("[均摊] 结论: 翻倍扩容总拷贝 O(n)（均摊 O(1)），每次加 1 是 O(n^2)（均摊 O(n)）\n");
+    return 0;
+}</code></pre>
+
+      <h3>C++</h3>
+      <div class="code-label">amortized.cpp</div>
+<pre><code class="language-cpp">// =====================================================================
+// 数据结构与算法 · 第 2 章 复杂度与算法分析 · 均摊分析（C++）
+// 编译运行： g++ -std=c++17 -Wall -Wextra -Wpedantic -o app amortized.cpp &amp;&amp; ./app
+//
+// 要回答的问题：动态数组（vector）每次插入都要扩容吗？
+// 答案：容量翻倍时，n 次插入的总拷贝是 O(n)，均摊到每次插入是 O(1)——
+//      这就是 std::vector::push_back 号称「均摊 O(1)」的由来。
+//
+// 复杂度（时间 / 空间）
+//   翻倍扩容：总拷贝 O(n)，均摊 O(1)，额外空间 O(1)
+//   每次加 1：总拷贝 O(n^2)，均摊 O(n)，额外空间 O(1)
+// =====================================================================
+
+#include &lt;cstdio&gt;
+
+// 容量翻倍：容量满时扩容并拷贝旧数据，返回 n 次插入的总拷贝次数
+long simulate_doubling(int n) {
+    int cap = 1, size = 0;
+    long copies = 0;
+    for (int i = 0; i &lt; n; ++i) {
+        if (size == cap) { copies += size; cap *= 2; }
+        ++size;
+    }
+    return copies;
+}
+
+// 每次只加 1：容量满时只多扩一个位置，返回总拷贝次数
+long simulate_plus_one(int n) {
+    int cap = 1, size = 0;
+    long copies = 0;
+    for (int i = 0; i &lt; n; ++i) {
+        if (size == cap) { copies += size; cap += 1; }
+        ++size;
+    }
+    return copies;
+}
+
+void report(int n) {
+    long doubling = simulate_doubling(n);
+    long plusone = simulate_plus_one(n);
+    std::printf("[均摊] n = %d\n", n);
+    std::printf("[均摊]   翻倍扩容: 总拷贝 %ld 次, 平均 %.2f 次/插入\n",
+                doubling, static_cast&lt;double&gt;(doubling) / n);
+    std::printf("[均摊]   每次加 1: 总拷贝 %ld 次, 平均 %.2f 次/插入\n",
+                plusone, static_cast&lt;double&gt;(plusone) / n);
+}
+
+int main() {
+    report(16);
+    report(1024);
+    std::printf("[均摊] 结论: 翻倍扩容总拷贝 O(n)（均摊 O(1)），每次加 1 是 O(n^2)（均摊 O(n)）\n");
+    return 0;
+}</code></pre>
+
+      <h3>Java</h3>
+      <div class="code-label">Amortized.java</div>
+<pre><code class="language-java">// =====================================================================
+// 数据结构与算法 · 第 2 章 复杂度与算法分析 · 均摊分析（Java）
+// 编译运行： javac -encoding UTF-8 Amortized.java
+//            java -Dstdout.encoding=UTF-8 Amortized
+//
+// 要回答的问题：ArrayList 每次 add 都要扩容吗？
+// 答案：容量按倍数增长时，n 次 add 的总拷贝是 O(n)，均摊到每次是 O(1)。
+//
+// 复杂度（时间 / 空间）
+//   翻倍扩容：总拷贝 O(n)，均摊 O(1)，额外空间 O(1)
+//   每次加 1：总拷贝 O(n^2)，均摊 O(n)，额外空间 O(1)
+// =====================================================================
+
+import java.util.Locale;
+
+public class Amortized {
+
+    // 容量翻倍：容量满时扩容并拷贝旧数据，返回 n 次插入的总拷贝次数
+    static long simulateDoubling(int n) {
+        int cap = 1, size = 0;
+        long copies = 0;
+        for (int i = 0; i &lt; n; ++i) {
+            if (size == cap) { copies += size; cap *= 2; }
+            ++size;
+        }
+        return copies;
+    }
+
+    // 每次只加 1：容量满时只多扩一个位置，返回总拷贝次数
+    static long simulatePlusOne(int n) {
+        int cap = 1, size = 0;
+        long copies = 0;
+        for (int i = 0; i &lt; n; ++i) {
+            if (size == cap) { copies += size; cap += 1; }
+            ++size;
+        }
+        return copies;
+    }
+
+    static void report(int n) {
+        long doubling = simulateDoubling(n);
+        long plusOne = simulatePlusOne(n);
+        System.out.println("[均摊] n = " + n);
+        System.out.println(String.format(Locale.ROOT,
+                "[均摊]   翻倍扩容: 总拷贝 %d 次, 平均 %.2f 次/插入",
+                doubling, (double) doubling / n));
+        System.out.println(String.format(Locale.ROOT,
+                "[均摊]   每次加 1: 总拷贝 %d 次, 平均 %.2f 次/插入",
+                plusOne, (double) plusOne / n));
+    }
+
+    public static void main(String[] args) {
+        report(16);
+        report(1024);
+        System.out.println("[均摊] 结论: 翻倍扩容总拷贝 O(n)（均摊 O(1)），每次加 1 是 O(n^2)（均摊 O(n)）");
+    }
+}</code></pre>
+
+      <h3>Python</h3>
+      <div class="code-label">amortized.py</div>
+<pre><code class="language-python"># =====================================================================
+# 数据结构与算法 · 第 2 章 复杂度与算法分析 · 均摊分析（Python）
+# 运行： python amortized.py
+#
+# 要回答的问题：list.append 每次都要搬家吗？
+# 答案：CPython 的 list 也是按倍数扩容量，n 次 append 的总拷贝是 O(n)，
+#      均摊到每次是 O(1)。
+#
+# 复杂度（时间 / 空间）
+#   翻倍扩容：总拷贝 O(n)，均摊 O(1)，额外空间 O(1)
+#   每次加 1：总拷贝 O(n^2)，均摊 O(n)，额外空间 O(1)
+# =====================================================================
+
+
+def simulate_doubling(n):
+    """容量翻倍：容量满时扩容并拷贝旧数据，返回 n 次插入的总拷贝次数"""
+    cap, size, copies = 1, 0, 0
+    for _ in range(n):
+        if size == cap:
+            copies += size
+            cap *= 2
+        size += 1
+    return copies
+
+
+def simulate_plus_one(n):
+    """每次只加 1：容量满时只多扩一个位置，返回总拷贝次数"""
+    cap, size, copies = 1, 0, 0
+    for _ in range(n):
+        if size == cap:
+            copies += size
+            cap += 1
+        size += 1
+    return copies
+
+
+def report(n):
+    doubling = simulate_doubling(n)
+    plus_one = simulate_plus_one(n)
+    print("[均摊] n = %d" % n)
+    print("[均摊]   翻倍扩容: 总拷贝 %d 次, 平均 %.2f 次/插入" % (doubling, doubling / n))
+    print("[均摊]   每次加 1: 总拷贝 %d 次, 平均 %.2f 次/插入" % (plus_one, plus_one / n))
+
+
+def main():
+    report(16)
+    report(1024)
+    print("[均摊] 结论: 翻倍扩容总拷贝 O(n)（均摊 O(1)），每次加 1 是 O(n^2)（均摊 O(n)）")
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+
+      <h3>实测输出（四份逐字节一致）</h3>
+      <div class="code-label">运行结果</div>
+<pre><code>[均摊] n = 16
+[均摊]   翻倍扩容: 总拷贝 15 次, 平均 0.94 次/插入
+[均摊]   每次加 1: 总拷贝 120 次, 平均 7.50 次/插入
+[均摊] n = 1024
+[均摊]   翻倍扩容: 总拷贝 1023 次, 平均 1.00 次/插入
+[均摊]   每次加 1: 总拷贝 523776 次, 平均 511.50 次/插入
+[均摊] 结论: 翻倍扩容总拷贝 O(n)（均摊 O(1)），每次加 1 是 O(n^2)（均摊 O(n)）</code></pre>
+      <div class="tip">🔍 <b>注意 n 从 16 涨到 1024 时两组数字的变化：</b>翻倍扩容的平均拷贝从 0.94 只涨到 1.00（基本不变，说明是均摊 O(1)）；每次加 1 的平均拷贝从 7.50 涨到 511.50（跟着 n 线性涨，说明是均摊 O(n)）。<b>「平均次数随 n 怎么变」，就是判断均摊复杂度的直接方法。</b></div>
+
+      <h2 id="s-2-7">2.7 空间复杂度：别忘了递归栈</h2>
+      <p>空间复杂度算的是<b>额外</b>用掉的内存（输入本身不算），但有一个容易漏掉的部分：<b>递归调用栈</b>。</p>
+      <p>本章程序里实测：递归求和 n=100 时，栈深度是 <b>100 层</b>；同样的活改成迭代写，栈深度是 <b>1 层</b>。虽然两者时间都是 O(n)，但空间一个是 O(n)、一个是 O(1)。</p>
+      <table>
+        <tr><th>写法</th><th>时间复杂度</th><th>空间复杂度</th><th>说明</th></tr>
+        <tr><td>归并排序（递归）</td><td>O(n log n)</td><td>O(n)</td><td>合并用的辅助数组 O(n) + 递归栈 O(log n)</td></tr>
+        <tr><td>快速排序（原地）</td><td>平均 O(n log n)</td><td>O(log n)</td><td>原地分区，空间主要是递归栈</td></tr>
+        <tr><td>链表反转（迭代）</td><td>O(n)</td><td>O(1)</td><td>只用三个指针（第 1 章写过）</td></tr>
+        <tr><td>链表反转（递归）</td><td>O(n)</td><td>O(n)</td><td>递归栈 n 层，链表长了会爆栈</td></tr>
+      </table>
+      <div class="warn">⚠️ <b>面试常问：</b>「递归反转链表和迭代反转链表，谁更省空间？」答案是迭代（O(1) vs O(n)）。很多人在时间上答对了（都是 O(n)），但空间上会答错。</div>
+
+      <h2 id="s-2-8">2.8 主定理速查：一眼看出分治的复杂度</h2>
+      <p>分治算法的复杂度都能写成 <code>T(n) = a·T(n/b) + f(n)</code>：把问题拆成 a 个子问题、每个规模是 n/b，合并代价是 f(n)。主定理给了三种情形：</p>
+      <table>
+        <tr><th>情形</th><th>条件（比较 f(n) 和 n^(log_b a)）</th><th>结论</th></tr>
+        <tr><td>① 子问题更重</td><td>f(n) 比 n^(log_b a) 小一个量级</td><td>T(n) = Θ(n^(log_b a))</td></tr>
+        <tr><td>② 两边一样重</td><td>f(n) 和 n^(log_b a) 同量级</td><td>T(n) = Θ(n^(log_b a) · log n)</td></tr>
+        <tr><td>③ 合并更重</td><td>f(n) 比 n^(log_b a) 大一个量级</td><td>T(n) = Θ(f(n))</td></tr>
+      </table>
+      <p>对着四个常见式子套一遍，比背公式有用：</p>
+      <table>
+        <tr><th>递归式</th><th>a, b, log_b a</th><th>情形</th><th>结果</th><th>出现在哪</th></tr>
+        <tr><td>T(n) = 2T(n/2) + O(n)</td><td>a=2, b=2, log₂2=1</td><td>② f(n)=Θ(n¹)</td><td>Θ(n log n)</td><td>归并排序、快排平均</td></tr>
+        <tr><td>T(n) = 2T(n/2) + O(1)</td><td>a=2, b=2, log₂2=1</td><td>① f(n) 更小</td><td>Θ(n)</td><td>二叉树遍历</td></tr>
+        <tr><td>T(n) = T(n/2) + O(1)</td><td>a=1, b=2, log₂1=0</td><td>② f(n)=Θ(n⁰)</td><td>Θ(log n)</td><td>二分查找</td></tr>
+        <tr><td>T(n) = 2T(n/2) + O(n²)</td><td>a=2, b=2, log₂2=1</td><td>③ f(n) 更大</td><td>Θ(n²)</td><td>合并代价过高的分治</td></tr>
+      </table>
+      <div class="tip">📌 <b>不用背三种情形，记一句人话：</b>看「拆分的代价」和「合并的代价」哪个大——合并更大就由合并主导，拆分更重就由最底层子问题主导，一样大就乘一个 log n。</div>
+
+      <h2 id="s-2-9">2.9 实战：从 n 的范围反推该用什么算法</h2>
+      <p>笔试面试里最实用的一项能力：<b>看到数据范围，立刻知道题目要什么复杂度</b>。下面是按 C++ 每秒约 10⁸ 次简单操作估的经验表：</p>
+      <table>
+        <tr><th>n 的范围</th><th>允许的复杂度</th><th>通常对应什么算法</th></tr>
+        <tr><td>n ≤ 20</td><td>O(2ⁿ)、O(n!)</td><td>子集枚举、全排列、状态压缩 DP、暴力回溯</td></tr>
+        <tr><td>n ≤ 100</td><td>O(n⁴)、O(n³)</td><td>区间 DP、Floyd 多源最短路</td></tr>
+        <tr><td>n ≤ 5000</td><td>O(n²)</td><td>双重循环 DP、朴素字符串匹配</td></tr>
+        <tr><td>n ≤ 10⁶</td><td>O(n log n)</td><td>排序、二分、堆、分治</td></tr>
+        <tr><td>n ≤ 10⁸</td><td>O(n)</td><td>一次遍历、前缀和、双指针、单调栈</td></tr>
+        <tr><td>n 很大或不确定</td><td>O(log n)、O(1)</td><td>二分、快速幂、数学公式、哈希</td></tr>
+      </table>
+      <p>用法举例：题目说 <code>n ≤ 10⁵</code>，那么 O(n²) 的 10¹⁰ 次操作必然超时，要往 O(n log n) 或 O(n) 的方向想——这就是第 4 章双指针、第 5 章哈希表、第 8 章排序存在的原因。</p>
+
+      <h2 id="s-2-10">2.10 常见误区清单</h2>
+      <table>
+        <tr><th>误区</th><th>为什么错 / 正确说法</th></tr>
+        <tr><td>O(1) 就是很快</td><td>O(1) 只说明和 n 无关；一次 O(1) 的哈希计算也可能很贵。复杂度讲增长，不讲绝对时间</td></tr>
+        <tr><td>常数不重要，忽略就行</td><td>n 小的时候常数说了算。同复杂度下，把 cin 换成 scanf 就能把程序从超时救回来</td></tr>
+        <tr><td>O(2n) 和 O(n) 是两个复杂度</td><td>常数系数会被吸收：O(2n) = O(n)，O(n/2) = O(n)</td></tr>
+        <tr><td>最坏、平均、最好是一回事</td><td>三者是不同的问题：快排最坏 O(n²)、平均 O(n log n)；哈希查找平均 O(1)、最坏 O(n)</td></tr>
+        <tr><td>空间复杂度只算数组</td><td>递归调用栈也算：递归深度 n = 空间 O(n)（本章程序实测 100 层栈）</td></tr>
+        <tr><td>循环层数 = 复杂度</td><td>双层循环可能是 O(n)、O(n log n) 或 O(n²)，要看最内层那句执行了多少次</td></tr>
+        <tr><td>n 就是数值大小</td><td>O(n) 里的 n 是数据规模。计数排序是 O(n + k)，k 是值域，不能写成 O(n)</td></tr>
+        <tr><td>均摊 O(1) = 每次都 O(1)</td><td>均摊说的是长期平均。单次 push_back 仍可能是 O(n)，只是很少发生</td></tr>
+      </table>
+
+      <h2 id="s-2-11">2.11 运行命令（照抄就能跑）</h2>
+      <table>
+        <tr><th>语言</th><th>文件</th><th>命令</th></tr>
+        <tr><td>C</td><td>count_ops.c / amortized.c</td><td><code>gcc -std=c17 -Wall -Wextra -o app count_ops.c &amp;&amp; ./app</code></td></tr>
+        <tr><td>C++</td><td>count_ops.cpp / amortized.cpp</td><td><code>g++ -std=c++17 -Wall -Wextra -Wpedantic -o app count_ops.cpp &amp;&amp; ./app</code></td></tr>
+        <tr><td>Java</td><td>CountOps.java / Amortized.java</td><td><code>javac -encoding UTF-8 CountOps.java</code> 然后 <code>java -Dstdout.encoding=UTF-8 CountOps</code></td></tr>
+        <tr><td>Python</td><td>count_ops.py / amortized.py</td><td><code>python count_ops.py</code></td></tr>
+      </table>
+      <div class="warn">⚙️ <b>Windows 终端中文乱码时：</b>先 <code>chcp 65001</code>；Python 另设 <code>set PYTHONIOENCODING=utf-8</code>；Java 用上面的 <code>-Dstdout.encoding=UTF-8</code>。macOS / Linux 把 <code>./app.exe</code> 换成 <code>./app</code>。</div>
+
+      <h2 id="s-2-12">2.12 练习</h2>
+      <div class="ex">
+        <div class="ex-head"><span class="ex-id">2.1</span><span class="ex-title">手推复杂度</span></div>
+        <p>写出下面这段代码的复杂度，并说明理由：外层 <code>i</code> 从 1 开始每次乘 2（<code>i *= 2</code>），内层 <code>j</code> 从 0 到 n 跑满。</p>
+        <div class="hint">提示：外层从 1 开始每次乘 2，跑了几次？内层每次都跑满 n 次吗？</div>
+      </div>
+      <div class="ex">
+        <div class="ex-head"><span class="ex-id">2.2</span><span class="ex-title">改一段代码验证</span></div>
+        <p>把本章程序一里的 <code>N</code> 改成 2000 和 4000，把三次运行的关键行（双重循环、归并比较、二分比较）抄成一张表，观察哪个量级是「翻倍后翻两倍」，哪个是「翻倍后翻四倍」。</p>
+        <div class="hint">提示：O(n) 随 n 线性增长；O(n log n) 略快于线性；O(n²) 是四倍。</div>
+      </div>
+      <div class="ex">
+        <div class="ex-head"><span class="ex-id">2.3</span><span class="ex-title">均摊的边界</span></div>
+        <p>如果动态数组的容量策略改成「每次增长 1.5 倍」（CPython 的 list 就是这么做的），总拷贝次数还是 O(n) 吗？动手改本章程序二的 <code>cap *= 2</code> 验证一下，并解释增长倍数小于 2 时平均拷贝次数为什么会略高。</p>
+        <div class="hint">提示：1.5 倍增长时扩容更频繁，但仍是指数增长，总拷贝仍是 O(n) 量级。</div>
+      </div>
+      <div class="ex">
+        <div class="ex-head"><span class="ex-id">2.4</span><span class="ex-title">把递归改成迭代</span></div>
+        <p>本章程序一的 <code>rec_sum_depth</code> 是递归写的。改写成迭代版本，让程序输出「栈深度 1 层」，并说明为什么两者时间复杂度相同、空间复杂度不同。</p>
+        <div class="hint">提示：递归的空间开销来自「每一层都要记住返回地址和局部变量」。</div>
+      </div>
+      <div class="ex">
+        <div class="ex-head"><span class="ex-id">2.5</span><span class="ex-title">读题反推（面试常考）</span></div>
+        <p>一道题给的数据范围是 <code>n ≤ 10⁵</code>，要求判断数组中是否存在两个数之和等于目标值。请说出：① 暴力解法复杂度是多少、为什么过不了；② 用哈希表能做到什么复杂度；③ 如果数组已经有序，还能怎么做。</p>
+        <div class="hint">提示：① 双重循环 O(n²) 约 10¹⁰ 次；② 哈希表一次遍历 O(n)；③ 有序数组用双指针 O(n)、O(1) 额外空间。</div>
+      </div>
+
+      <div class="tip"><b>📚 本文概念都在知识大全：</b>
+      <p style="margin-top:6px"><a href="../../knowledge/index.html#complexity">时间复杂度</a> ·
+      <a href="../../knowledge/index.html#vector">vector</a> ·
+      <a href="../../knowledge/index.html#hash-table">哈希表</a> ·
+      <a href="../../knowledge/index.html#sorting">排序</a></p></div>
+
+      <div class="recap"><b>一句话回顾：</b>复杂度不是秒数，是「规模翻倍时代价怎么变」；大 O 只留最高阶、丢掉系数；均摊分析让 n 次插入的平均代价摊成 O(1)；递归的空间要算调用栈；看到数据范围就能反推该用什么算法——这条本事从第 3 章开始每天都要用。</div>
+    </article>
+
+    <script src="../../assets/highlight.min.js"></script>
+    <script src="../../assets/article.js"></script>
+    <script src="../../assets/interact.js"></script>
+    <script src="../../assets/search.js"></script>
+    <script src="../../assets/giscus-config.js"></script>
+    <script src="../../assets/comments.js"></script>
+    <footer>
+      <p>© 2026 red wenzi · <a href="index.html">数据结构与算法目录</a> · <a href="../../roadmap/index.html">学习路线</a> · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

@@ -8,6 +8,13 @@
   <author><name>red wenzi</name></author>
 
   <entry>
+    <title>数据结构与算法 · 第 2 章 复杂度与算法分析（四语言对照）</title>
+    <link href="https://redwenzi-blog.pages.dev/programming/dsa/02-complexity.html"/>
+    <id>https://redwenzi-blog.pages.dev/programming/dsa/02-complexity.html</id>
+    <updated>2026-09-20T00:00:00Z</updated>
+    <summary>复杂度与算法分析：大 O 推导、n=1000 的操作次数实测、均摊分析、递归栈与空间复杂度、主定理速查、从数据范围反推算法。C / C++ / Java / Python 四语言代码实测，输出逐字节一致。</summary>
+  </entry>
+  <entry>
     <title>数据结构与算法 · 第 1 章 链表（四语言对照）</title>
     <link href="https://redwenzi-blog.pages.dev/programming/dsa/01-linked-list.html"/>
     <id>https://redwenzi-blog.pages.dev/programming/dsa/01-linked-list.html</id>
