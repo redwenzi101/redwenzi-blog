@@ -6,15 +6,16 @@
   <title>red wenzi · 主页</title>
   <meta name="description" content="red wenzi 的数字花园：编程语言学习路线、计算机基础、工程实践、AI 与数据实验；数据科学专业在读，记录学与做的过程。">
   <style>
+    /* 与 assets/theme.css 的 DESIGN_TOKENS 对齐：奶油米黄 + 钢笔墨蓝 + 旧书烫金 */
     :root {
-      --bg:#fbfbfd;
+      --bg:#faf7f2;
       --surface:#ffffff;
-      --text:#1d1d1f;
-      --sub:#6e6e73;
-      --line:rgba(0,0,0,.08);
-      --accent:#0071e3;
-      --accent2:#00c7be;
-      --shadow:0 10px 40px rgba(0,0,0,.06);
+      --text:#2b2b2b;
+      --sub:#6a6a6a;
+      --line:#ece6da;
+      --accent:#1f3a5f;
+      --accent2:#c9a227;
+      --shadow:0 1px 3px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.04);
       --ease:cubic-bezier(.22,.61,.36,1);
     }
     * { margin:0; padding:0; box-sizing:border-box; }
@@ -26,15 +27,15 @@
     /* ---- soft animated gradient blobs ---- */
     .blobs { position:fixed; inset:0; overflow:hidden; z-index:-1; pointer-events:none; }
     .blob { position:absolute; border-radius:50%; filter:blur(70px); opacity:.55; will-change:transform; }
-    .b1 { width:520px; height:520px; top:-160px; left:-120px; background:radial-gradient(circle,#dbeafe,transparent 70%); animation:drift 22s var(--ease) infinite alternate; }
-    .b2 { width:460px; height:460px; top:20%; right:-140px; background:radial-gradient(circle,#e0f2fe,transparent 70%); animation:drift 26s var(--ease) infinite alternate-reverse; }
-    .b3 { width:420px; height:420px; bottom:-150px; left:30%; background:radial-gradient(circle,#e6f7f4,transparent 70%); animation:drift 30s var(--ease) infinite alternate; }
+    .b1 { width:520px; height:520px; top:-160px; left:-120px; background:radial-gradient(circle,#f2e3bd,transparent 70%); animation:drift 22s var(--ease) infinite alternate; }
+    .b2 { width:460px; height:460px; top:20%; right:-140px; background:radial-gradient(circle,#e3ebf3,transparent 70%); animation:drift 26s var(--ease) infinite alternate-reverse; }
+    .b3 { width:420px; height:420px; bottom:-150px; left:30%; background:radial-gradient(circle,#f6ecdc,transparent 70%); animation:drift 30s var(--ease) infinite alternate; }
     @keyframes drift { from{transform:translate(0,0) scale(1)} to{transform:translate(60px,-40px) scale(1.15)} }
 
     /* ---- progress bar ---- */
     #progress { position:fixed; top:0; left:0; height:3px; width:0; background:linear-gradient(90deg,var(--accent),var(--accent2)); z-index:60; }
 
-    nav { position:sticky; top:0; z-index:50; background:rgba(251,251,253,.72); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); border-bottom:1px solid var(--line); }
+    nav { position:sticky; top:0; z-index:50; background:rgba(250,247,242,.72); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px); border-bottom:1px solid var(--line); }
     nav .wrap { display:flex; align-items:center; justify-content:space-between; height:56px; }
     .logo { font-weight:700; font-size:17px; }
     .logo span { color:var(--accent); }
@@ -67,7 +68,7 @@
 
     .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:22px; }
     .card { background:var(--surface); border:1px solid var(--line); border-radius:24px; padding:30px; box-shadow:var(--shadow); position:relative; overflow:hidden; transition:transform .45s var(--ease),box-shadow .45s var(--ease); }
-    .card::before { content:""; position:absolute; inset:0; background:linear-gradient(135deg,rgba(0,113,227,.06),transparent 60%); opacity:0; transition:opacity .45s; }
+    .card::before { content:""; position:absolute; inset:0; background:linear-gradient(135deg,rgba(201,162,39,.1),transparent 60%); opacity:0; transition:opacity .45s; }
     .card:hover { transform:translateY(-6px); box-shadow:0 22px 50px rgba(0,0,0,.1); }
     .card:hover::before { opacity:1; }
     .card .ico { font-size:34px; }
@@ -300,9 +301,9 @@
         <div class="rule"></div>
       </div>
       <div class="stats-grid reveal">
-        <div><img src="https://dev-stats.mintimate.cn/api?username=redwenzi101&show_icons=true&count_private=true&title_color=0071e3&icon_color=00c7be&text_color=24292f&bg_color=ffffff&border_color=e1e4e8" alt="GitHub 统计"></div>
+        <div><img src="https://dev-stats.mintimate.cn/api?username=redwenzi101&show_icons=true&count_private=true&title_color=1f3a5f&icon_color=c9a227&text_color=2b2b2b&bg_color=ffffff&border_color=ece6da" alt="GitHub 统计"></div>
         <div><img src="https://streak-stats.demolab.com?user=redwenzi101&theme=default&hide_border=true&border_radius=8" alt="连续提交天数"></div>
-        <div><img src="https://dev-stats.mintimate.cn/api/top-langs?username=redwenzi101&layout=compact&title_color=0071e3&text_color=24292f&bg_color=ffffff&border_color=e1e4e8&langs_count=8" alt="常用语言"></div>
+        <div><img src="https://dev-stats.mintimate.cn/api/top-langs?username=redwenzi101&layout=compact&title_color=1f3a5f&text_color=2b2b2b&bg_color=ffffff&border_color=ece6da&langs_count=8" alt="常用语言"></div>
       </div>
     </section>
 

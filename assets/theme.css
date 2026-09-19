@@ -221,8 +221,98 @@ tr:nth-child(even) td { background:#fdfcf9; }
   pre code { font-size:14px; }
 }
 
-/* ---------- 尊重“减少动效” ---------- */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation:none !important; transition:none !important; }
-  .fade-in-up, .reveal { opacity:1 !important; transform:none !important; }
-}
+  /* ---------- 尊重“减少动效” ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation:none !important; transition:none !important; }
+    .fade-in-up, .reveal { opacity:1 !important; transform:none !important; }
+  }
+
+  /* ==========================================================
+     提示条统一到设计 token
+     61 个页面各自内联写了 .tip { background:#eef4ff }（旧蓝），
+     与 DESIGN_TOKENS 的奶油米黄 + 钢笔墨蓝 + 旧书烫金不一致。
+     这里用设计 token 统一覆盖，颜色只保留在 theme.css 一处。
+     ========================================================== */
+  .tip {
+    background: var(--accent-lighter) !important;
+    border-left-color: var(--accent) !important;
+    color: var(--accent-dark) !important;
+  }
+
+  /* ==========================================================
+     灵动岛（全站悬浮胶囊）
+     折叠态：站点状态点 + 当前页面名 + 阅读进度
+     展开态：正在做 + 进度条 + 六个入口 + 回到顶部 / 搜索
+     由 assets/interact.js 注入，样式全部集中在这里。
+     ========================================================== */
+  :root {
+    --island-bg: #152a45;
+    --island-fg: #f8f4ea;
+    --island-gold: #c9a227;
+    --island-gold-light: #e0c255;
+  }
+
+  nav { transition: transform .4s cubic-bezier(.22,.61,.36,1), background .3s ease, box-shadow .3s ease; }
+  nav.nav-hidden { transform: translateY(-110%); }
+
+  .island {
+    position: fixed; left: 50%; top: 12px; z-index: 130;
+    max-width: calc(100vw - 24px);
+    color: var(--island-fg);
+    background: var(--island-bg);
+    border: 1px solid rgba(201,162,39,.45);
+    border-radius: 999px;
+    box-shadow: 0 10px 28px rgba(21,42,69,.28), inset 0 1px 0 rgba(255,255,255,.08);
+    font-family: -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,sans-serif;
+    font-size: 13px; line-height: 1;
+    overflow: hidden;
+    opacity: 0; pointer-events: none;
+    transform: translate(-50%, -10px) scale(.96);
+    transition: opacity .28s ease, transform .45s cubic-bezier(.22,.61,.36,1),
+                border-radius .45s cubic-bezier(.22,.61,.36,1), width .45s cubic-bezier(.22,.61,.36,1);
+  }
+  .island.on { opacity: 1; pointer-events: auto; transform: translate(-50%, 0) scale(1); }
+  .island.open { border-radius: 20px; width: min(320px, calc(100vw - 24px)); }
+
+  .island-head {
+    display: flex; align-items: center; gap: 9px; width: 100%;
+    min-height: 34px; padding: 8px 15px;
+    background: none; border: 0; color: inherit; font: inherit; cursor: pointer;
+  }
+  .island-dot {
+    flex: none; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--island-gold);
+    animation: island-pulse 2.6s ease-out infinite;
+  }
+  @keyframes island-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(201,162,39,.5); }
+    70% { box-shadow: 0 0 0 9px rgba(201,162,39,0); }
+    100% { box-shadow: 0 0 0 0 rgba(201,162,39,0); }
+  }
+  .island-label { max-width: 40vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .island-pct { color: var(--island-gold-light); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .island-caret { color: rgba(248,244,234,.5); font-size: 10px; transition: transform .35s ease; }
+  .island.open .island-caret { transform: rotate(180deg); }
+
+  .island-body { display: none; padding: 0 15px 14px; }
+  .island.open .island-body { display: block; }
+
+  .island-live { font-size: 12.5px; color: #ece3d0; padding-bottom: 10px; }
+  .island-live b { color: var(--island-gold-light); font-weight: 600; }
+
+  .island-track { height: 4px; border-radius: 999px; background: rgba(255,255,255,.14); overflow: hidden; }
+  .island-track i { display: block; width: 0; height: 100%; border-radius: 999px; background: linear-gradient(90deg,var(--island-gold),var(--island-gold-light)); transition: width .15s linear; }
+
+  .island-links { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 12px; }
+  .island-links a { display: block; padding: 9px 11px; border-radius: 10px; background: rgba(255,255,255,.06); color: #f2ece0; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .island-links a:hover { background: rgba(201,162,39,.22); color: #fff; }
+
+  .island-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .island-actions button { flex: 1; padding: 9px 11px; border-radius: 10px; border: 1px solid rgba(201,162,39,.4); background: transparent; color: var(--island-gold-light); font: inherit; font-size: 12.5px; cursor: pointer; }
+  .island-actions button:hover { background: rgba(201,162,39,.18); }
+
+  @media (max-width:640px) {
+    .island { top: 8px; font-size: 12px; }
+    .island-label { max-width: 44vw; }
+    .island-head { padding: 7px 13px; }
+  }
