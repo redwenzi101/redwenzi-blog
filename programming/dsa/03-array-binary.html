@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第 3 章 数组、字符串与二分查找 · 数据结构与算法（3/12） · red wenzi</title>
+  <meta name="description" content="数组、字符串与二分查找：数组代价实测、前缀和、差分数组、二分三写法与边界、二分答案；C / C++ / Java / Python 四语言代码实测编译运行，输出逐字节一致。">
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:860px; margin:0 auto; padding:0 24px; }
+    header { padding:56px 0 26px; }
+    .back { font-size:14px; color:var(--sub); }
+    .back + .back { margin-left:14px; }
+    h1 { margin-top:12px; font-size:clamp(26px,5vw,36px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:#fff; border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:34px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    table { width:100%; border-collapse:collapse; margin:14px 0; font-size:14px; }
+    th,td { border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+    th { background:#f6f8fa; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} table{font-size:13px} }
+  </style>
+  <link rel="stylesheet" href="../../assets/article.css">
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/course.css?v=20260915">
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="index.html">← 数据结构与算法（共 12 章）</a>
+      <a class="back" href="../../roadmap/index.html">🗺️ 学习路线</a>
+      <h1>第 3 章　数组、字符串与二分查找</h1>
+      <div class="meta">red wenzi · 2026-09-20 · 计算机基础 · 数据结构与算法 · 📖 预计阅读 32 分钟 · 四语言对照 · 代码实测编译运行</div>
+    </header>
+
+    <article>
+      <div class="tip">🎯 <b>本章你会学到：</b>数组为什么随机访问 O(1)、插入删除却要 O(n)；<b>前缀和</b>怎么把区间求和降到 O(1)；<b>差分数组</b>怎么把区间批量修改降到 O(1)；<b>二分查找</b>三种写法的边界差别；以及<b>二分答案</b>这个从「找一个数」升级到「找一个最优解」的套路。</div>
+      <p>数组是笔试里出现频率最高的结构，理由很直接：它简单、能随机访问、缓存友好。但只用「一个循环扫一遍」不够——这一章要教的是<b>怎么用预处理把查询变快</b>。</p>
+      <p>两段程序都是四语言对照，代码在 <code>gcc 16.1 / g++ 16.1 / javac 21 / Python 3.14</code> 下实测编译运行，四份输出逐字节一致。</p>
+
+      <h2 id="s-3-1">3.1 数组：连续内存换来了什么</h2>
+      <p>数组把元素放在<b>一整块连续内存</b>里，并且每个元素一样大。这两点合起来，让「第 k 个元素在哪」变成一道算术题：</p>
+      <pre><code class="language-text">第 k 个元素的地址 = 起始地址 + k × 单个元素大小</code></pre>
+      <p>不用找、不用数，一次乘加就算出来了，所以随机访问是 <b>O(1)</b>。这也是为什么数组下标从 0 开始——偏移量直接就是 k。</p>
+      <p>连续内存还带来一个隐形好处：<b>缓存友好</b>。CPU 读内存是一小块一小块读的，连续访问时下一份数据很可能已经在缓存里了，所以「数组顺序遍历」通常比「链表跳着遍历」快好几倍，哪怕两者复杂度一样（第 1 章提过这一点）。</p>
+
+      <h2 id="s-3-2">3.2 数组的代价：插入和删除为什么要搬家</h2>
+      <p>既然元素是紧挨着排的，那在中间插一个元素，就必须把它后面的元素<b>全部往后挪一格</b>，否则就重叠了。删除同理，要往前填补空位。</p>
+      <p>本章程序一实测（n = 1000）的移动次数：</p>
+      <table>
+        <tr><th>操作</th><th>实测移动元素数</th><th>复杂度</th><th>原因</th></tr>
+        <tr><td>随机访问第 500 个</td><td>1 次取值</td><td>O(1)</td><td>直接算地址</td></tr>
+        <tr><td>尾部追加（容量够）</td><td>0</td><td>O(1)</td><td>直接放到末尾</td></tr>
+        <tr><td>头部插入</td><td>1000</td><td>O(n)</td><td>所有元素右移一格</td></tr>
+        <tr><td>尾部插入（触发扩容）</td><td>1001（拷贝）</td><td>O(n)</td><td>换一块更大的内存，整体搬过去</td></tr>
+        <tr><td>删除头部</td><td>1001</td><td>O(n)</td><td>后面所有元素左移一格</td></tr>
+        <tr><td>删除尾部</td><td>0</td><td>O(1)</td><td>把长度减一就行</td></tr>
+      </table>
+      <div class="tip">📌 <b>一句话记住：</b>数组「读得快、两端快、中间慢」。凡是要在数组中间频繁增删的场景，就该考虑链表或别的结构（第 1 章）；而在<b>尾部</b>增删（push_back / append）因为有均摊分析兜着，仍然是 O(1)（第 2 章）。</div>
+
+      <h2 id="s-3-3">3.3 字符串：本质是字符数组</h2>
+      <p>字符串在底层就是「一串字符」，只是四门语言对它的处理差别很大，写题时必须知道：</p>
+      <table>
+        <tr><th>语言</th><th>类型</th><th>可变吗</th><th>按下标访问</th><th>拼接 n 次的代价</th></tr>
+        <tr><td>C</td><td><code>char[]</code> + 结尾的 <code>'\0'</code></td><td>可变</td><td><code>O(1)</code></td><td>手动管理长度，容易溢出，建议用 <code>snprintf</code></td></tr>
+        <tr><td>C++</td><td><code>std::string</code></td><td>可变</td><td><code>O(1)</code></td><td>会按倍数扩容，均摊 O(n)</td></tr>
+        <tr><td>Java</td><td><code>String</code></td><td><b>不可变</b></td><td><code>O(1)</code></td><td>每次拼接都造新对象，O(n²)，必须用 <code>StringBuilder</code></td></tr>
+        <tr><td>Python</td><td><code>str</code></td><td><b>不可变</b></td><td><code>O(1)</code>（索引）</td><td>同样 O(n²)，要用 <code>"".join(list)</code></td></tr>
+      </table>
+      <p>三条容易踩的结论：</p>
+      <ul>
+        <li><b>Java 和 Python 的字符串不可变</b>，意味着「在循环里用 + 拼字符串」是 O(n²)，而 <code>StringBuilder</code> / <code>join</code> 是 O(n)。这是笔试里最常见的性能陷阱之一。</li>
+        <li><b>Python 切片 <code>s[a:b]</code> 会复制一份</b>，是 O(长度) 而不是 O(1)；循环里切片容易把 O(n) 写成 O(n²)。</li>
+        <li><b>C 的字符串靠 <code>'\0'</code> 结尾</b>，长度要自己算（<code>strlen</code> 是 O(n)），而且不能用 <code>==</code> 比较内容，要用 <code>strcmp</code>。</li>
+      </ul>
+      <div class="warn">⚠️ 字符串进阶算法（KMP、Manacher、后缀数组）在本章<b>不展开</b>：它们属于「面试低频、性价比一般」的内容，先把数组上的前缀和、差分、二分、双指针练熟更划算。想了解可以查 <a href="../../knowledge/index.html">知识大全</a>。</div>
+
+      <h2 id="s-3-4">3.4 程序一：数组代价、前缀和、差分（四语言对照）</h2>
+      <p>这段程序用固定种子的伪随机数生成 1000 个数据，然后实测四件事：数组四种操作的移动次数、前缀和的预处理与查询代价、差分数组的修改与还原代价。</p>
+
+      <h3>C</h3>
+      <div class="code-label">array_cost.c</div>
+<pre><code class="language-c">/* =====================================================================
+   数据结构与算法 · 第 3 章 数组、字符串与二分查找 · 数组代价实测（C）
+   编译运行： gcc -std=c17 -Wall -Wextra -o app array_cost.c &amp;&amp; ./app
+
+   本章要回答三个问题：
+     ① 数组的「随机访问快、中间插入慢」到底体现在哪？——数元素移动次数；
+     ② 区间求和为什么能做到 O(1)？——前缀和，预处理 O(n)、查询 O(1)；
+     ③ 区间批量加为什么也能做到 O(1)？——差分数组，修改 O(1)、还原 O(n)。
+
+   复杂度（时间 / 空间）
+     随机访问 O(1) / O(1)
+     尾部追加（容量够）O(1) / O(1)      头部插入 / 删除 O(n) / O(1)
+     前缀和：预处理 O(n) / O(n)          区间查询 O(1) / O(1)
+     差分：区间加 O(1) / O(n)            还原 O(n) / O(1)
+   ===================================================================== */
+
+#include &lt;stdio.h&gt;
+
+#define N 1000
+#define L 200
+#define R 800
+
+static int data[N];
+static int buf[N + 2];          /* 留两格余量：头部插入 1 个 + 尾部插入 1 个 */
+static long prefix[N + 1];      /* prefix[i] = data[0..i) 的和 */
+static long diff[N + 1];
+
+/* 固定种子的伪随机数列：与第 2 章同一个种子，方便对照 */
+static void lcg_fill(int *a, int n) {
+    unsigned long long x = 12345ULL;
+    for (int i = 0; i &lt; n; ++i) {
+        x = (x * 1103515245ULL + 12345ULL) % 2147483648ULL;
+        a[i] = (int)(x % 2000ULL);
+    }
+}
+
+int main(void) {
+    lcg_fill(data, N);
+
+    /* ---- ① 数组的四种基本操作的代价 ---- */
+    int random_access = data[N / 2];                 /* 随机访问：1 次取值 */
+
+    for (int i = 0; i &lt; N; ++i) buf[i] = data[i];    /* 复制一份来演示插入删除 */
+    int size = N;
+
+    int tail_appended = data[N - 1];                 /* 尾部追加（容量够）：不移动元素 */
+
+    /* 头部插入：先把 1000 个元素整体右移一格 */
+    long head_insert_moves = 0;
+    for (int i = size; i &gt; 0; --i) { buf[i] = buf[i - 1]; head_insert_moves++; }
+    buf[0] = 42;
+    size++;
+
+    /* 尾部插入（需要扩容）：先把已有元素整体搬到新数组 */
+    long tail_insert_moves = 0;
+    for (int i = 0; i &lt; size; ++i) tail_insert_moves++;   /* 扩容时要拷贝的元素个数 */
+    buf[size] = 43;
+    size++;
+
+    /* 删除头部：把后面 999 个元素整体左移一格 */
+    long head_delete_moves = 0;
+    for (int i = 0; i + 1 &lt; size; ++i) { buf[i] = buf[i + 1]; head_delete_moves++; }
+    size--;
+
+    int tail_deleted_moves = 0;                      /* 删除尾部：不移动元素 */
+    size--;
+
+    /* ---- ② 前缀和：预处理一次，之后每次区间求和都是 O(1) ---- */
+    long prefix_adds = 0;
+    prefix[0] = 0;
+    for (int i = 0; i &lt; N; ++i) { prefix[i + 1] = prefix[i] + data[i]; prefix_adds++; }
+
+    long range_sum_fast = prefix[R] - prefix[L];      /* 1 次减法 */
+    long range_sum_brute = 0;
+    long brute_adds = 0;
+    for (int i = L; i &lt; R; ++i) { range_sum_brute += data[i]; brute_adds++; }
+
+    /* ---- ③ 差分数组：区间批量加只需改两个位置 ---- */
+    for (int i = 0; i &lt;= N; ++i) diff[i] = 0;
+    diff[L] += 5;
+    diff[R] -= 5;
+    long diff_changes = 2;
+
+    long restore_adds = 0;
+    long cur = 0;
+    long restored_range_sum = 0;
+    for (int i = 0; i &lt; N; ++i) {
+        cur += diff[i];
+        restore_adds++;
+        if (i &gt;= L &amp;&amp; i &lt; R) restored_range_sum += data[i] + cur;
+    }
+
+    printf("[数组] 数据规模 n = %d\n", N);
+    printf("[数组] 随机访问第 %d 个: %d（1 次取值）, O(1)\n", N / 2, random_access);
+    printf("[数组] 尾部追加（容量够）: 移动 0 个元素（读到 %d）, O(1)\n", tail_appended);
+    printf("[数组] 头部插入: 移动 %ld 个元素, O(n)\n", head_insert_moves);
+    printf("[数组] 尾部插入（触发扩容）: 拷贝 %ld 个元素, O(n)\n", tail_insert_moves);
+    printf("[数组] 删除头部: 移动 %ld 个元素, O(n)\n", head_delete_moves);
+    printf("[数组] 删除尾部: 移动 %d 个元素, O(1)\n", tail_deleted_moves);
+    printf("[前缀和] 预处理 %d 个元素: %ld 次加法, O(n)\n", N, prefix_adds);
+    printf("[前缀和] 区间 [%d, %d) 求和: 1 次减法 = %ld, O(1)\n", L, R, range_sum_fast);
+    printf("[前缀和] 同区间暴力求和: %ld 次加法 = %ld, O(n)\n", brute_adds, range_sum_brute);
+    printf("[前缀和] 两者结果一致: %s\n", range_sum_fast == range_sum_brute ? "是" : "否");
+    printf("[差分] 区间 [%d, %d) 批量加 5: %ld 次修改, O(1)\n", L, R, diff_changes);
+    printf("[差分] 从差分数组还原: %ld 次加法, O(n)\n", restore_adds);
+    printf("[差分] 还原后该区间和 = %ld（原区间和 %ld + %d×5）\n",
+           restored_range_sum, range_sum_brute, R - L);
+    return 0;
+}</code></pre>
+
+      <h3>C++</h3>
+      <div class="code-label">array_cost.cpp</div>
+<pre><code class="language-cpp">// =====================================================================
+// 数据结构与算法 · 第 3 章 数组、字符串与二分查找 · 数组代价实测（C++）
+// 编译运行： g++ -std=c++17 -Wall -Wextra -Wpedantic -o app array_cost.cpp &amp;&amp; ./app
+//
+// 复杂度（时间 / 空间）
+//   随机访问 O(1) / O(1)            尾部追加（容量够）O(1) / O(1)
+//   头部插入 / 删除 O(n) / O(1)     前缀和：预处理 O(n)、查询 O(1)
+//   差分：区间加 O(1)、还原 O(n)
+// =====================================================================
+
+#include &lt;cstdio&gt;
+
+constexpr int N = 1000;
+constexpr int L = 200;
+constexpr int R = 800;
+
+int data_[N];
+int buf[N + 2];              // 留两格余量：头部插入 1 个 + 尾部插入 1 个
+long prefix[N + 1];          // prefix[i] = data[0..i) 的和
+long diff[N + 1];
+
+// 固定种子的伪随机数列：与第 2 章同一个种子，方便对照
+void lcg_fill(int *a, int n) {
+    unsigned long long x = 12345ULL;
+    for (int i = 0; i &lt; n; ++i) {
+        x = (x * 1103515245ULL + 12345ULL) % 2147483648ULL;
+        a[i] = static_cast&lt;int&gt;(x % 2000ULL);
+    }
+}
+
+int main() {
+    lcg_fill(data_, N);
+
+    int random_access = data_[N / 2];                 // 随机访问：1 次取值
+
+    for (int i = 0; i &lt; N; ++i) buf[i] = data_[i];
+    int size = N;
+
+    int tail_appended = data_[N - 1];                 // 尾部追加（容量够）：不移动元素
+
+    long head_insert_moves = 0;                       // 头部插入：整体右移
+    for (int i = size; i &gt; 0; --i) { buf[i] = buf[i - 1]; ++head_insert_moves; }
+    buf[0] = 42;
+    ++size;
+
+    long tail_insert_moves = 0;                       // 尾部插入触发扩容：整体拷贝
+    for (int i = 0; i &lt; size; ++i) ++tail_insert_moves;
+    buf[size] = 43;
+    ++size;
+
+    long head_delete_moves = 0;                       // 删除头部：整体左移
+    for (int i = 0; i + 1 &lt; size; ++i) { buf[i] = buf[i + 1]; ++head_delete_moves; }
+    --size;
+
+    int tail_deleted_moves = 0;                       // 删除尾部：不移动元素
+    --size;
+
+    long prefix_adds = 0;
+    prefix[0] = 0;
+    for (int i = 0; i &lt; N; ++i) { prefix[i + 1] = prefix[i] + data_[i]; ++prefix_adds; }
+
+    long range_sum_fast = prefix[R] - prefix[L];
+    long range_sum_brute = 0;
+    long brute_adds = 0;
+    for (int i = L; i &lt; R; ++i) { range_sum_brute += data_[i]; ++brute_adds; }
+
+    for (int i = 0; i &lt;= N; ++i) diff[i] = 0;
+    diff[L] += 5;
+    diff[R] -= 5;
+    long diff_changes = 2;
+
+    long restore_adds = 0;
+    long cur = 0;
+    long restored_range_sum = 0;
+    for (int i = 0; i &lt; N; ++i) {
+        cur += diff[i];
+        ++restore_adds;
+        if (i &gt;= L &amp;&amp; i &lt; R) restored_range_sum += data_[i] + cur;
+    }
+
+    std::printf("[数组] 数据规模 n = %d\n", N);
+    std::printf("[数组] 随机访问第 %d 个: %d（1 次取值）, O(1)\n", N / 2, random_access);
+    std::printf("[数组] 尾部追加（容量够）: 移动 0 个元素（读到 %d）, O(1)\n", tail_appended);
+    std::printf("[数组] 头部插入: 移动 %ld 个元素, O(n)\n", head_insert_moves);
+    std::printf("[数组] 尾部插入（触发扩容）: 拷贝 %ld 个元素, O(n)\n", tail_insert_moves);
+    std::printf("[数组] 删除头部: 移动 %ld 个元素, O(n)\n", head_delete_moves);
+    std::printf("[数组] 删除尾部: 移动 %d 个元素, O(1)\n", tail_deleted_moves);
+    std::printf("[前缀和] 预处理 %d 个元素: %ld 次加法, O(n)\n", N, prefix_adds);
+    std::printf("[前缀和] 区间 [%d, %d) 求和: 1 次减法 = %ld, O(1)\n", L, R, range_sum_fast);
+    std::printf("[前缀和] 同区间暴力求和: %ld 次加法 = %ld, O(n)\n", brute_adds, range_sum_brute);
+    std::printf("[前缀和] 两者结果一致: %s\n", range_sum_fast == range_sum_brute ? "是" : "否");
+    std::printf("[差分] 区间 [%d, %d) 批量加 5: %ld 次修改, O(1)\n", L, R, diff_changes);
+    std::printf("[差分] 从差分数组还原: %ld 次加法, O(n)\n", restore_adds);
+    std::printf("[差分] 还原后该区间和 = %ld（原区间和 %ld + %d×5）\n",
+                restored_range_sum, range_sum_brute, R - L);
+    return 0;
+}</code></pre>
+
+      <h3>Java</h3>
+      <div class="code-label">ArrayCost.java</div>
+<pre><code class="language-java">// =====================================================================
+// 数据结构与算法 · 第 3 章 数组、字符串与二分查找 · 数组代价实测（Java）
+// 编译运行： javac -encoding UTF-8 ArrayCost.java
+//            java -Dstdout.encoding=UTF-8 ArrayCost
+//
+// 复杂度（时间 / 空间）
+//   随机访问 O(1) / O(1)            尾部追加（容量够）O(1) / O(1)
+//   头部插入 / 删除 O(n) / O(1)     前缀和：预处理 O(n)、查询 O(1)
+//   差分：区间加 O(1)、还原 O(n)
+// =====================================================================
+
+public class ArrayCost {
+
+    static final int N = 1000;
+    static final int L = 200;
+    static final int R = 800;
+
+    static int[] data = new int[N];
+    static int[] buf = new int[N + 2];      // 留两格余量：头部插入 1 个 + 尾部插入 1 个
+    static long[] prefix = new long[N + 1]; // prefix[i] = data[0..i) 的和
+    static long[] diff = new long[N + 1];
+
+    // 固定种子的伪随机数列：与第 2 章同一个种子，方便对照
+    static void lcgFill(int[] a, int n) {
+        long x = 12345L;
+        for (int i = 0; i &lt; n; ++i) {
+            x = (x * 1103515245L + 12345L) % 2147483648L;
+            a[i] = (int) (x % 2000L);
+        }
+    }
+
+    public static void main(String[] args) {
+        lcgFill(data, N);
+
+        int randomAccess = data[N / 2];                 // 随机访问：1 次取值
+
+        for (int i = 0; i &lt; N; ++i) buf[i] = data[i];
+        int size = N;
+
+        int tailAppended = data[N - 1];                 // 尾部追加（容量够）
+
+        long headInsertMoves = 0;                       // 头部插入：整体右移
+        for (int i = size; i &gt; 0; --i) { buf[i] = buf[i - 1]; ++headInsertMoves; }
+        buf[0] = 42;
+        ++size;
+
+        long tailInsertMoves = 0;                       // 尾部插入触发扩容：整体拷贝
+        for (int i = 0; i &lt; size; ++i) ++tailInsertMoves;
+        buf[size] = 43;
+        ++size;
+
+        long headDeleteMoves = 0;                       // 删除头部：整体左移
+        for (int i = 0; i + 1 &lt; size; ++i) { buf[i] = buf[i + 1]; ++headDeleteMoves; }
+        --size;
+
+        int tailDeletedMoves = 0;                       // 删除尾部
+        --size;
+
+        long prefixAdds = 0;
+        prefix[0] = 0;
+        for (int i = 0; i &lt; N; ++i) { prefix[i + 1] = prefix[i] + data[i]; ++prefixAdds; }
+
+        long rangeSumFast = prefix[R] - prefix[L];
+        long rangeSumBrute = 0;
+        long bruteAdds = 0;
+        for (int i = L; i &lt; R; ++i) { rangeSumBrute += data[i]; ++bruteAdds; }
+
+        for (int i = 0; i &lt;= N; ++i) diff[i] = 0;
+        diff[L] += 5;
+        diff[R] -= 5;
+        long diffChanges = 2;
+
+        long restoreAdds = 0;
+        long cur = 0;
+        long restoredRangeSum = 0;
+        for (int i = 0; i &lt; N; ++i) {
+            cur += diff[i];
+            ++restoreAdds;
+            if (i &gt;= L &amp;&amp; i &lt; R) restoredRangeSum += data[i] + cur;
+        }
+
+        System.out.println("[数组] 数据规模 n = " + N);
+        System.out.println("[数组] 随机访问第 " + (N / 2) + " 个: " + randomAccess + "（1 次取值）, O(1)");
+        System.out.println("[数组] 尾部追加（容量够）: 移动 0 个元素（读到 " + tailAppended + "）, O(1)");
+        System.out.println("[数组] 头部插入: 移动 " + headInsertMoves + " 个元素, O(n)");
+        System.out.println("[数组] 尾部插入（触发扩容）: 拷贝 " + tailInsertMoves + " 个元素, O(n)");
+        System.out.println("[数组] 删除头部: 移动 " + headDeleteMoves + " 个元素, O(n)");
+        System.out.println("[数组] 删除尾部: 移动 " + tailDeletedMoves + " 个元素, O(1)");
+        System.out.println("[前缀和] 预处理 " + N + " 个元素: " + prefixAdds + " 次加法, O(n)");
+        System.out.println("[前缀和] 区间 [" + L + ", " + R + ") 求和: 1 次减法 = " + rangeSumFast + ", O(1)");
+        System.out.println("[前缀和] 同区间暴力求和: " + bruteAdds + " 次加法 = " + rangeSumBrute + ", O(n)");
+        System.out.println("[前缀和] 两者结果一致: " + (rangeSumFast == rangeSumBrute ? "是" : "否"));
+        System.out.println("[差分] 区间 [" + L + ", " + R + ") 批量加 5: " + diffChanges + " 次修改, O(1)");
+        System.out.println("[差分] 从差分数组还原: " + restoreAdds + " 次加法, O(n)");
+        System.out.println("[差分] 还原后该区间和 = " + restoredRangeSum
+                + "（原区间和 " + rangeSumBrute + " + " + (R - L) + "×5）");
+    }
+}</code></pre>
+
+      <h3>Python</h3>
+      <div class="code-label">array_cost.py</div>
+<pre><code class="language-python"># =====================================================================
+# 数据结构与算法 · 第 3 章 数组、字符串与二分查找 · 数组代价实测（Python）
+# 运行： python array_cost.py
+#
+# 复杂度（时间 / 空间）
+#   随机访问 O(1) / O(1)            尾部追加（容量够）O(1) / O(1)
+#   头部插入 / 删除 O(n) / O(1)     前缀和：预处理 O(n)、查询 O(1)
+#   差分：区间加 O(1)、还原 O(n)
+# =====================================================================
+
+N = 1000
+L = 200
+R = 800
+
+
+def lcg_fill(a, n):
+    """固定种子的伪随机数列：与第 2 章同一个种子，方便对照"""
+    x = 12345
+    for i in range(n):
+        x = (x * 1103515245 + 12345) % 2147483648
+        a[i] = x % 2000
+
+
+def main():
+    data = [0] * N
+    lcg_fill(data, N)
+
+    random_access = data[N // 2]                 # 随机访问：1 次取值
+
+    buf = data[:] + [0, 0]                       # 留两格余量：头部插入 1 个 + 尾部插入 1 个
+    size = N
+
+    tail_appended = data[N - 1]                  # 尾部追加（容量够）：不移动元素
+
+    head_insert_moves = 0                        # 头部插入：整体右移
+    for i in range(size, 0, -1):
+        buf[i] = buf[i - 1]
+        head_insert_moves += 1
+    buf[0] = 42
+    size += 1
+
+    tail_insert_moves = 0                        # 尾部插入触发扩容：整体拷贝
+    for i in range(size):
+        tail_insert_moves += 1
+    buf[size] = 43
+    size += 1
+
+    head_delete_moves = 0                        # 删除头部：整体左移
+    for i in range(size - 1):
+        buf[i] = buf[i + 1]
+        head_delete_moves += 1
+    size -= 1
+
+    tail_deleted_moves = 0                       # 删除尾部：不移动元素
+    size -= 1
+
+    prefix = [0] * (N + 1)                       # 前缀和：预处理一次
+    prefix_adds = 0
+    for i in range(N):
+        prefix[i + 1] = prefix[i] + data[i]
+        prefix_adds += 1
+
+    range_sum_fast = prefix[R] - prefix[L]       # 1 次减法
+    range_sum_brute = 0
+    brute_adds = 0
+    for i in range(L, R):
+        range_sum_brute += data[i]
+        brute_adds += 1
+
+    diff = [0] * (N + 1)                         # 差分数组：区间加
+    diff[L] += 5
+    diff[R] -= 5
+    diff_changes = 2
+
+    restore_adds = 0
+    cur = 0
+    restored_range_sum = 0
+    for i in range(N):
+        cur += diff[i]
+        restore_adds += 1
+        if L &lt;= i &lt; R:
+            restored_range_sum += data[i] + cur
+
+    print("[数组] 数据规模 n = %d" % N)
+    print("[数组] 随机访问第 %d 个: %d（1 次取值）, O(1)" % (N // 2, random_access))
+    print("[数组] 尾部追加（容量够）: 移动 0 个元素（读到 %d）, O(1)" % tail_appended)
+    print("[数组] 头部插入: 移动 %d 个元素, O(n)" % head_insert_moves)
+    print("[数组] 尾部插入（触发扩容）: 拷贝 %d 个元素, O(n)" % tail_insert_moves)
+    print("[数组] 删除头部: 移动 %d 个元素, O(n)" % head_delete_moves)
+    print("[数组] 删除尾部: 移动 %d 个元素, O(1)" % tail_deleted_moves)
+    print("[前缀和] 预处理 %d 个元素: %d 次加法, O(n)" % (N, prefix_adds))
+    print("[前缀和] 区间 [%d, %d) 求和: 1 次减法 = %d, O(1)" % (L, R, range_sum_fast))
+    print("[前缀和] 同区间暴力求和: %d 次加法 = %d, O(n)" % (brute_adds, range_sum_brute))
+    print("[前缀和] 两者结果一致: %s" % ("是" if range_sum_fast == range_sum_brute else "否"))
+    print("[差分] 区间 [%d, %d) 批量加 5: %d 次修改, O(1)" % (L, R, diff_changes))
+    print("[差分] 从差分数组还原: %d 次加法, O(n)" % restore_adds)
+    print("[差分] 还原后该区间和 = %d（原区间和 %d + %d×5）"
+          % (restored_range_sum, range_sum_brute, R - L))
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+
+      <h3>实测输出（四份逐字节一致）</h3>
+      <div class="code-label">运行结果</div>
+<pre><code>[数组] 数据规模 n = 1000
+[数组] 随机访问第 500 个: 1194（1 次取值）, O(1)
+[数组] 尾部追加（容量够）: 移动 0 个元素（读到 65）, O(1)
+[数组] 头部插入: 移动 1000 个元素, O(n)
+[数组] 尾部插入（触发扩容）: 拷贝 1001 个元素, O(n)
+[数组] 删除头部: 移动 1001 个元素, O(n)
+[数组] 删除尾部: 移动 0 个元素, O(1)
+[前缀和] 预处理 1000 个元素: 1000 次加法, O(n)
+[前缀和] 区间 [200, 800) 求和: 1 次减法 = 595380, O(1)
+[前缀和] 同区间暴力求和: 600 次加法 = 595380, O(n)
+[前缀和] 两者结果一致: 是
+[差分] 区间 [200, 800) 批量加 5: 2 次修改, O(1)
+[差分] 从差分数组还原: 1000 次加法, O(n)
+[差分] 还原后该区间和 = 598380（原区间和 595380 + 600×5）</code></pre>
+      <div class="tip">🔍 <b>从输出里能读出三件事：</b><br>
+      ① 头部插入要移动 <b>1000</b> 个元素、删除头部要移动 <b>1001</b> 个，而尾部的两个操作都是 <b>0</b>——这就是「两端快、中间慢」；<br>
+      ② 区间 [200, 800) 求和：前缀和 <b>1 次减法</b>，暴力求和 <b>600 次加法</b>，结果都是 595380。预处理花 1000 次加法，之后每次查询都省下 599 次；<br>
+      ③ 差分数组把「600 个元素各加 5」变成 <b>2 次修改</b>，代价转移到一次 O(n) 的还原上——这就是「空间换时间」的另一种形态：<b>把代价从「每次查询」挪到「最后汇总一次」</b>。</div>
+
+      <h2 id="s-3-5">3.5 前缀和：一次预处理，换来无数次 O(1) 查询</h2>
+      <p>要反复求「数组区间 [L, R) 的和」，直觉是每次循环加一遍，那是 O(n)。前缀和把它变成 O(1)：</p>
+      <pre><code class="language-text">prefix[0] = 0
+prefix[i + 1] = prefix[i] + a[i]        # 预处理 O(n)
+区间 [L, R) 的和 = prefix[R] - prefix[L]   # 查询 O(1)</code></pre>
+      <p>为什么成立？因为 <code>prefix[R]</code> 是「前 R 个元素的和」，<code>prefix[L]</code> 是「前 L 个元素的和」，两者相减，剩下的正好是 [L, R) 这一段。</p>
+      <h3>二维前缀和：矩形区域求和</h3>
+      <p>矩阵里求「左上角 (0,0) 到 (i,j) 这块矩形的和」也用同样思路，靠容斥原理拼出来：</p>
+      <pre><code class="language-text">S[i+1][j+1] = S[i][j+1] + S[i+1][j] - S[i][j] + a[i][j]
+区域 (r1,c1) 到 (r2,c2) 的和 = S[r2+1][c2+1] - S[r1][c2+1] - S[r2+1][c1] + S[r1][c1]</code></pre>
+      <p>预处理 O(nm)、每次查询 O(1)。减掉重复加的部分、再加回被减两次的部分，就是容斥。</p>
+      <div class="tip">📌 <b>什么时候用前缀和：</b>数组<b>不变</b>、但要被反复问「某一段的和」时。如果数组频繁修改，前缀和每次都要重建 O(n)，这时候要么用差分，要么用线段树 / 树状数组。</div>
+
+      <h2 id="s-3-6">3.6 差分数组：把「区间批量加」变成 O(1)</h2>
+      <p>反过来的问题是：要给区间 [L, R) 里的每个元素都加 v，做很多次，最后才输出整个数组。暴力每次都要改 R-L 个元素，O(n)。</p>
+      <p>差分数组把它变成 O(1)：只在两个位置动手，最后一次性还原。</p>
+      <pre><code class="language-text">diff[L] += v          # 从 L 开始，之后都多加了 v
+diff[R] -= v          # 从 R 开始，把多加的 v 抵消掉
+# 还原：cur 一路累加 diff，a[i] + cur 就是修改后的值
+cur = 0
+for i in 0..n-1:
+    cur += diff[i]
+    result[i] = a[i] + cur</code></pre>
+      <p>本章实测：区间 [200, 800) 批量加 5，只做了 <b>2 次修改</b>；还原时做 1000 次加法。还原后该区间和从 595380 变成 598380，正好多了 600 × 5 = 3000。</p>
+      <table>
+        <tr><th>做法</th><th>每次区间加</th><th>最后输出</th><th>适合场景</th></tr>
+        <tr><td>暴力</td><td>O(n)</td><td>O(1)</td><td>只要改一两次</td></tr>
+        <tr><td>差分数组</td><td>O(1)</td><td>O(n)</td><td>要改很多次、最后统一输出</td></tr>
+      </table>
+
+      <h2 id="s-3-7">3.7 程序二：二分查找的三种写法（四语言对照）</h2>
+      <p>二分查找思路谁都懂（每次砍一半），但<b>边界写错</b>是面试挂人的常客。三种写法都要能默写：</p>
+
+      <h3>C</h3>
+      <div class="code-label">binary_search.c</div>
+<pre><code class="language-c">/* =====================================================================
+   数据结构与算法 · 第 3 章 数组、字符串与二分查找 · 二分查找（C）
+   编译运行： gcc -std=c17 -Wall -Wextra -o app binary_search.c &amp;&amp; ./app
+
+   三种写法都要会，因为边界处理不同，面试最爱在这里挑错：
+     ① 闭区间 [lo, hi]    —— hi 取 n-1，循环条件 lo &lt;= hi
+     ② 左闭右开 [lo, hi)  —— hi 取 n，循环条件 lo &lt; hi
+     ③ lower_bound        —— 找「第一个 &gt;= target」的位置，不存在时返回应插入位置
+
+   复杂度（时间 / 空间）
+     二分查找 O(log n) / O(1)
+     二分答案 O(log(答案范围) × 判定代价) / O(1)
+   ===================================================================== */
+
+#include &lt;stdio.h&gt;
+
+#define N 1000
+
+static int a[N];
+
+/* ① 闭区间 [lo, hi]：hi 取 n-1 */
+static int bsearch_closed(const int *arr, int n, int target, long *cmp) {
+    int lo = 0, hi = n - 1;
+    while (lo &lt;= hi) {
+        (*cmp)++;
+        int mid = lo + (hi - lo) / 2;
+        if (arr[mid] == target) return mid;
+        if (arr[mid] &lt; target) lo = mid + 1;
+        else hi = mid - 1;
+    }
+    return -1;
+}
+
+/* ② 左闭右开 [lo, hi)：hi 取 n */
+static int bsearch_half_open(const int *arr, int n, int target, long *cmp) {
+    int lo = 0, hi = n;
+    while (lo &lt; hi) {
+        (*cmp)++;
+        int mid = lo + (hi - lo) / 2;
+        if (arr[mid] == target) return mid;
+        if (arr[mid] &lt; target) lo = mid + 1;
+        else hi = mid;
+    }
+    return -1;
+}
+
+/* ③ lower_bound：第一个 &gt;= target 的下标（可能返回 n，表示比所有元素都大） */
+static int lower_bound_idx(const int *arr, int n, int target, long *cmp) {
+    int lo = 0, hi = n;
+    while (lo &lt; hi) {
+        (*cmp)++;
+        int mid = lo + (hi - lo) / 2;
+        if (arr[mid] &lt; target) lo = mid + 1;
+        else hi = mid;
+    }
+    return lo;
+}
+
+/* 二分答案：假设每段长 len，能切出多少段 */
+static long cut_count(const int *wood, int k, int len) {
+    long seg = 0;
+    for (int i = 0; i &lt; k; ++i) seg += wood[i] / len;
+    return seg;
+}
+
+/* 二分答案：求最大的等长 L，使切出的段数 &gt;= need */
+static int max_cut_length(const int *wood, int k, long need, long *checks) {
+    int lo = 1, hi = 0;
+    for (int i = 0; i &lt; k; ++i) if (wood[i] &gt; hi) hi = wood[i];
+    int ans = 0;
+    while (lo &lt;= hi) {
+        (*checks)++;
+        int mid = lo + (hi - lo) / 2;
+        if (cut_count(wood, k, mid) &gt;= need) { ans = mid; lo = mid + 1; }
+        else hi = mid - 1;
+    }
+    return ans;
+}
+
+int main(void) {
+    for (int i = 0; i &lt; N; ++i) a[i] = i * 3;      /* 有序：0, 3, 6, ... 2997 */
+
+    long cmp1 = 0, cmp2 = 0, cmp3 = 0, cmp4 = 0;
+    int i1 = bsearch_closed(a, N, 1800, &amp;cmp1);
+    int i2 = bsearch_half_open(a, N, 1800, &amp;cmp2);
+    int i3 = lower_bound_idx(a, N, 1800, &amp;cmp3);
+    int i4 = lower_bound_idx(a, N, 1801, &amp;cmp4);
+
+    /* 边界用例：空数组、单元素、第一个、最后一个、不存在 */
+    int empty[1] = {0};
+    int one[1] = {5};
+    long tmp = 0;
+    int e1 = bsearch_closed(empty, 0, 5, &amp;tmp);
+    int e2 = bsearch_closed(one, 1, 5, &amp;tmp);
+    int e3 = bsearch_closed(one, 1, 9, &amp;tmp);
+    int e4 = bsearch_closed(a, N, 0, &amp;tmp);
+    int e5 = bsearch_closed(a, N, 2997, &amp;tmp);
+    int e6 = bsearch_closed(a, N, 1801, &amp;tmp);
+
+    /* 二分答案：把木头切成至少 7 段，求最大等长 */
+    int wood[3] = {10, 24, 16};
+    long checks = 0;
+    int best = max_cut_length(wood, 3, 7, &amp;checks);
+
+    printf("[二分] 有序数组 n = %d（a[i] = i × 3）\n", N);
+    printf("[二分] 闭区间 [lo, hi]    找 1800: 找到, 下标 %d, 比较 %ld 次\n", i1, cmp1);
+    printf("[二分] 左闭右开 [lo, hi)  找 1800: 找到, 下标 %d, 比较 %ld 次\n", i2, cmp2);
+    printf("[二分] lower_bound 找 1800: 下标 %d, 比较 %ld 次\n", i3, cmp3);
+    printf("[二分] lower_bound 找 1801: 下标 %d, 比较 %ld 次\n", i4, cmp4);
+    printf("[二分] 边界用例:\n");
+    printf("[二分]   空数组找 5: 返回 %d\n", e1);
+    printf("[二分]   单元素 [5] 找 5: 返回 %d\n", e2);
+    printf("[二分]   单元素 [5] 找 9: 返回 %d\n", e3);
+    printf("[二分]   找第一个元素 0: 返回 %d\n", e4);
+    printf("[二分]   找最后一个元素 2997: 返回 %d\n", e5);
+    printf("[二分]   找不存在的 1801: 返回 %d\n", e6);
+    printf("[二分答案] 切木头: 长度 [10, 24, 16]，要切成至少 7 段等长\n");
+    printf("[二分答案] 最大等长 = %d, 判定 %ld 次\n", best, checks);
+    printf("[二分答案] 验证: L=6 得 %ld 段（够），L=7 得 %ld 段（不够）\n",
+           cut_count(wood, 3, 6), cut_count(wood, 3, 7));
+    return 0;
+}</code></pre>
+
+      <h3>C++</h3>
+      <div class="code-label">binary_search.cpp</div>
+<pre><code class="language-cpp">// =====================================================================
+// 数据结构与算法 · 第 3 章 数组、字符串与二分查找 · 二分查找（C++）
+// 编译运行： g++ -std=c++17 -Wall -Wextra -Wpedantic -o app binary_search.cpp &amp;&amp; ./app
+//
+// 三种写法都要会，因为边界处理不同，面试最爱在这里挑错：
+//   ① 闭区间 [lo, hi]    ② 左闭右开 [lo, hi)    ③ lower_bound
+//
+// 复杂度（时间 / 空间）
+//   二分查找 O(log n) / O(1)      二分答案 O(log(答案范围) × 判定代价) / O(1)
+// =====================================================================
+
+#include &lt;cstdio&gt;
+
+constexpr int N = 1000;
+
+int a[N];
+
+// ① 闭区间 [lo, hi]：hi 取 n-1
+int bsearch_closed(const int *arr, int n, int target, long *cmp) {
+    int lo = 0, hi = n - 1;
+    while (lo &lt;= hi) {
+        ++(*cmp);
+        int mid = lo + (hi - lo) / 2;
+        if (arr[mid] == target) return mid;
+        if (arr[mid] &lt; target) lo = mid + 1;
+        else hi = mid - 1;
+    }
+    return -1;
+}
+
+// ② 左闭右开 [lo, hi)：hi 取 n
+int bsearch_half_open(const int *arr, int n, int target, long *cmp) {
+    int lo = 0, hi = n;
+    while (lo &lt; hi) {
+        ++(*cmp);
+        int mid = lo + (hi - lo) / 2;
+        if (arr[mid] == target) return mid;
+        if (arr[mid] &lt; target) lo = mid + 1;
+        else hi = mid;
+    }
+    return -1;
+}
+
+// ③ lower_bound：第一个 &gt;= target 的下标（可能返回 n）
+int lower_bound_idx(const int *arr, int n, int target, long *cmp) {
+    int lo = 0, hi = n;
+    while (lo &lt; hi) {
+        ++(*cmp);
+        int mid = lo + (hi - lo) / 2;
+        if (arr[mid] &lt; target) lo = mid + 1;
+        else hi = mid;
+    }
+    return lo;
+}
+
+// 二分答案：假设每段长 len，能切出多少段
+long cut_count(const int *wood, int k, int len) {
+    long seg = 0;
+    for (int i = 0; i &lt; k; ++i) seg += wood[i] / len;
+    return seg;
+}
+
+// 二分答案：求最大的等长 L，使切出的段数 &gt;= need
+int max_cut_length(const int *wood, int k, long need, long *checks) {
+    int lo = 1, hi = 0;
+    for (int i = 0; i &lt; k; ++i) if (wood[i] &gt; hi) hi = wood[i];
+    int ans = 0;
+    while (lo &lt;= hi) {
+        ++(*checks);
+        int mid = lo + (hi - lo) / 2;
+        if (cut_count(wood, k, mid) &gt;= need) { ans = mid; lo = mid + 1; }
+        else hi = mid - 1;
+    }
+    return ans;
+}
+
+int main() {
+    for (int i = 0; i &lt; N; ++i) a[i] = i * 3;      // 有序：0, 3, 6, ... 2997
+
+    long cmp1 = 0, cmp2 = 0, cmp3 = 0, cmp4 = 0;
+    int i1 = bsearch_closed(a, N, 1800, &amp;cmp1);
+    int i2 = bsearch_half_open(a, N, 1800, &amp;cmp2);
+    int i3 = lower_bound_idx(a, N, 1800, &amp;cmp3);
+    int i4 = lower_bound_idx(a, N, 1801, &amp;cmp4);
+
+    int empty[1] = {0};
+    int one[1] = {5};
+    long tmp = 0;
+    int e1 = bsearch_closed(empty, 0, 5, &amp;tmp);
+    int e2 = bsearch_closed(one, 1, 5, &amp;tmp);
+    int e3 = bsearch_closed(one, 1, 9, &amp;tmp);
+    int e4 = bsearch_closed(a, N, 0, &amp;tmp);
+    int e5 = bsearch_closed(a, N, 2997, &amp;tmp);
+    int e6 = bsearch_closed(a, N, 1801, &amp;tmp);
+
+    int wood[3] = {10, 24, 16};
+    long checks = 0;
+    int best = max_cut_length(wood, 3, 7, &amp;checks);
+
+    std::printf("[二分] 有序数组 n = %d（a[i] = i × 3）\n", N);
+    std::printf("[二分] 闭区间 [lo, hi]    找 1800: 找到, 下标 %d, 比较 %ld 次\n", i1, cmp1);
+    std::printf("[二分] 左闭右开 [lo, hi)  找 1800: 找到, 下标 %d, 比较 %ld 次\n", i2, cmp2);
+    std::printf("[二分] lower_bound 找 1800: 下标 %d, 比较 %ld 次\n", i3, cmp3);
+    std::printf("[二分] lower_bound 找 1801: 下标 %d, 比较 %ld 次\n", i4, cmp4);
+    std::printf("[二分] 边界用例:\n");
+    std::printf("[二分]   空数组找 5: 返回 %d\n", e1);
+    std::printf("[二分]   单元素 [5] 找 5: 返回 %d\n", e2);
+    std::printf("[二分]   单元素 [5] 找 9: 返回 %d\n", e3);
+    std::printf("[二分]   找第一个元素 0: 返回 %d\n", e4);
+    std::printf("[二分]   找最后一个元素 2997: 返回 %d\n", e5);
+    std::printf("[二分]   找不存在的 1801: 返回 %d\n", e6);
+    std::printf("[二分答案] 切木头: 长度 [10, 24, 16]，要切成至少 7 段等长\n");
+    std::printf("[二分答案] 最大等长 = %d, 判定 %ld 次\n", best, checks);
+    std::printf("[二分答案] 验证: L=6 得 %ld 段（够），L=7 得 %ld 段（不够）\n",
+                cut_count(wood, 3, 6), cut_count(wood, 3, 7));
+    return 0;
+}</code></pre>
+
+      <h3>Java</h3>
+      <div class="code-label">BinarySearch.java</div>
+<pre><code class="language-java">// =====================================================================
+// 数据结构与算法 · 第 3 章 数组、字符串与二分查找 · 二分查找（Java）
+// 编译运行： javac -encoding UTF-8 BinarySearch.java
+//            java -Dstdout.encoding=UTF-8 BinarySearch
+//
+// 三种写法都要会，因为边界处理不同，面试最爱在这里挑错：
+//   ① 闭区间 [lo, hi]    ② 左闭右开 [lo, hi)    ③ lower_bound
+//
+// 复杂度（时间 / 空间）
+//   二分查找 O(log n) / O(1)      二分答案 O(log(答案范围) × 判定代价) / O(1)
+// =====================================================================
+
+public class BinarySearch {
+
+    static final int N = 1000;
+    static int[] a = new int[N];
+    static long cmp = 0;      // 用一个字段累计比较次数，方便在 main 里清零复用
+
+    // ① 闭区间 [lo, hi]：hi 取 n-1
+    static int bsearchClosed(int[] arr, int n, int target) {
+        int lo = 0, hi = n - 1;
+        while (lo &lt;= hi) {
+            ++cmp;
+            int mid = lo + (hi - lo) / 2;
+            if (arr[mid] == target) return mid;
+            if (arr[mid] &lt; target) lo = mid + 1;
+            else hi = mid - 1;
+        }
+        return -1;
+    }
+
+    // ② 左闭右开 [lo, hi)：hi 取 n
+    static int bsearchHalfOpen(int[] arr, int n, int target) {
+        int lo = 0, hi = n;
+        while (lo &lt; hi) {
+            ++cmp;
+            int mid = lo + (hi - lo) / 2;
+            if (arr[mid] == target) return mid;
+            if (arr[mid] &lt; target) lo = mid + 1;
+            else hi = mid;
+        }
+        return -1;
+    }
+
+    // ③ lower_bound：第一个 &gt;= target 的下标（可能返回 n）
+    static int lowerBoundIdx(int[] arr, int n, int target) {
+        int lo = 0, hi = n;
+        while (lo &lt; hi) {
+            ++cmp;
+            int mid = lo + (hi - lo) / 2;
+            if (arr[mid] &lt; target) lo = mid + 1;
+            else hi = mid;
+        }
+        return lo;
+    }
+
+    // 二分答案：假设每段长 len，能切出多少段
+    static long cutCount(int[] wood, int k, int len) {
+        long seg = 0;
+        for (int i = 0; i &lt; k; ++i) seg += wood[i] / len;
+        return seg;
+    }
+
+    // 二分答案：求最大的等长 L，使切出的段数 &gt;= need
+    static int maxCutLength(int[] wood, int k, long need, long[] checks) {
+        int lo = 1, hi = 0;
+        for (int i = 0; i &lt; k; ++i) if (wood[i] &gt; hi) hi = wood[i];
+        int ans = 0;
+        while (lo &lt;= hi) {
+            ++checks[0];
+            int mid = lo + (hi - lo) / 2;
+            if (cutCount(wood, k, mid) &gt;= need) { ans = mid; lo = mid + 1; }
+            else hi = mid - 1;
+        }
+        return ans;
+    }
+
+    public static void main(String[] args) {
+        for (int i = 0; i &lt; N; ++i) a[i] = i * 3;      // 有序：0, 3, 6, ... 2997
+
+        cmp = 0;
+        int i1 = bsearchClosed(a, N, 1800);
+        long cmp1 = cmp;
+        cmp = 0;
+        int i2 = bsearchHalfOpen(a, N, 1800);
+        long cmp2 = cmp;
+        cmp = 0;
+        int i3 = lowerBoundIdx(a, N, 1800);
+        long cmp3 = cmp;
+        cmp = 0;
+        int i4 = lowerBoundIdx(a, N, 1801);
+        long cmp4 = cmp;
+
+        int[] empty = {0};
+        int[] one = {5};
+        int e1 = bsearchClosed(empty, 0, 5);
+        int e2 = bsearchClosed(one, 1, 5);
+        int e3 = bsearchClosed(one, 1, 9);
+        int e4 = bsearchClosed(a, N, 0);
+        int e5 = bsearchClosed(a, N, 2997);
+        int e6 = bsearchClosed(a, N, 1801);
+
+        int[] wood = {10, 24, 16};
+        long[] checks = {0};
+        int best = maxCutLength(wood, 3, 7, checks);
+
+        System.out.println("[二分] 有序数组 n = " + N + "（a[i] = i × 3）");
+        System.out.println("[二分] 闭区间 [lo, hi]    找 1800: 找到, 下标 " + i1 + ", 比较 " + cmp1 + " 次");
+        System.out.println("[二分] 左闭右开 [lo, hi)  找 1800: 找到, 下标 " + i2 + ", 比较 " + cmp2 + " 次");
+        System.out.println("[二分] lower_bound 找 1800: 下标 " + i3 + ", 比较 " + cmp3 + " 次");
+        System.out.println("[二分] lower_bound 找 1801: 下标 " + i4 + ", 比较 " + cmp4 + " 次");
+        System.out.println("[二分] 边界用例:");
+        System.out.println("[二分]   空数组找 5: 返回 " + e1);
+        System.out.println("[二分]   单元素 [5] 找 5: 返回 " + e2);
+        System.out.println("[二分]   单元素 [5] 找 9: 返回 " + e3);
+        System.out.println("[二分]   找第一个元素 0: 返回 " + e4);
+        System.out.println("[二分]   找最后一个元素 2997: 返回 " + e5);
+        System.out.println("[二分]   找不存在的 1801: 返回 " + e6);
+        System.out.println("[二分答案] 切木头: 长度 [10, 24, 16]，要切成至少 7 段等长");
+        System.out.println("[二分答案] 最大等长 = " + best + ", 判定 " + checks[0] + " 次");
+        System.out.println("[二分答案] 验证: L=6 得 " + cutCount(wood, 3, 6)
+                + " 段（够），L=7 得 " + cutCount(wood, 3, 7) + " 段（不够）");
+    }
+}</code></pre>
+
+      <h3>Python</h3>
+      <div class="code-label">binary_search.py</div>
+<pre><code class="language-python"># =====================================================================
+# 数据结构与算法 · 第 3 章 数组、字符串与二分查找 · 二分查找（Python）
+# 运行： python binary_search.py
+#
+# 三种写法都要会，因为边界处理不同，面试最爱在这里挑错：
+#   ① 闭区间 [lo, hi]    ② 左闭右开 [lo, hi)    ③ lower_bound
+#
+# 复杂度（时间 / 空间）
+#   二分查找 O(log n) / O(1)      二分答案 O(log(答案范围) × 判定代价) / O(1)
+# =====================================================================
+
+N = 1000
+
+
+def bsearch_closed(arr, n, target):
+    """① 闭区间 [lo, hi]：hi 取 n-1，返回 (下标, 比较次数)"""
+    lo, hi, cmp_count = 0, n - 1, 0
+    while lo &lt;= hi:
+        cmp_count += 1
+        mid = lo + (hi - lo) // 2
+        if arr[mid] == target:
+            return mid, cmp_count
+        if arr[mid] &lt; target:
+            lo = mid + 1
+        else:
+            hi = mid - 1
+    return -1, cmp_count
+
+
+def bsearch_half_open(arr, n, target):
+    """② 左闭右开 [lo, hi)：hi 取 n，返回 (下标, 比较次数)"""
+    lo, hi, cmp_count = 0, n, 0
+    while lo &lt; hi:
+        cmp_count += 1
+        mid = lo + (hi - lo) // 2
+        if arr[mid] == target:
+            return mid, cmp_count
+        if arr[mid] &lt; target:
+            lo = mid + 1
+        else:
+            hi = mid
+    return -1, cmp_count
+
+
+def lower_bound_idx(arr, n, target):
+    """③ 第一个 &gt;= target 的下标（可能返回 n），返回 (下标, 比较次数)"""
+    lo, hi, cmp_count = 0, n, 0
+    while lo &lt; hi:
+        cmp_count += 1
+        mid = lo + (hi - lo) // 2
+        if arr[mid] &lt; target:
+            lo = mid + 1
+        else:
+            hi = mid
+    return lo, cmp_count
+
+
+def cut_count(wood, k, length):
+    """二分答案：假设每段长 length，能切出多少段"""
+    seg = 0
+    for i in range(k):
+        seg += wood[i] // length
+    return seg
+
+
+def max_cut_length(wood, k, need):
+    """二分答案：求最大的等长 L，使切出的段数 &gt;= need，返回 (L, 判定次数)"""
+    lo, hi = 1, max(wood[:k])
+    ans, checks = 0, 0
+    while lo &lt;= hi:
+        checks += 1
+        mid = lo + (hi - lo) // 2
+        if cut_count(wood, k, mid) &gt;= need:
+            ans = mid
+            lo = mid + 1
+        else:
+            hi = mid - 1
+    return ans, checks
+
+
+def main():
+    a = [i * 3 for i in range(N)]      # 有序：0, 3, 6, ... 2997
+
+    i1, cmp1 = bsearch_closed(a, N, 1800)
+    i2, cmp2 = bsearch_half_open(a, N, 1800)
+    i3, cmp3 = lower_bound_idx(a, N, 1800)
+    i4, cmp4 = lower_bound_idx(a, N, 1801)
+
+    empty = [0]
+    one = [5]
+    e1, _ = bsearch_closed(empty, 0, 5)
+    e2, _ = bsearch_closed(one, 1, 5)
+    e3, _ = bsearch_closed(one, 1, 9)
+    e4, _ = bsearch_closed(a, N, 0)
+    e5, _ = bsearch_closed(a, N, 2997)
+    e6, _ = bsearch_closed(a, N, 1801)
+
+    wood = [10, 24, 16]
+    best, checks = max_cut_length(wood, 3, 7)
+
+    print("[二分] 有序数组 n = %d（a[i] = i × 3）" % N)
+    print("[二分] 闭区间 [lo, hi]    找 1800: 找到, 下标 %d, 比较 %d 次" % (i1, cmp1))
+    print("[二分] 左闭右开 [lo, hi)  找 1800: 找到, 下标 %d, 比较 %d 次" % (i2, cmp2))
+    print("[二分] lower_bound 找 1800: 下标 %d, 比较 %d 次" % (i3, cmp3))
+    print("[二分] lower_bound 找 1801: 下标 %d, 比较 %d 次" % (i4, cmp4))
+    print("[二分] 边界用例:")
+    print("[二分]   空数组找 5: 返回 %d" % e1)
+    print("[二分]   单元素 [5] 找 5: 返回 %d" % e2)
+    print("[二分]   单元素 [5] 找 9: 返回 %d" % e3)
+    print("[二分]   找第一个元素 0: 返回 %d" % e4)
+    print("[二分]   找最后一个元素 2997: 返回 %d" % e5)
+    print("[二分]   找不存在的 1801: 返回 %d" % e6)
+    print("[二分答案] 切木头: 长度 [10, 24, 16]，要切成至少 7 段等长")
+    print("[二分答案] 最大等长 = %d, 判定 %d 次" % (best, checks))
+    print("[二分答案] 验证: L=6 得 %d 段（够），L=7 得 %d 段（不够）"
+          % (cut_count(wood, 3, 6), cut_count(wood, 3, 7)))
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+
+      <h3>实测输出（四份逐字节一致）</h3>
+      <div class="code-label">运行结果</div>
+<pre><code>[二分] 有序数组 n = 1000（a[i] = i × 3）
+[二分] 闭区间 [lo, hi]    找 1800: 找到, 下标 600, 比较 7 次
+[二分] 左闭右开 [lo, hi)  找 1800: 找到, 下标 600, 比较 9 次
+[二分] lower_bound 找 1800: 下标 600, 比较 10 次
+[二分] lower_bound 找 1801: 下标 601, 比较 10 次
+[二分] 边界用例:
+[二分]   空数组找 5: 返回 -1
+[二分]   单元素 [5] 找 5: 返回 0
+[二分]   单元素 [5] 找 9: 返回 -1
+[二分]   找第一个元素 0: 返回 0
+[二分]   找最后一个元素 2997: 返回 999
+[二分]   找不存在的 1801: 返回 -1
+[二分答案] 切木头: 长度 [10, 24, 16]，要切成至少 7 段等长
+[二分答案] 最大等长 = 6, 判定 4 次
+[二分答案] 验证: L=6 得 7 段（够），L=7 得 6 段（不够）</code></pre>
+      <div class="tip">🔍 <b>输出里最值得看的两点：</b><br>
+      ① 同样找 1800（在下标 600），闭区间写法比较 <b>7 次</b>、左闭右开写法比较 <b>9 次</b>。差别来自 <code>mid</code> 的取法（<code>(999-0)/2</code> vs <code>(1000-0)/2</code>），不是谁写错了——但这也说明「二分的比较次数和具体写法有关」，别拿次数当正确性标准，要用边界用例验证；<br>
+      ② 六个边界用例全部正确：空数组返回 -1、单元素命中返回 0、单元素不命中返回 -1、找首元素返回 0、找末元素返回 999、找不存在的 1801 返回 -1。二分写对的分水岭就是<b>这些用例能不能全过</b>。</div>
+
+      <h3>三种写法的差别，一张表说清</h3>
+      <table>
+        <tr><th>写法</th><th>初始区间</th><th>循环条件</th><th>缩右边界时</th><th>适合什么</th></tr>
+        <tr><td>闭区间</td><td><code>lo=0, hi=n-1</code></td><td><code>lo &lt;= hi</code></td><td><code>hi = mid - 1</code></td><td>新手最好记：区间两端都是闭的，mid 一定被排除在下一轮之外</td></tr>
+        <tr><td>左闭右开</td><td><code>lo=0, hi=n</code></td><td><code>lo &lt; hi</code></td><td><code>hi = mid</code></td><td>和 STL 的迭代器习惯一致，写「找边界」类题目更顺</td></tr>
+        <tr><td>lower_bound</td><td><code>lo=0, hi=n</code></td><td><code>lo &lt; hi</code></td><td><code>hi = mid</code></td><td>求「第一个 ≥ x 的位置」，是很多题目的核心动作</td></tr>
+      </table>
+      <div class="warn">⚠️ <b>三条铁律，写二分时背下来：</b><br>
+      ① <code>mid</code> 一定写成 <code>lo + (hi - lo) / 2</code>，不要写 <code>(lo + hi) / 2</code>——后者在 lo、hi 都很大时会整型溢出；<br>
+      ② 缩边界时<b>要么排除 mid、要么保证区间变小</b>，否则会死循环（<code>lo = mid</code> 且 <code>hi = mid + 1</code> 这种就要小心）；<br>
+      ③ 数组必须<b>有序</b>。乱序数组上二分得到的不是「找不到」，而是<b>随机答案</b>。</div>
+
+      <h2 id="s-3-8">3.8 二分答案：从「找一个数」到「找一个最优解」</h2>
+      <p>这是二分里最值钱的套路。题目长这样：<b>求满足某个条件的最大值 / 最小值</b>，而「条件」随着你猜的答案单调变化。</p>
+      <p>本章的例子：有三根木头长度 10、24、16，要切成<b>至少 7 段</b>等长的，问每段最长能多长。</p>
+      <ul>
+        <li>猜 L = 3：能切 3+8+5 = 16 段 ≥ 7，可行；</li>
+        <li>猜 L = 10：能切 1+2+1 = 4 段 &lt; 7，不可行；</li>
+        <li>于是「L 越小越容易可行」——这个单调性就是二分的依据。</li>
+      </ul>
+      <p>程序实测结果：<b>最大等长 = 6，只做了 4 次判定</b>。而如果从 1 枚举到 24，要判定 24 次。</p>
+      <pre><code class="language-text">lo = 1, hi = 最大木头长度, ans = 0
+while lo <= hi:
+    mid = lo + (hi - lo) / 2
+    if 判定(mid) 可行:  ans = mid; lo = mid + 1     # 可行就往更大试
+    else:               hi = mid - 1                # 不可行就往更小试</code></pre>
+      <table>
+        <tr><th>题目特征</th><th>二分答案的判定函数怎么写</th><th>例子</th></tr>
+        <tr><td>「最小化最大值」</td><td>给定上界 X，判断能不能在 X 之内完成</td><td>分割数组、运货问题、安排任务</td></tr>
+        <tr><td>「最大化最小值」</td><td>给定下界 X，判断能不能达到 X</td><td>切木头、分糖果、放牛问题</td></tr>
+        <tr><td>「找第 k 小 / 第 k 大」</td><td>数一数 ≤ X 的有几个，和 k 比较</td><td>有序矩阵第 k 小、乘法表第 k 小</td></tr>
+      </table>
+      <div class="tip">📌 <b>判断能不能用二分答案，只需问一句：</b>当我猜的答案变大时，「可行」会不会从 true 变成 false（或者反过来）并且<b>不再变回来</b>？是，就能二分。</div>
+
+      <h2 id="s-3-9">3.9 选型速查：这题该用哪个</h2>
+      <table>
+        <tr><th>题目特征</th><th>该用什么</th><th>复杂度</th></tr>
+        <tr><td>反复问某一段的和（数组不变）</td><td>前缀和</td><td>预处理 O(n)，每次查询 O(1)</td></tr>
+        <tr><td>反复对某一段整体加/减（最后才输出）</td><td>差分数组</td><td>每次修改 O(1)，最后还原 O(n)</td></tr>
+        <tr><td>在有序数组里找某个值 / 找边界</td><td>二分查找</td><td>O(log n)</td></tr>
+        <tr><td>求「最大化的最小值」「最小化的最大值」</td><td>二分答案</td><td>O(log(范围) × 判定代价)</td></tr>
+        <tr><td>求「最长/最短满足条件的连续子段」</td><td>滑动窗口（第 4 章）</td><td>O(n)</td></tr>
+        <tr><td>数组频繁单点修改 + 频繁区间查询</td><td>树状数组 / 线段树（第 12 章）</td><td>O(log n)</td></tr>
+      </table>
+
+      <h2 id="s-3-10">3.10 常见误区</h2>
+      <table>
+        <tr><th>误区</th><th>正确说法</th></tr>
+        <tr><td>二分写在乱序数组上也能用</td><td>不能。乱序时 mid 和 target 的大小关系不能说明 target 在哪半边，结果无意义</td></tr>
+        <tr><td><code>mid = (lo + hi) / 2</code> 没问题</td><td>lo、hi 接近 int 上限时会溢出。统一写 <code>lo + (hi - lo) / 2</code></td></tr>
+        <tr><td>二分只有「找值」一种用法</td><td>它的本质是「在单调序列上定位」：找边界、找答案、找第 k 小，都是二分</td></tr>
+        <tr><td>前缀和只能求一维</td><td>二维也能，靠容斥原理，预处理 O(nm)、查询 O(1)</td></tr>
+        <tr><td>差分只能做加法</td><td>减法同理；二维差分也能做矩形区域的批量修改</td></tr>
+        <tr><td>循环里用 <code>+=</code> 拼字符串没关系</td><td>Java / Python 字符串不可变，每次拼接都是新对象，O(n²)。用 StringBuilder / join</td></tr>
+        <tr><td>Python 切片 <code>s[1:]</code> 很便宜</td><td>它会复制一份，是 O(长度)。循环里切片会把 O(n) 变成 O(n²)</td></tr>
+      </table>
+
+      <h2 id="s-3-11">3.11 运行命令（照抄就能跑）</h2>
+      <table>
+        <tr><th>语言</th><th>文件</th><th>命令</th></tr>
+        <tr><td>C</td><td>array_cost.c / binary_search.c</td><td><code>gcc -std=c17 -Wall -Wextra -o app array_cost.c &amp;&amp; ./app</code></td></tr>
+        <tr><td>C++</td><td>array_cost.cpp / binary_search.cpp</td><td><code>g++ -std=c++17 -Wall -Wextra -Wpedantic -o app binary_search.cpp &amp;&amp; ./app</code></td></tr>
+        <tr><td>Java</td><td>ArrayCost.java / BinarySearch.java</td><td><code>javac -encoding UTF-8 BinarySearch.java</code> 然后 <code>java -Dstdout.encoding=UTF-8 BinarySearch</code></td></tr>
+        <tr><td>Python</td><td>array_cost.py / binary_search.py</td><td><code>python binary_search.py</code></td></tr>
+      </table>
+      <div class="warn">⚙️ <b>Windows 终端中文乱码时：</b>先 <code>chcp 65001</code>；Python 另设 <code>set PYTHONIOENCODING=utf-8</code>；Java 用上面的 <code>-Dstdout.encoding=UTF-8</code>。macOS / Linux 把 <code>./app.exe</code> 换成 <code>./app</code>。</div>
+
+      <h2 id="s-3-12">3.12 练习</h2>
+      <div class="ex">
+        <div class="ex-head"><span class="ex-id">3.1</span><span class="ex-title">手推前缀和</span></div>
+        <p>数组 <code>[3, 1, 4, 1, 5, 9, 2, 6]</code>，写出它的前缀和数组（长度为 9，<code>prefix[0] = 0</code>），然后用它求出区间 [2, 6) 的和，再用暴力法核对一次。</p>
+        <div class="hint">提示：prefix = [0, 3, 4, 8, 9, 14, 23, 25, 31]；区间 [2,6) 的和 = prefix[6] - prefix[2]。</div>
+      </div>
+      <div class="ex">
+        <div class="ex-head"><span class="ex-id">3.2</span><span class="ex-title">把差分用起来</span></div>
+        <p>一个长度 10 的全 0 数组，依次执行：区间 [1, 4) 加 3、区间 [3, 8) 加 5、区间 [0, 3) 减 2。请只用差分数组记录（不改原数组），最后还原并写出结果数组。</p>
+        <div class="hint">提示：diff 上做 3 组「左端 +v、右端 -v」，最后前缀累加还原。</div>
+      </div>
+      <div class="ex">
+        <div class="ex-head"><span class="ex-id">3.3</span><span class="ex-title">三种二分都写一遍</span></div>
+        <p>在不看本章代码的前提下，用你熟悉的语言写出闭区间、左闭右开、lower_bound 三种二分，然后跑本章的六个边界用例，全部通过才算对。</p>
+        <div class="hint">提示：最容易错的是「空数组」和「找最后一个元素」两个用例。</div>
+      </div>
+      <div class="ex">
+        <div class="ex-head"><span class="ex-id">3.4</span><span class="ex-title">二分答案：分割数组</span></div>
+        <p>给定非负数组和目标段数 k，把它切成 k 段连续子数组，使「各段和的最大值」最小。写出判定函数 <code>can(limit)</code>，并用二分答案求出最小值。</p>
+        <div class="hint">提示：判定函数用贪心——从左往右累加，超过 limit 就切一段，看最后需要几段。</div>
+      </div>
+      <div class="ex">
+        <div class="ex-head"><span class="ex-id">3.5</span><span class="ex-title">改一段代码验证复杂度</span></div>
+        <p>把本章程序一的区间宽度从 [200, 800) 改成 [0, 1000) 和 [500, 501)，观察「差分修改次数」与「前缀和查询次数」有没有变化，并解释为什么。</p>
+        <div class="hint">提示：前缀和查询永远是 1 次减法、差分修改永远是 2 次，与区间长度无关——这正是它们存在的意义。</div>
+      </div>
+
+      <div class="tip"><b>📚 本文概念都在知识大全：</b>
+      <p style="margin-top:6px"><a href="../../knowledge/index.html#complexity">时间复杂度</a> ·
+      <a href="../../knowledge/index.html#vector">vector</a> ·
+      <a href="../../knowledge/index.html#prefix-sum">前缀和</a> ·
+      <a href="../../knowledge/index.html#binary-search">二分查找</a> ·
+      <a href="../../knowledge/index.html#c-string">C 字符串</a> ·
+      <a href="../../knowledge/index.html#java-string">Java 字符串</a> ·
+      <a href="../../knowledge/index.html#python-fstring">Python 字符串</a></p></div>
+
+      <div class="recap"><b>一句话回顾：</b>数组随机访问 O(1)、中间增删 O(n)；前缀和把区间查询降到 O(1)，差分把区间修改降到 O(1)，两者都是「预处理换查询」；二分查找要默写三种写法并过边界用例；二分答案则是把「猜答案 + 单调性判定」用在最优化问题上——这套套路从第 4 章开始天天用。</div>
+    </article>
+
+    <script src="../../assets/highlight.min.js"></script>
+    <script src="../../assets/article.js"></script>
+    <script src="../../assets/interact.js"></script>
+    <script src="../../assets/search.js"></script>
+    <script src="../../assets/giscus-config.js"></script>
+    <script src="../../assets/comments.js"></script>
+    <footer>
+      <p>© 2026 red wenzi · <a href="index.html">数据结构与算法目录</a> · <a href="../../roadmap/index.html">学习路线</a> · 浙ICP备00000000号-1（备案通过后替换）</p>
+    </footer>
+  </div>
+</body>
+</html>

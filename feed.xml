@@ -8,6 +8,13 @@
   <author><name>red wenzi</name></author>
 
   <entry>
+    <title>数据结构与算法 · 第 3 章 数组、字符串与二分查找（四语言对照）</title>
+    <link href="https://redwenzi-blog.pages.dev/programming/dsa/03-array-binary.html"/>
+    <id>https://redwenzi-blog.pages.dev/programming/dsa/03-array-binary.html</id>
+    <updated>2026-09-20T00:00:00Z</updated>
+    <summary>数组、字符串与二分查找：数组四种操作的代价实测、前缀和把区间查询降到 O(1)、差分把区间修改降到 O(1)、二分查找三种写法与边界用例、二分答案。四语言代码实测，输出逐字节一致。</summary>
+  </entry>
+  <entry>
     <title>数据结构与算法 · 第 2 章 复杂度与算法分析（四语言对照）</title>
     <link href="https://redwenzi-blog.pages.dev/programming/dsa/02-complexity.html"/>
     <id>https://redwenzi-blog.pages.dev/programming/dsa/02-complexity.html</id>

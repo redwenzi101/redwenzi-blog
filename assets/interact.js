@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
         '<span class="island-caret">▼</span>' +
       '</button>' +
       '<div class="island-body">' +
-        '<div class="island-live">🔄 正在做：<b>数据结构与算法</b> · 已上线 2 章（链表 / 复杂度）</div>' +
+        '<div class="island-live">🔄 正在做：<b>数据结构与算法</b> · 已上线 3 章（链表 / 复杂度 / 数组与二分）</div>' +
         '<div class="island-track"><i></i></div>' +
         '<div class="island-links">' +
           LINKS.map(function (l) { return '<a href="' + l[0] + '">' + l[1] + "</a>"; }).join("") +
