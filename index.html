@@ -13,7 +13,7 @@
     :root {
       --bg:            #ffffff;
       --bg-soft:       #f5f5f7;
-      --bg-dark:       #000000;
+      --bg-dark:       #0a0712;
       --text:          #1d1d1f;
       --text-sub:      #6e6e73;
       --text-tertiary: #86868b;
@@ -27,7 +27,7 @@
       --line-soft:     rgba(0, 0, 0, .08);
       --line-dark:     rgba(255, 255, 255, .14);
 
-      --grad-hero:   linear-gradient(135deg, #0a0e27 0%, #1a1a4e 50%, #0d2137 100%);
+      --grad-hero:   linear-gradient(135deg, #140b33 0%, #3b1f6e 30%, #7b2fd0 56%, #d6459f 80%, #ff6b6b 100%);
       --grad-blue:   linear-gradient(135deg, #0071e3 0%, #5ac8fa 100%);
       --grad-green:  linear-gradient(135deg, #34c759 0%, #30d158 100%);
       --grad-violet: linear-gradient(135deg, #af52de 0%, #5e5ce6 100%);
@@ -152,9 +152,10 @@
       filter: blur(100px);
       opacity: .5;
     }
-    .hero-glow .g1 { width: 60vw; height: 60vw; left: -12vw; top: -22vw; background: radial-gradient(circle at 45% 45%, rgba(90, 200, 250, .55), transparent 68%); animation: float1 24s var(--ease) infinite alternate; }
-    .hero-glow .g2 { width: 52vw; height: 52vw; right: -14vw; top: -6vw; background: radial-gradient(circle at 50% 50%, rgba(175, 82, 222, .45), transparent 68%); animation: float2 28s var(--ease) infinite alternate; }
-    .hero-glow .g3 { width: 48vw; height: 48vw; left: 24vw; bottom: -26vw; background: radial-gradient(circle at 50% 50%, rgba(0, 113, 227, .42), transparent 70%); animation: float1 32s var(--ease) infinite alternate-reverse; }
+    .hero-glow .g1 { width: 60vw; height: 60vw; left: -12vw; top: -22vw; background: radial-gradient(circle at 45% 45%, rgba(100, 210, 255, .5), transparent 68%); animation: float1 24s var(--ease) infinite alternate; }
+    .hero-glow .g2 { width: 52vw; height: 52vw; right: -14vw; top: -6vw; background: radial-gradient(circle at 50% 50%, rgba(191, 90, 242, .5), transparent 68%); animation: float2 28s var(--ease) infinite alternate; }
+    .hero-glow .g3 { width: 48vw; height: 48vw; left: 16vw; bottom: -24vw; background: radial-gradient(circle at 50% 50%, rgba(255, 55, 95, .42), transparent 70%); animation: float1 32s var(--ease) infinite alternate-reverse; }
+    .hero-glow .g4 { width: 40vw; height: 40vw; right: 6vw; bottom: -18vw; background: radial-gradient(circle at 50% 50%, rgba(255, 159, 10, .38), transparent 70%); animation: float2 30s var(--ease) infinite alternate; }
     @keyframes float1 { to { transform: translate3d(4vw, 3vw, 0) scale(1.1); } }
     @keyframes float2 { to { transform: translate3d(-5vw, 4vw, 0) scale(1.06); } }
 
@@ -281,7 +282,10 @@
     /* ---------------- 区块通用 ---------------- */
     .section { padding: var(--sec-y) 0; }
     .section--soft { background: var(--bg-soft); }
-    .section--dark { background: var(--bg-dark); color: var(--on-dark); }
+    .section--dark {
+      background: radial-gradient(120% 90% at 50% 0%, #181033 0%, var(--bg-dark) 58%, #0d0a18 100%);
+      color: var(--on-dark);
+    }
     .section[id] { scroll-margin-top: var(--nav-h); }
 
     .eyebrow {
@@ -773,7 +777,7 @@
     <!-- ================= 1. Hero：深色渐变 ================= -->
     <section class="hero" id="hero">
       <div class="hero-glow" aria-hidden="true">
-        <i class="g1"></i><i class="g2"></i><i class="g3"></i>
+        <i class="g1"></i><i class="g2"></i><i class="g3"></i><i class="g4"></i>
       </div>
 
       <div class="hero-inner">
