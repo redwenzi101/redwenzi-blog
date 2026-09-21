@@ -4,42 +4,50 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>red wenzi · 主页</title>
-  <meta name="description" content="red wenzi 的个人站点：山东大学数据科学在读，让数据「说话」。Programming · Fundamentals · AI &amp; Data · Engineering 四条主线，做完才写。">
+  <meta name="description" content="red wenzi 的个人站点：山东大学数据科学在读，让数据「说话」。编程语言、计算机基础、AI 与数据、工程实践四条主线，做完才写。">
   <style>
     /* ============================================================
-       red wenzi · 首页
-       结构、间距与字号按 apple.com 首页/全局导航/全局页脚的线上样式复刻：
-         · 全局导航 44px（≤833px → 48px），链接 12px rgba(0,0,0,.8)
-         · 顶部促销条（ribbon）14px，浅灰 #f5f5f7
-         · 标题字重 600；中文 letter-spacing 归零（苹果 :lang(zh) 规则）
-         · 按钮 #0071e3 / hover #0076df / 圆角 980px
-         · 文字链接 #0066cc；次要文字 #6e6e73；小字 #86868b
-         · 瓦片：扁平色块，大卡 28px 圆角、小卡 18px 圆角
-         · 页脚：4 列 12px 链接 + 版权行（底色 #f5f5f7）
+       red wenzi · 首页 v2
+       深色渐变首屏 + 时间线更新 + 四张炫彩渐变卡片 + 纯黑项目区
        ============================================================ */
     :root {
       --bg:            #ffffff;
       --bg-soft:       #f5f5f7;
-      --surface:       #ffffff;
+      --bg-dark:       #000000;
       --text:          #1d1d1f;
       --text-sub:      #6e6e73;
       --text-tertiary: #86868b;
+      --on-dark:       #ffffff;
+      --on-dark-sub:   rgba(255, 255, 255, .8);
+      --on-dark-mute:  rgba(255, 255, 255, .62);
+
       --accent:        #0071e3;
-      --accent-hover:  #0076df;
-      --link:          #0066cc;
+      --accent-bright: #0a84ff;
       --line:          #d2d2d7;
-      --radius-card:   18px;
-      --radius-tile:   28px;
-      --radius-pill:   980px;
-      --ease:          cubic-bezier(.25, .1, .25, 1);
-      --nav-h:         44px;
-      --ribbon-h:      calc(var(--nav-h) + 48px);   /* 促销条高度 = 导航 + 上下留白 */
-      --pad-x:         22px;
-      --sec-y:         100px;
+      --line-soft:     rgba(0, 0, 0, .08);
+      --line-dark:     rgba(255, 255, 255, .14);
+
+      --grad-hero:   linear-gradient(135deg, #0a0e27 0%, #1a1a4e 50%, #0d2137 100%);
+      --grad-blue:   linear-gradient(135deg, #0071e3 0%, #5ac8fa 100%);
+      --grad-green:  linear-gradient(135deg, #34c759 0%, #30d158 100%);
+      --grad-violet: linear-gradient(135deg, #af52de 0%, #5e5ce6 100%);
+      --grad-orange: linear-gradient(135deg, #ff9500 0%, #ff3b30 100%);
+      --grad-line:   linear-gradient(180deg, rgba(0, 113, 227, .7), rgba(175, 82, 222, .55) 55%, rgba(0, 0, 0, 0));
+
+      --shadow-card:  0 4px 14px rgba(0, 0, 0, .06), 0 20px 50px rgba(0, 0, 0, .08);
+      --shadow-hover: 0 8px 24px rgba(0, 0, 0, .1), 0 32px 70px rgba(0, 0, 0, .14);
+      --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+
+      --radius-card: 24px;
+      --radius-pill: 980px;
+      --ease:        cubic-bezier(.25, .1, .25, 1);
+      --nav-h:       52px;
+      --pad-x:       24px;
+      --sec-y:       130px;
+      --max-w:       1100px;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
     body {
@@ -47,22 +55,22 @@
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
                    "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
-      font-size: 17px;
-      line-height: 1.47059;
+      font-size: 18px;
+      line-height: 1.6;
       letter-spacing: 0;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       overflow-x: hidden;
     }
 
-    a { color: var(--link); text-decoration: none; }
-    img { max-width: 100%; display: block; }
-    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
-    ::selection { background: rgba(0, 113, 227, .16); }
+    a { color: var(--accent); text-decoration: none; }
+    :focus-visible { outline: 2px solid var(--accent-bright); outline-offset: 3px; border-radius: 6px; }
+    ::selection { background: rgba(10, 132, 255, .25); }
 
-    .wrap { max-width: 980px; margin: 0 auto; padding: 0 var(--pad-x); }
+    .wrap { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-x); }
+    .anchor-alias { display: block; height: 0; overflow: hidden; scroll-margin-top: calc(var(--nav-h) + 12px); }
 
-    /* ---------------- 全局导航 ---------------- */
+    /* ---------------- 导航 ---------------- */
     .nav {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -72,481 +80,660 @@
       -webkit-backdrop-filter: saturate(180%) blur(20px);
       backdrop-filter: saturate(180%) blur(20px);
       border-bottom: 1px solid transparent;
-      transition: background-color .3s var(--ease), border-color .3s var(--ease);
+      transition: background-color .35s var(--ease), border-color .35s var(--ease),
+                  color .35s var(--ease);
     }
-    .nav.is-scrolled {
-      background: rgba(255, 255, 255, .8);
-      border-bottom-color: var(--line);
-    }
-
     .nav .wrap {
       height: 100%;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 20px;
+      gap: 24px;
     }
 
     .brand {
-      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
       font-weight: 600;
       letter-spacing: -.01em;
-      color: var(--text);
+      color: var(--on-dark);
       white-space: nowrap;
+      transition: color .35s var(--ease);
+    }
+    .brand-mark {
+      width: 24px; height: 24px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #0a84ff, #af52de 55%, #ff375f);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5);
     }
 
-    .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+    .nav-links { display: flex; align-items: center; gap: 34px; list-style: none; }
     .nav-links a {
-      font-size: 12px;
-      line-height: 1;
+      font-size: 14px;
       font-weight: 400;
-      letter-spacing: -.01em;
-      color: rgba(0, 0, 0, .8);
+      color: rgba(255, 255, 255, .82);
       transition: color .25s var(--ease);
       white-space: nowrap;
     }
-    .nav-links a:hover { color: #000000; }
+    .nav-links a:hover { color: #ffffff; }
 
-    /* ---------------- 顶部促销条 ---------------- */
-    .ribbon {
-      background: var(--bg-soft);
-      padding: calc(var(--nav-h) + 14px) var(--pad-x) 14px;
-      text-align: center;
-      font-size: 14px;
-      line-height: 1.4285914286;
-      letter-spacing: -.016em;
-      color: var(--text);
+    /* 滚过首屏：导航变毛玻璃白底 + 深色文字 */
+    .nav.is-scrolled {
+      background: rgba(255, 255, 255, .82);
+      border-bottom-color: var(--line-soft);
     }
-    .ribbon a { color: var(--link); white-space: nowrap; }
-    .ribbon a:hover { text-decoration: underline; }
+    .nav.is-scrolled .brand { color: var(--text); }
+    .nav.is-scrolled .nav-links a { color: rgba(0, 0, 0, .78); }
+    .nav.is-scrolled .nav-links a:hover { color: #000000; }
 
     /* ---------------- Hero ---------------- */
     .hero {
-      /* 促销条 + 首屏 = 正好一屏（苹果首页首块的做法） */
-      min-height: calc(100vh - var(--ribbon-h));
-      min-height: calc(100svh - var(--ribbon-h));
+      position: relative;
+      min-height: 100vh;
+      min-height: 100svh;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 80px var(--pad-x) 60px;
+      padding: calc(var(--nav-h) + 80px) var(--pad-x) 140px;
+      background-image: var(--grad-hero);
+      color: var(--on-dark);
+      overflow: hidden;
+      isolation: isolate;
     }
 
-    .hero-inner { max-width: 800px; width: 100%; }
+    /* 光晕：淡蓝 + 淡紫，压得很低，不刺眼 */
+    .hero-glow { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+    .hero-glow i {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: .5;
+    }
+    .hero-glow .g1 { width: 60vw; height: 60vw; left: -12vw; top: -22vw; background: radial-gradient(circle at 45% 45%, rgba(90, 200, 250, .55), transparent 68%); animation: float1 24s var(--ease) infinite alternate; }
+    .hero-glow .g2 { width: 52vw; height: 52vw; right: -14vw; top: -6vw; background: radial-gradient(circle at 50% 50%, rgba(175, 82, 222, .45), transparent 68%); animation: float2 28s var(--ease) infinite alternate; }
+    .hero-glow .g3 { width: 48vw; height: 48vw; left: 24vw; bottom: -26vw; background: radial-gradient(circle at 50% 50%, rgba(0, 113, 227, .42), transparent 70%); animation: float1 32s var(--ease) infinite alternate-reverse; }
+    @keyframes float1 { to { transform: translate3d(4vw, 3vw, 0) scale(1.1); } }
+    @keyframes float2 { to { transform: translate3d(-5vw, 4vw, 0) scale(1.06); } }
+
+    .hero::before {
+      content: "";
+      position: absolute; inset: 0; z-index: 0;
+      background-image: radial-gradient(rgba(255, 255, 255, .1) 1px, transparent 1px);
+      background-size: 30px 30px;
+      -webkit-mask-image: radial-gradient(70% 60% at 50% 45%, #000 0%, transparent 80%);
+      mask-image: radial-gradient(70% 60% at 50% 45%, #000 0%, transparent 80%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: "";
+      position: absolute; inset: 0; z-index: 0;
+      background-image: var(--noise);
+      opacity: .05;
+      pointer-events: none;
+    }
+
+    .hero-inner { position: relative; z-index: 1; max-width: 980px; width: 100%; }
 
     .hero-kicker {
-      font-size: 12px;
+      font-size: 15px;
       font-weight: 600;
-      letter-spacing: .1em;
+      letter-spacing: .22em;
       text-transform: uppercase;
-      color: var(--accent);
+      color: var(--accent-bright);
     }
 
     .hero h1 {
-      margin-top: 14px;
-      font-size: clamp(40px, 6.4vw, 68px);
-      font-weight: 600;
-      letter-spacing: -.015em;
-      line-height: 1.08;
-      color: var(--text);
+      margin-top: 20px;
+      font-size: clamp(56px, 9vw, 96px);
+      font-weight: 700;
+      letter-spacing: -.03em;
+      line-height: 1.02;
+      color: #ffffff;
     }
 
     .hero-sub {
-      margin: 18px auto 0;
-      max-width: 640px;
-      font-size: 21px;
+      margin: 28px auto 0;
+      max-width: 760px;
+      font-size: clamp(22px, 3vw, 32px);
       line-height: 1.45;
-      color: var(--text-sub);
+      color: var(--on-dark-sub);
       text-wrap: balance;
     }
     .nw { white-space: nowrap; }
 
     .hero-en {
-      margin-top: 10px;
-      font-size: 14px;
-      letter-spacing: .01em;
-      color: var(--text-tertiary);
+      margin-top: 16px;
+      font-size: 17px;
+      color: var(--on-dark-mute);
     }
 
     .hero-actions {
-      margin-top: 28px;
+      margin-top: 40px;
       display: flex;
       flex-wrap: wrap;
-      gap: 14px;
+      gap: 16px;
       justify-content: center;
     }
 
     .btn {
       display: inline-block;
-      padding: 11px 22px;
+      padding: 15px 32px;
       border-radius: var(--radius-pill);
-      font-size: 17px;
-      line-height: 1.2353641176;
-      transition: background-color .25s var(--ease), border-color .25s var(--ease),
-                  color .25s var(--ease);
+      font-size: 18px;
+      font-weight: 500;
+      transition: transform .3s var(--ease), box-shadow .3s var(--ease),
+                  background-color .3s var(--ease), border-color .3s var(--ease), color .3s var(--ease);
     }
-    .btn-primary {
-      background: var(--accent);
+    .btn-white {
+      background: #ffffff;
+      color: #0a0e27;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .3);
+    }
+    .btn-white:hover { transform: scale(1.02); box-shadow: 0 16px 40px rgba(0, 0, 0, .4); }
+    .btn-ghost {
+      background: rgba(255, 255, 255, .06);
       color: #ffffff;
-      border: 1px solid var(--accent);
+      border: 1px solid rgba(255, 255, 255, .45);
     }
-    .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
-    .btn-secondary {
-      background: transparent;
-      color: var(--accent);
-      border: 1px solid var(--accent);
-    }
-    .btn-secondary:hover { background: rgba(0, 113, 227, .06); }
+    .btn-ghost:hover { transform: scale(1.02); background: rgba(255, 255, 255, .14); border-color: #ffffff; }
 
-    .hero-seq {
-      animation: heroIn .8s var(--ease) both;
+    /* 滚动提示 */
+    .scroll-hint {
+      position: absolute;
+      left: 50%;
+      bottom: 34px;
+      z-index: 1;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      color: var(--on-dark-mute);
     }
+    .scroll-hint .chev {
+      width: 26px; height: 26px;
+      border-right: 2px solid rgba(255, 255, 255, .75);
+      border-bottom: 2px solid rgba(255, 255, 255, .75);
+      transform: rotate(45deg);
+      animation: bob 1.9s var(--ease) infinite;
+    }
+    @keyframes bob {
+      0%, 100% { transform: translateY(0) rotate(45deg); opacity: .55; }
+      50%      { transform: translateY(8px) rotate(45deg); opacity: 1; }
+    }
+
+    /* 入场：模糊到清晰 + 上移 */
+    .hero-seq { animation: heroIn 1.2s var(--ease) both; }
     .hero-seq:nth-child(1) { animation-delay: .05s; }
-    .hero-seq:nth-child(2) { animation-delay: .20s; }
-    .hero-seq:nth-child(3) { animation-delay: .35s; }
-    .hero-seq:nth-child(4) { animation-delay: .50s; }
-    .hero-seq:nth-child(5) { animation-delay: .65s; }
+    .hero-seq:nth-child(2) { animation-delay: .18s; }
+    .hero-seq:nth-child(3) { animation-delay: .32s; }
+    .hero-seq:nth-child(4) { animation-delay: .44s; }
+    .hero-seq:nth-child(5) { animation-delay: .56s; }
     @keyframes heroIn {
-      from { opacity: 0; transform: translateY(24px); }
-      to   { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(40px); filter: blur(10px); }
+      to   { opacity: 1; transform: translateY(0);   filter: blur(0); }
     }
 
     /* ---------------- 区块通用 ---------------- */
     .section { padding: var(--sec-y) 0; }
     .section--soft { background: var(--bg-soft); }
+    .section--dark { background: var(--bg-dark); color: var(--on-dark); }
     .section[id] { scroll-margin-top: var(--nav-h); }
 
-    /* 兼容旧链接的锚点（#blog / #contact 被 404 页与项目页引用） */
-    .anchor-alias {
-      display: block;
-      height: 0;
-      overflow: hidden;
-      scroll-margin-top: calc(var(--nav-h) + 12px);
-    }
-
     .eyebrow {
-      font-size: 12px;
+      display: inline-block;
+      font-size: 15px;
       font-weight: 600;
-      letter-spacing: .1em;
+      letter-spacing: .16em;
       text-transform: uppercase;
       color: var(--accent);
     }
 
     .section h2 {
-      margin-top: 10px;
-      font-size: clamp(28px, 4.4vw, 48px);
-      font-weight: 600;
-      letter-spacing: -.002em;
-      line-height: 1.15;
+      margin-top: 14px;
+      font-size: clamp(40px, 6vw, 56px);
+      font-weight: 700;
+      letter-spacing: -.02em;
+      line-height: 1.1;
       color: var(--text);
     }
+    .section--dark h2 { color: var(--on-dark); }
 
     .section-note {
-      margin-top: 12px;
-      font-size: 17px;
+      margin-top: 16px;
+      font-size: 18px;
+      color: var(--text-sub);
+    }
+    .section--dark .section-note { color: var(--on-dark-sub); }
+
+    .section-head { margin-bottom: 60px; }
+
+    /* ---------------- 最新动态：时间线 ---------------- */
+    .timeline { list-style: none; position: relative; padding-left: 46px; }
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 7px; top: 14px; bottom: 14px;
+      width: 2px;
+      background: var(--grad-line);
+      border-radius: 2px;
+    }
+
+    .tl-item + .tl-item { margin-top: 8px; }
+
+    .tl-link {
+      position: relative;
+      display: grid;
+      grid-template-columns: 210px 1fr;
+      gap: 32px;
+      align-items: start;
+      padding: 28px 28px 28px 26px;
+      border-radius: 18px;
+      color: inherit;
+      transition: background-color .3s var(--ease);
+    }
+    .tl-link:hover { background: #f5f5f7; }
+
+    .tl-dot {
+      position: absolute;
+      left: -46px;
+      top: 38px;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px #ffffff, 0 0 0 5px rgba(0, 113, 227, .25);
+    }
+    .tl-item:nth-child(1) .tl-dot { background: #0071e3; }
+    .tl-item:nth-child(2) .tl-dot { background: #34c759; box-shadow: 0 0 0 4px #ffffff, 0 0 0 5px rgba(52, 199, 89, .25); }
+    .tl-item:nth-child(3) .tl-dot { background: #af52de; box-shadow: 0 0 0 4px #ffffff, 0 0 0 5px rgba(175, 82, 222, .25); }
+
+    .tl-date {
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -.02em;
+      line-height: 1.2;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+    .tl-date span {
+      display: block;
+      margin-top: 6px;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: .1em;
+      text-transform: uppercase;
       color: var(--text-sub);
     }
 
-    .section-head { margin-bottom: 44px; }
-
-    /* ---------------- 最新动态 ---------------- */
-    .updates { list-style: none; border-top: 1px solid var(--line); }
-    .update-row { border-bottom: 1px solid var(--line); }
-
-    .update-link {
-      display: grid;
-      grid-template-columns: 100px 1fr auto;
-      gap: 22px;
-      align-items: start;
-      padding: 26px 4px 26px 0;
-      color: inherit;
-    }
-
-    .update-date {
-      font-size: 14px;
-      line-height: 1.4285914286;
-      color: var(--text-tertiary);
-      padding-top: 3px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .update-title {
+    .tl-title {
       display: block;
-      font-size: 21px;
-      font-weight: 600;
-      line-height: 1.1904761905;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      line-height: 1.25;
       color: var(--text);
       transition: color .3s var(--ease);
     }
+    .tl-link:hover .tl-title { color: var(--accent); }
 
-    .update-meta {
-      display: block;
-      margin-top: 8px;
-      font-size: 14px;
-      line-height: 1.4285914286;
+    .tl-desc {
+      margin-top: 12px;
+      font-size: 18px;
+      line-height: 1.6;
       color: var(--text-sub);
     }
-    .update-meta em {
-      font-style: normal;
-      color: var(--text-tertiary);
-      letter-spacing: .01em;
+
+    .tl-cta {
+      display: inline-block;
+      margin-top: 16px;
+      font-size: 18px;
+      color: var(--accent);
     }
+    .tl-cta .arrow { display: inline-block; transition: transform .3s var(--ease); }
+    .tl-link:hover .tl-cta .arrow { transform: translateX(4px); }
 
-    .update-arrow {
-      font-size: 19px;
-      color: var(--link);
-      line-height: 1.2;
-      transition: transform .3s var(--ease);
-    }
-    .update-link:hover .update-title { color: var(--link); }
-    .update-link:hover .update-arrow { transform: translateX(3px); }
+    .timeline-more { margin-top: 34px; padding-left: 46px; font-size: 18px; }
 
-    .updates-more { margin-top: 26px; font-size: 17px; }
-
-    /* ---------------- 内容方向 ---------------- */
-    .topic-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
-    .topic-grid > .reveal,
-    .project-grid > .reveal { display: grid; }
+    /* ---------------- 内容方向：炫彩卡片 ---------------- */
+    .topic-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; }
+    .topic-grid > .reveal { display: grid; }
 
     .topic-card {
-      display: block;
-      background: var(--bg-soft);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-height: 420px;
       border-radius: var(--radius-card);
-      padding: 34px 32px 32px;
-      color: inherit;
-      transition: transform .3s var(--ease), box-shadow .3s var(--ease), background-color .3s var(--ease);
+      padding: 48px;
+      color: #ffffff;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+      transition: transform .3s var(--ease), box-shadow .3s var(--ease);
     }
-    .topic-card:hover {
-      background: #f0f0f2;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, .08);
-      transform: translateY(-2px);
+    .topic-card::before {
+      content: "";
+      position: absolute; inset: 0;
+      background-image: var(--noise);
+      opacity: .07;
+      mix-blend-mode: overlay;
+      pointer-events: none;
     }
+    /* 底部压暗一点，保证白字对比度 */
+    .topic-card::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, .32) 100%);
+      pointer-events: none;
+    }
+    /* 绿/橙两色偏亮，白字要再多压一点才够清楚 */
+    .c-green::after,
+    .c-orange::after {
+      background: linear-gradient(180deg, rgba(0, 0, 0, .04) 18%, rgba(0, 0, 0, .44) 100%);
+    }
+    .topic-card:hover { transform: scale(1.02); box-shadow: var(--shadow-hover); }
+
+    .c-blue   { background-image: var(--grad-blue); }
+    .c-green  { background-image: var(--grad-green); }
+    .c-violet { background-image: var(--grad-violet); }
+    .c-orange { background-image: var(--grad-orange); }
 
     .topic-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
+      position: relative;
+      z-index: 1;
+      width: 60px; height: 60px;
+      border-radius: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 15px;
+      font-size: 20px;
       font-weight: 600;
-      letter-spacing: -.01em;
-      background: #ffffff;
-      color: var(--text);
+      color: #ffffff;
+      background: rgba(255, 255, 255, .22);
+      border: 1px solid rgba(255, 255, 255, .35);
+      backdrop-filter: blur(8px);
     }
 
-    .tile-label {
-      display: block;
-      margin-top: 22px;
-      font-size: 12px;
+    .topic-label {
+      position: relative;
+      z-index: 1;
+      margin-top: 30px;
+      font-size: 15px;
       font-weight: 600;
-      letter-spacing: .1em;
+      letter-spacing: .16em;
       text-transform: uppercase;
-      color: var(--text-tertiary);
+      color: rgba(255, 255, 255, .82);
     }
 
     .topic-card h3 {
-      margin-top: 6px;
-      font-size: 24px;
+      position: relative;
+      z-index: 1;
+      margin-top: 8px;
+      font-size: 28px;
       font-weight: 600;
-      letter-spacing: .009em;
-      line-height: 1.1666666667;
-      color: var(--text);
+      letter-spacing: -.015em;
+      line-height: 1.16;
     }
 
-    .topic-stat {
-      margin-top: 6px;
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: -.016em;
-      color: var(--accent);
+    /* 大数字 */
+    .topic-figure {
+      position: relative;
+      z-index: 1;
+      margin-top: 22px;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .topic-figure b {
+      font-size: 76px;
+      font-weight: 700;
+      letter-spacing: -.035em;
+      line-height: .95;
+      font-variant-numeric: tabular-nums;
+    }
+    .topic-figure span {
+      font-size: 22px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, .85);
     }
 
     .topic-desc {
-      margin-top: 12px;
-      font-size: 17px;
-      line-height: 1.47059;
-      color: var(--text-sub);
+      position: relative;
+      z-index: 1;
+      margin-top: auto;
+      padding-top: 26px;
+      font-size: 18px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, .9);
     }
 
-    .tile-cta {
-      display: inline-block;
-      margin-top: 16px;
-      font-size: 17px;
-      color: var(--link);
+    .topic-cta {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: 500;
+      color: #ffffff;
     }
-    .tile-cta .arrow {
-      display: inline-block;
-      transition: transform .3s var(--ease);
-    }
-    .topic-card:hover .tile-cta .arrow,
-    .project-card:hover .tile-cta .arrow { transform: translateX(3px); }
+    .topic-cta .arrow { display: inline-block; transition: transform .3s var(--ease); }
+    .topic-card:hover .topic-cta .arrow { transform: translateX(4px); }
 
-    /* ---------------- 精选项目 ---------------- */
-    .project-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
+    /* ---------------- 精选项目：纯黑区 ---------------- */
+    .project-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; }
+    .project-grid > .reveal { display: grid; }
 
     .project-card {
-      display: block;
-      background: var(--surface);
-      border-radius: var(--radius-tile);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      min-height: 400px;
+      padding: 44px;
+      border-radius: var(--radius-card);
+      border: 1px solid var(--line-dark);
+      color: var(--on-dark);
       overflow: hidden;
-      color: inherit;
-      transition: transform .3s var(--ease), box-shadow .3s var(--ease);
+      transition: transform .3s var(--ease), box-shadow .3s var(--ease), border-color .3s var(--ease);
     }
     .project-card:hover {
-      box-shadow: 0 8px 30px rgba(0, 0, 0, .08);
-      transform: translateY(-2px);
+      transform: translateY(-6px);
+      box-shadow: 0 30px 70px rgba(0, 0, 0, .6);
+      border-color: rgba(255, 255, 255, .3);
     }
 
-    .project-visual {
-      height: 200px;
-      display: flex;
+    /* 抽象视觉：渐变 + 圆环 / 网格 */
+    .project-card::before {
+      content: "";
+      position: absolute; inset: 0;
+      background-image: var(--noise);
+      opacity: .06;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .project-art { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+    .project-art .orb {
+      position: absolute;
+      width: 340px; height: 340px;
+      right: -70px; top: -80px;
+      border-radius: 50%;
+      filter: blur(6px);
+    }
+    .project-art .ring {
+      position: absolute;
+      width: 420px; height: 420px;
+      left: -120px; bottom: -160px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, .18);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06);
+    }
+    .project-art .ring.small { width: 260px; height: 260px; left: -50px; bottom: -90px; }
+    .project-art .mesh {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, .07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .07) 1px, transparent 1px);
+      background-size: 60px 60px;
+      -webkit-mask-image: radial-gradient(70% 70% at 30% 20%, #000, transparent 75%);
+      mask-image: radial-gradient(70% 70% at 30% 20%, #000, transparent 75%);
+    }
+    .project-card.a-blue  { background-image: linear-gradient(145deg, #061033 0%, #123a8f 55%, #0a84ff 130%); }
+    .project-card.a-blue  .orb { background: radial-gradient(circle at 40% 40%, rgba(90, 200, 250, .75), rgba(90, 200, 250, 0) 68%); }
+    .project-card.a-slate { background-image: linear-gradient(145deg, #0b0b0d 0%, #241a4d 60%, #6f4bff 140%); }
+    .project-card.a-slate .orb { background: radial-gradient(circle at 40% 40%, rgba(175, 82, 222, .6), rgba(175, 82, 222, 0) 68%); }
+
+    .project-body { position: relative; z-index: 3; }
+
+    .project-label {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--on-dark-mute);
+    }
+
+    .project-card h3 {
+      margin-top: 12px;
+      font-size: clamp(34px, 3.4vw, 46px);
+      font-weight: 700;
+      letter-spacing: -.025em;
+      line-height: 1.08;
+      color: #ffffff;
+    }
+
+    .project-card p {
+      margin-top: 14px;
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--on-dark-sub);
+      max-width: 40ch;
+    }
+
+    .project-cta {
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      font-size: 64px;
-      font-weight: 600;
-      letter-spacing: -.02em;
-      color: rgba(255, 255, 255, .95);
+      gap: 10px;
+      margin-top: 26px;
+      padding: 13px 26px;
+      border-radius: var(--radius-pill);
+      font-size: 18px;
+      font-weight: 500;
+      color: #ffffff;
+      background: rgba(255, 255, 255, .12);
+      border: 1px solid rgba(255, 255, 255, .3);
+      backdrop-filter: blur(8px);
+      transition: background-color .3s var(--ease), transform .3s var(--ease);
     }
-    .project-visual--blue  { background: linear-gradient(135deg, #0071e3 0%, #4f8ff5 100%); }
-    .project-visual--slate { background: linear-gradient(135deg, #1d1d1f 0%, #6e6e73 100%); }
-
-    .project-body { padding: 26px 30px 30px; }
-
-    .project-body h3 {
-      font-size: 28px;
-      font-weight: 600;
-      letter-spacing: .007em;
-      line-height: 1.1428571429;
-      color: var(--text);
-    }
-
-    .project-body p {
-      margin-top: 10px;
-      font-size: 17px;
-      line-height: 1.47059;
-      color: var(--text-sub);
-    }
+    .project-card:hover .project-cta { background: rgba(255, 255, 255, .2); transform: translateY(-1px); }
+    .project-cta .arrow { display: inline-block; transition: transform .3s var(--ease); }
+    .project-card:hover .project-cta .arrow { transform: translateX(4px); }
 
     /* ---------------- 关于我 ---------------- */
     .about-grid {
       display: grid;
-      grid-template-columns: 1.15fr 1fr;
-      gap: 56px;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 70px;
       align-items: start;
     }
 
-    .about-copy p + p { margin-top: 18px; }
-    .about-copy p { font-size: 17px; line-height: 1.47059; color: var(--text); }
+    .about-copy p { font-size: 18px; line-height: 1.7; color: var(--text); }
+    .about-copy p + p { margin-top: 22px; }
 
-    .skill-group + .skill-group { margin-top: 28px; }
+    .skill-group + .skill-group { margin-top: 30px; }
 
     .skill-label {
-      font-size: 12px;
+      font-size: 15px;
       font-weight: 600;
-      letter-spacing: .1em;
+      letter-spacing: .12em;
       text-transform: uppercase;
-      color: var(--text-tertiary);
+      color: var(--text-sub);
     }
 
-    .skill-tags { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 10px; }
+    .skill-tags { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 12px; }
 
     .tag {
+      font-size: 16px;
+      padding: 10px 20px;
+      border-radius: var(--radius-pill);
       background: var(--bg-soft);
       color: var(--text);
-      font-size: 14px;
-      letter-spacing: -.016em;
-      border-radius: var(--radius-pill);
-      padding: 6px 14px;
+      border: 1px solid transparent;
+      transition: background-color .3s var(--ease), color .3s var(--ease), border-color .3s var(--ease);
       white-space: nowrap;
     }
+    .tag:hover { background: #eaeaf0; }
+    .g-lang .tag:hover    { background: rgba(0, 113, 227, .12); color: #0059b3; border-color: rgba(0, 113, 227, .3); }
+    .g-eng .tag:hover     { background: rgba(52, 199, 89, .12); color: #1d8a3c; border-color: rgba(52, 199, 89, .3); }
+    .g-ai .tag:hover      { background: rgba(175, 82, 222, .12); color: #8a34b0; border-color: rgba(175, 82, 222, .3); }
 
-    /* ---------------- 页脚（苹果式） ---------------- */
+    /* ---------------- Footer ---------------- */
     .footer {
-      background: var(--bg-soft);
-      padding: 40px 0 30px;
-      font-size: 12px;
-      color: var(--text-sub);
-    }
-
-    .footer-cols {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 32px;
-      padding-bottom: 30px;
-    }
-
-    .footer-col-title {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 10px;
-    }
-
-    .footer-col ul { list-style: none; }
-    .footer-col li + li { margin-top: 9px; }
-    .footer-col a {
-      font-size: 12px;
-      line-height: 1.3333733333;
-      color: var(--text-sub);
-    }
-    .footer-col a:hover { color: var(--text); text-decoration: underline; }
-
-    .footer-bottom {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 10px 24px;
-      padding-top: 18px;
-      border-top: 1px solid var(--line);
+      border-top: 1px solid var(--line-soft);
+      padding: 34px var(--pad-x) 40px;
+      text-align: center;
+      font-size: 15px;
       color: var(--text-tertiary);
     }
-    .footer-bottom ul { display: flex; flex-wrap: wrap; gap: 18px; list-style: none; }
-    .footer-bottom a { color: var(--text-tertiary); }
-    .footer-bottom a:hover { color: var(--text); text-decoration: underline; }
+    .footer a { color: var(--text-sub); }
+    .footer a:hover { color: var(--text); text-decoration: underline; }
 
     /* ---------------- 滚动渐入 ---------------- */
     .reveal {
       opacity: 0;
-      transform: translateY(24px);
-      transition: opacity .7s var(--ease), transform .7s var(--ease);
+      transform: translateY(30px);
+      transition: opacity .8s var(--ease), transform .8s var(--ease);
     }
     .reveal.is-visible { opacity: 1; transform: translateY(0); }
 
     /* ---------------- 响应式 ---------------- */
+    @media (max-width: 1000px) {
+      .topic-card { padding: 40px; min-height: 380px; }
+      .project-card { padding: 36px; }
+    }
+
     @media (max-width: 833px) {
-      :root { --nav-h: 48px; }
+      :root { --nav-h: 56px; }
+      .nav-links { gap: 22px; }
+      .tl-link { grid-template-columns: 1fr; gap: 12px; }
+      .tl-dot { top: 30px; }
     }
 
     @media (max-width: 734px) {
-      :root { --sec-y: 72px; }
-
-      .nav-links { gap: 16px; }
-      .section-head { margin-bottom: 34px; }
-
-      .update-link { grid-template-columns: 1fr; gap: 10px; padding: 22px 0; }
-      .update-date { padding-top: 0; }
-      .update-arrow { display: none; }
+      :root { --sec-y: 88px; }
+      .section-head { margin-bottom: 40px; }
 
       .topic-grid,
       .project-grid,
       .about-grid { grid-template-columns: 1fr; }
-      .about-grid { gap: 40px; }
+      .about-grid { gap: 44px; }
 
-      .footer-cols { grid-template-columns: repeat(2, 1fr); gap: 26px 20px; }
+      .topic-card { padding: 32px; min-height: 0; }
+      .topic-figure b { font-size: 62px; }
 
-      .topic-card { padding: 26px; }
-      .project-body { padding: 22px 22px 26px; }
-      .project-visual { height: 180px; font-size: 54px; }
+      .project-card { min-height: 340px; padding: 30px; }
 
+      .timeline { padding-left: 34px; }
+      .tl-link { padding: 24px 20px 24px 18px; }
+      .tl-dot { left: -34px; }
+      .timeline-more { padding-left: 34px; }
+
+      .hero { padding-bottom: 120px; }
       .hero-actions .btn { width: 100%; text-align: center; }
+      .scroll-hint { bottom: 26px; }
     }
 
     @media (max-width: 420px) {
-      .nav-links { gap: 12px; }
-      .brand { font-size: 14px; }
-      .footer-cols { grid-template-columns: 1fr; }
+      .nav-links { gap: 14px; }
+      .nav-links a { font-size: 14px; }
+      .brand { font-size: 16px; }
+      .topic-card { padding: 26px; }
+      .project-card { padding: 26px; }
+      .tl-date, .tl-title { font-size: 24px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -557,19 +744,22 @@
         transition-duration: .01ms !important;
         scroll-behavior: auto !important;
       }
+      .hero-glow i { animation: none; }
+      .scroll-hint .chev { animation: none; }
       .reveal { opacity: 1; transform: none; }
-      .hero-seq { opacity: 1; transform: none; }
+      .hero-seq { opacity: 1; transform: none; filter: none; }
       .topic-card:hover,
-      .project-card:hover { transform: none; }
+      .project-card:hover,
+      .btn:hover { transform: none; }
     }
   </style>
 </head>
 
 <body id="top">
-  <!-- ================= 全局导航 ================= -->
+  <!-- ================= 导航 ================= -->
   <nav class="nav" id="nav">
     <div class="wrap">
-      <a class="brand" href="#top">red wenzi</a>
+      <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"></span>red wenzi</a>
       <ul class="nav-links">
         <li><a href="#updates">更新</a></li>
         <li><a href="#topics">内容</a></li>
@@ -579,162 +769,179 @@
     </div>
   </nav>
 
-  <!-- ================= 顶部促销条 ================= -->
-  <div class="ribbon">
-    数据结构与算法线已上线 3 章 · 四门语言实现逐行对齐　<a href="programming/dsa/index.html">查看目录 ›</a>
-  </div>
-
   <main>
-    <!-- ================= 1. Hero ================= -->
-    <section class="hero">
+    <!-- ================= 1. Hero：深色渐变 ================= -->
+    <section class="hero" id="hero">
+      <div class="hero-glow" aria-hidden="true">
+        <i class="g1"></i><i class="g2"></i><i class="g3"></i>
+      </div>
+
       <div class="hero-inner">
-        <p class="hero-kicker hero-seq">Data Science · AI · Engineering</p>
+        <p class="hero-kicker hero-seq">数据科学 · AI · 工程实践</p>
         <h1 class="hero-seq">red wenzi</h1>
-        <p class="hero-sub hero-seq">山东大学数据科学在读，让数据<span class="nw">「说话」</span>。算法、工程与 AI 实践的持续记录。</p>
+        <p class="hero-sub hero-seq"><span class="nw">山东大学数据科学在读</span>，让数据<span class="nw">「说话」</span></p>
         <p class="hero-en hero-seq">Notes on data, code and the things that finally run.</p>
         <div class="hero-actions hero-seq">
-          <a class="btn btn-primary" href="#updates">看看最近在做什么</a>
-          <a class="btn btn-secondary" href="#about">了解我</a>
+          <a class="btn btn-white" href="#updates">看看最近在做什么</a>
+          <a class="btn btn-ghost" href="#about">了解我</a>
         </div>
       </div>
+
+      <a class="scroll-hint" href="#updates" aria-label="向下滚动">
+        <span>向下看看</span>
+        <span class="chev" aria-hidden="true"></span>
+      </a>
     </section>
 
     <span id="blog" class="anchor-alias" aria-hidden="true"></span>
 
-    <!-- ================= 2. 最新动态 ================= -->
-    <section class="section section--soft" id="updates">
+    <!-- ================= 2. 最新动态：时间线 ================= -->
+    <section class="section" id="updates">
       <div class="wrap">
         <header class="section-head reveal">
-          <p class="eyebrow">Latest</p>
+          <p class="eyebrow">最新动态</p>
           <h2>最近在折腾什么</h2>
           <p class="section-note">做完的东西才写在这里，按时间倒序。</p>
         </header>
 
-        <ul class="updates">
-          <li class="update-row reveal">
-            <a class="update-link" href="programming/dsa/index.html">
-              <span class="update-date">2026-09-20</span>
-              <div>
-                <span class="update-title">数据结构与算法线：第 1、2、3 章已上线</span>
-                <span class="update-meta"><em>Data Structures &amp; Algorithms ·</em> 链表、复杂度、数组与二分，四门语言实现逐行对齐，示例代码实测可跑。</span>
-              </div>
-              <span class="update-arrow" aria-hidden="true">›</span>
+        <ol class="timeline">
+          <li class="tl-item reveal">
+            <a class="tl-link" href="programming/dsa/index.html">
+              <span class="tl-dot" aria-hidden="true"></span>
+              <span class="tl-date">2026-09-20<span>数据结构与算法</span></span>
+              <span>
+                <span class="tl-title">数据结构与算法线：第 1、2、3 章已上线</span>
+                <span class="tl-desc">链表、复杂度、数组与二分，四门语言实现逐行对齐，示例代码实测可跑。</span>
+                <span class="tl-cta">查看这 3 章 <span class="arrow" aria-hidden="true">›</span></span>
+              </span>
             </a>
           </li>
 
-          <li class="update-row reveal">
-            <a class="update-link" href="programming/index.html">
-              <span class="update-date">2026-09-15</span>
-              <div>
-                <span class="update-title">四门语言线全部上线</span>
-                <span class="update-meta"><em>Programming ·</em> C 8 章 · C++ 13 章 · Java 8 章 · Python 8 章，共 37 章 146 题，每题都有可运行参考代码。</span>
-              </div>
-              <span class="update-arrow" aria-hidden="true">›</span>
+          <li class="tl-item reveal">
+            <a class="tl-link" href="programming/index.html">
+              <span class="tl-dot" aria-hidden="true"></span>
+              <span class="tl-date">2026-09-15<span>编程语言</span></span>
+              <span>
+                <span class="tl-title">四门语言线全部上线</span>
+                <span class="tl-desc">C 8 章 · C++ 13 章 · Java 8 章 · Python 8 章，共 37 章 146 题，每题都有可运行参考代码。</span>
+                <span class="tl-cta">进入编程语言线 <span class="arrow" aria-hidden="true">›</span></span>
+              </span>
             </a>
           </li>
 
-          <li class="update-row reveal">
-            <a class="update-link" href="programming/cpp/practice/index.html">
-              <span class="update-date">2026-09-15</span>
-              <div>
-                <span class="update-title">C++ 教材补齐配套练习</span>
-                <span class="update-meta"><em>Practice Set ·</em> 181 题练习册按「识别 / 理解 / 改错 / 写程序」四档编排，每题带答案解析，另附 98 题索引。</span>
-              </div>
-              <span class="update-arrow" aria-hidden="true">›</span>
+          <li class="tl-item reveal">
+            <a class="tl-link" href="programming/cpp/practice/index.html">
+              <span class="tl-dot" aria-hidden="true"></span>
+              <span class="tl-date">2026-09-15<span>配套练习</span></span>
+              <span>
+                <span class="tl-title">C++ 教材补齐配套练习</span>
+                <span class="tl-desc">181 题练习册按「识别 / 理解 / 改错 / 写程序」四档编排，每题带答案解析，另附 98 题索引。</span>
+                <span class="tl-cta">打开练习册 <span class="arrow" aria-hidden="true">›</span></span>
+              </span>
             </a>
           </li>
-        </ul>
+        </ol>
 
-        <p class="updates-more reveal"><a href="tags/index.html">全部更新与归档 ›</a></p>
+        <p class="timeline-more reveal"><a href="tags/index.html">全部更新与归档 ›</a></p>
       </div>
     </section>
 
-    <!-- ================= 3. 内容方向 ================= -->
-    <section class="section" id="topics">
+    <!-- ================= 3. 内容方向：炫彩卡片 ================= -->
+    <section class="section section--soft" id="topics">
       <div class="wrap">
         <header class="section-head reveal">
-          <p class="eyebrow">Topics</p>
+          <p class="eyebrow">内容方向</p>
           <h2>四条主线，持续输出</h2>
         </header>
 
         <div class="topic-grid">
           <div class="reveal">
-            <a class="topic-card" href="programming/index.html">
+            <a class="topic-card c-blue" href="programming/index.html">
               <span class="topic-icon" aria-hidden="true">{ }</span>
-              <span class="tile-label">Programming</span>
+              <span class="topic-label">Programming</span>
               <h3>编程语言</h3>
-              <p class="topic-stat">37 章 · 146 题</p>
-              <p class="topic-desc">C、C++、Java、Python 四门语言从第一个程序走到完整项目，每章有示例，每题有能编译运行的参考代码。</p>
-              <span class="tile-cta">Learn more <span class="arrow" aria-hidden="true">›</span></span>
+              <span class="topic-figure"><b>146</b><span>题</span></span>
+              <span class="topic-desc">C、C++、Java、Python 四门语言，从第一个程序走到完整项目，每章有示例，每题有能编译运行的参考代码。</span>
+              <span class="topic-cta">Learn more <span class="arrow" aria-hidden="true">›</span></span>
             </a>
           </div>
 
           <div class="reveal">
-            <a class="topic-card" href="programming/dsa/index.html">
+            <a class="topic-card c-green" href="programming/dsa/index.html">
               <span class="topic-icon" aria-hidden="true">01</span>
-              <span class="tile-label">Fundamentals</span>
+              <span class="topic-label">Fundamentals</span>
               <h3>计算机基础</h3>
-              <p class="topic-stat">3 章已上线 · 连载中</p>
-              <p class="topic-desc">数据结构与算法线：链表、复杂度、数组与二分，把操作次数真的数出来，四门语言实测对比。</p>
-              <span class="tile-cta">Learn more <span class="arrow" aria-hidden="true">›</span></span>
+              <span class="topic-figure"><b>3</b><span>章</span></span>
+              <span class="topic-desc">数据结构与算法线：链表、复杂度、数组与二分，把操作次数真的数出来，四门语言实测对比，还在往下写。</span>
+              <span class="topic-cta">Learn more <span class="arrow" aria-hidden="true">›</span></span>
             </a>
           </div>
 
           <div class="reveal">
-            <a class="topic-card" href="posts/ai-agent-guide.html">
+            <a class="topic-card c-violet" href="posts/ai-agent-guide.html">
               <span class="topic-icon" aria-hidden="true">AI</span>
-              <span class="tile-label">AI &amp; Data</span>
+              <span class="topic-label">AI &amp; Data</span>
               <h3>AI 与数据</h3>
-              <p class="topic-stat">3 篇 · 入门到实操</p>
-              <p class="topic-desc">AI 是什么、怎么用、Agent 与 RAG 怎么跑通；也在云上做接口接入和本地大模型部署。</p>
-              <span class="tile-cta">Learn more <span class="arrow" aria-hidden="true">›</span></span>
+              <span class="topic-figure"><b>3</b><span>篇</span></span>
+              <span class="topic-desc">AI 是什么、怎么用、Agent 与 RAG 怎么跑通；也在云上做接口接入、折腾本地大模型部署。</span>
+              <span class="topic-cta">Learn more <span class="arrow" aria-hidden="true">›</span></span>
             </a>
           </div>
 
           <div class="reveal">
-            <a class="topic-card" href="posts/build-blog-guide.html">
+            <a class="topic-card c-orange" href="posts/build-blog-guide.html">
               <span class="topic-icon" aria-hidden="true">CI</span>
-              <span class="tile-label">Engineering</span>
+              <span class="topic-label">Engineering</span>
               <h3>工程实践</h3>
-              <p class="topic-stat">2 篇 · 建站与运维</p>
-              <p class="topic-desc">从域名、服务器、HTTPS 讲到把站点真正部署上线，敏感信息全部用占位符示范。</p>
-              <span class="tile-cta">Learn more <span class="arrow" aria-hidden="true">›</span></span>
+              <span class="topic-figure"><b>2</b><span>篇</span></span>
+              <span class="topic-desc">从域名、服务器、HTTPS 讲到把站点真正部署上线，敏感信息全部用占位符示范，照着做就能跑。</span>
+              <span class="topic-cta">Learn more <span class="arrow" aria-hidden="true">›</span></span>
             </a>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ================= 4. 精选项目 ================= -->
-    <section class="section section--soft" id="projects">
+    <!-- ================= 4. 精选项目：纯黑 + 大图卡 ================= -->
+    <section class="section section--dark" id="projects">
       <div class="wrap">
         <header class="section-head reveal">
-          <p class="eyebrow">Projects</p>
+          <p class="eyebrow">精选项目</p>
           <h2>做出来的东西</h2>
         </header>
 
         <div class="project-grid">
           <div class="reveal">
-            <a class="project-card" href="https://github.com/redwenzi101/yourself-skill-master">
-              <div class="project-visual project-visual--blue" aria-hidden="true">Y</div>
-              <div class="project-body">
-                <span class="tile-label">Open Source</span>
+            <a class="project-card a-blue" href="https://github.com/redwenzi101/yourself-skill-master">
+              <span class="project-art" aria-hidden="true">
+                <span class="mesh"></span>
+                <span class="orb"></span>
+                <span class="ring"></span>
+                <span class="ring small"></span>
+              </span>
+              <span class="project-body">
+                <span class="project-label">Open Source</span>
                 <h3>Yourself-Skill</h3>
-                <p>「找到属于你的灵魂伴侣」—— 用数据帮你找到对的人。已开源，欢迎直接跑一遍。</p>
-                <span class="tile-cta">View on GitHub <span class="arrow" aria-hidden="true">›</span></span>
-              </div>
+                <p>「找到属于你的灵魂伴侣」—— 用数据帮你找到对的人。代码已开源，欢迎直接跑一遍。</p>
+                <span class="project-cta">View on GitHub <span class="arrow" aria-hidden="true">›</span></span>
+              </span>
             </a>
           </div>
 
           <div class="reveal">
-            <a class="project-card" href="projects/think-tank.html">
-              <div class="project-visual project-visual--slate" aria-hidden="true">T</div>
-              <div class="project-body">
-                <span class="tile-label">Case Study</span>
+            <a class="project-card a-slate" href="projects/think-tank.html">
+              <span class="project-art" aria-hidden="true">
+                <span class="mesh"></span>
+                <span class="orb"></span>
+                <span class="ring"></span>
+                <span class="ring small"></span>
+              </span>
+              <span class="project-body">
+                <span class="project-label">Case Study</span>
                 <h3>Think Tank 智库平台</h3>
-                <p>面向高校院系的智库系统：资讯发布、知识库管理、评论与用户管理。代码不公开，提供项目介绍。</p>
-                <span class="tile-cta">Read the story <span class="arrow" aria-hidden="true">›</span></span>
-              </div>
+                <p>面向高校院系的智库系统：资讯发布、知识库管理、评论与用户管理，从规划到落地完整跑过一遍。</p>
+                <span class="project-cta">Read the story <span class="arrow" aria-hidden="true">›</span></span>
+              </span>
             </a>
           </div>
         </div>
@@ -745,7 +952,7 @@
     <section class="section" id="about">
       <div class="wrap">
         <header class="section-head reveal">
-          <p class="eyebrow">About</p>
+          <p class="eyebrow">关于我</p>
           <h2>Data Alchemist. Code Artisan.</h2>
         </header>
 
@@ -757,8 +964,8 @@
           </div>
 
           <div class="about-skills reveal">
-            <div class="skill-group">
-              <p class="skill-label">Languages</p>
+            <div class="skill-group g-lang">
+              <p class="skill-label">语言</p>
               <div class="skill-tags">
                 <span class="tag">C / C++</span>
                 <span class="tag">Java</span>
@@ -766,8 +973,8 @@
               </div>
             </div>
 
-            <div class="skill-group">
-              <p class="skill-label">Engineering</p>
+            <div class="skill-group g-eng">
+              <p class="skill-label">工程</p>
               <div class="skill-tags">
                 <span class="tag">Linux · 服务器</span>
                 <span class="tag">Git · GitHub</span>
@@ -776,8 +983,8 @@
               </div>
             </div>
 
-            <div class="skill-group">
-              <p class="skill-label">AI &amp; Data</p>
+            <div class="skill-group g-ai">
+              <p class="skill-label">AI 与数据</p>
               <div class="skill-tags">
                 <span class="tag">数据分析</span>
                 <span class="tag">云端 API</span>
@@ -793,69 +1000,23 @@
 
   <span id="contact" class="anchor-alias" aria-hidden="true"></span>
 
-  <!-- ================= 页脚 ================= -->
+  <!-- ================= Footer ================= -->
   <footer class="footer">
-    <div class="wrap">
-      <div class="footer-cols">
-        <div class="footer-col">
-          <p class="footer-col-title">Content</p>
-          <ul>
-            <li><a href="programming/index.html">编程语言</a></li>
-            <li><a href="programming/dsa/index.html">计算机基础</a></li>
-            <li><a href="posts/ai-agent-guide.html">AI 与数据</a></li>
-            <li><a href="posts/build-blog-guide.html">工程实践</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <p class="footer-col-title">Projects</p>
-          <ul>
-            <li><a href="https://github.com/redwenzi101/yourself-skill-master">Yourself-Skill</a></li>
-            <li><a href="projects/think-tank.html">Think Tank 智库平台</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <p class="footer-col-title">Writing</p>
-          <ul>
-            <li><a href="posts/what-is-ai.html">AI 是什么</a></li>
-            <li><a href="posts/ways-to-use-ai.html">怎么用 AI</a></li>
-            <li><a href="posts/web-domain-server-guide.html">域名与服务器</a></li>
-            <li><a href="posts/build-blog-guide.html">博客搭建上线</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <p class="footer-col-title">Site</p>
-          <ul>
-            <li><a href="roadmap/index.html">学习路线</a></li>
-            <li><a href="knowledge/index.html">知识大全</a></li>
-            <li><a href="tags/index.html">标签归档</a></li>
-            <li><a href="feed.xml">RSS 订阅</a></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="footer-bottom">
-        <p>© 2026 red wenzi. 用代码和数据构建。</p>
-        <ul>
-          <li><a href="https://github.com/redwenzi101">GitHub</a></li>
-          <li><a href="feed.xml">RSS</a></li>
-          <li><a href="tags/index.html">标签归档</a></li>
-          <li>浙ICP备00000000号-1</li>
-        </ul>
-      </div>
-    </div>
+    <p>© 2026 red wenzi. 用代码和数据构建 · <a href="https://github.com/redwenzi101">GitHub</a> · <a href="feed.xml">RSS</a> · <a href="tags/index.html">标签归档</a> · 浙ICP备00000000号-1</p>
   </footer>
 
   <script>
     (function () {
       var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
       var nav = document.getElementById('nav');
+      var hero = document.getElementById('hero');
+
+      /* 导航：在深色首屏上用白字，滚过首屏后毛玻璃白底 + 深色字 */
       var ticking = false;
       function onScroll() {
-        nav.classList.toggle('is-scrolled', window.scrollY > 10);
+        var y = window.scrollY;
+        var heroBottom = hero ? hero.offsetHeight - 120 : 400;
+        nav.classList.toggle('is-scrolled', y > heroBottom);
         ticking = false;
       }
       window.addEventListener('scroll', function () {
@@ -865,6 +1026,7 @@
       }, { passive: true });
       onScroll();
 
+      /* 滚动渐入 */
       var items = document.querySelectorAll('.reveal');
       if (reduce || !('IntersectionObserver' in window)) {
         items.forEach(function (el) { el.classList.add('is-visible'); });
