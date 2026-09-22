@@ -10,7 +10,8 @@
 set -euo pipefail
 
 DOMAIN="${1:?用法: sudo bash bootstrap.sh 域名 邮箱}"
-EMAIL="${2:?请提供邮箱（Let's Encrypt 证书通知用）}"
+# 注意：这里不要出现英文撇号，bash 在 ${...:?} 里会把它当成引号开盘，导致语法错误
+EMAIL="${2:?请提供邮箱（用于证书到期通知）}"
 REPO="https://github.com/redwenzi101/redwenzi-blog.git"
 SITE_DIR="/var/www/${DOMAIN%%.*}"
 CONF="/etc/nginx/conf.d/${DOMAIN%%.*}.conf"
