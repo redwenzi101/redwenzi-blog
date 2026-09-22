@@ -91,7 +91,11 @@ fi
 echo "→ [5/5] 自检"
 echo "   站点目录：$SITE_DIR"
 echo "   配置文件：$CONF"
-systemctl is-active --quiet nginx && echo "   nginx：运行中"
+if systemctl is-active --quiet nginx; then
+  echo "   nginx：运行中"
+else
+  echo "   ⚠️ nginx 没在运行，执行 systemctl status nginx 看看原因"
+fi
 echo ""
 echo "✅ 完成。现在打开 https://$DOMAIN 看看"
 echo "   以后更新站点：bash $SITE_DIR/deploy/update-site.sh"
