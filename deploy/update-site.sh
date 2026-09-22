@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# 服务器上一键更新站点（放到 /var/www/example 的同级目录，或服务器任意位置）
+# 服务器上一键更新站点（放到 /var/www/redwenzi 的同级目录，或服务器任意位置）
 # 用法：bash update-site.sh
 # 首次部署见 docs/备案通过后上线清单.md
 
 set -euo pipefail
 
-SITE_DIR="/var/www/example"          # ← 改成你的站点目录
+SITE_DIR="/var/www/redwenzi"          # ← 改成你的站点目录
 BRANCH="main"
 
 cd "$SITE_DIR"
@@ -26,3 +26,4 @@ echo "→ 刷新 Nginx 缓存目录权限（如有需要可删掉）"
 chown -R www-data:www-data "$SITE_DIR" 2>/dev/null || true
 
 echo "✅ 更新完成：$(date '+%F %T')"
+
