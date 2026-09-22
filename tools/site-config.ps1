@@ -20,8 +20,9 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# 只改站点文件：*.md（README / docs）里出现的域名属于说明文字，不该被替换
 $skip = '\\_pagefind\\|\\\.git\\|\\node_modules\\|\\tools\\'
-$files = Get-ChildItem -Path $Repo -Recurse -Include *.html,*.xml,*.md -File |
+$files = Get-ChildItem -Path $Repo -Recurse -Include *.html,*.xml -File |
   Where-Object { $_.FullName -notmatch $skip }
 
 $icpOld = @(
