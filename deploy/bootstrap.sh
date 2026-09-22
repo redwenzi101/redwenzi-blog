@@ -29,6 +29,10 @@ echo "→ [2/5] 拉取站点到 $SITE_DIR"
 mkdir -p "$SITE_DIR"
 if [ -d "$SITE_DIR/.git" ]; then
   git -C "$SITE_DIR" pull --ff-only || echo "⚠️ git pull 没成功，先手工看看 $SITE_DIR 的状态再继续"
+elif [ -n "$(ls -A "$SITE_DIR" 2>/dev/null)" ]; then
+  # 已经用压缩包/手动上传过站点文件的情况下，直接用现有文件
+  echo "   ℹ $SITE_DIR 里已经有站点文件（没有 .git），跳过 clone，直接用现有文件"
+  echo "     以后想用 git 一键更新，可清空该目录后执行：sudo git clone $REPO $SITE_DIR"
 else
   git clone "$REPO" "$SITE_DIR"
 fi
