@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChatGPT 做视频实操：Sora 关停后，我的完整流程 · red wenzi</title>
+  <style>
+    :root { --bg:#fbfbfd; --surface:#fff; --text:#1d1d1f; --sub:#6e6e73; --line:rgba(0,0,0,.08); --accent:#0071e3; --shadow:0 10px 40px rgba(0,0,0,.06); }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--text); line-height:1.75; -webkit-font-smoothing:antialiased; }
+    a { color:var(--accent); text-decoration:none; }
+    .wrap { max-width:800px; margin:0 auto; padding:0 24px; }
+    header { padding:60px 0 28px; }
+    .back { font-size:14px; color:var(--sub); }
+    .back + .back { margin-left:14px; }
+    h1 { margin-top:12px; font-size:clamp(28px,5vw,38px); font-weight:700; letter-spacing:-.02em; }
+    .meta { color:var(--sub); font-size:14px; margin-top:10px; }
+    article { background:var(--surface); border:1px solid var(--line); border-radius:22px; padding:34px 32px; box-shadow:var(--shadow); margin-bottom:40px; }
+    h2 { margin:38px 0 12px; font-size:22px; font-weight:700; }
+    h3 { margin:18px 0 6px; font-size:17px; font-weight:600; }
+    p { margin:10px 0; color:#3d4552; }
+    ol,ul { margin:8px 0 10px 22px; }
+    li { margin:4px 0; }
+    code { background:rgba(0,0,0,.05); padding:2px 7px; border-radius:6px; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.92em; }
+    pre { background:#f6f8fa; border:1px solid var(--line); border-radius:12px; padding:16px 18px; overflow:auto; margin:14px 0; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; line-height:1.6; }
+    pre code { background:none; padding:0; }
+    .tip { background:#eef4ff; border-left:4px solid var(--accent); border-radius:0 12px 12px 0; padding:12px 16px; margin:16px 0; color:#25324a; font-size:14px; }
+    .warn { background:#fff7ed; border:1px solid #fed7aa; border-radius:12px; padding:12px 16px; margin:16px 0; color:#7c2d12; font-size:14px; }
+    .step { display:inline-block; background:var(--accent); color:#fff; border-radius:8px; padding:1px 10px; font-size:13px; margin-right:8px; vertical-align:2px; }
+    footer { text-align:center; padding:20px 24px 60px; color:var(--sub); font-size:13px; }
+    @media (max-width:640px){ article{padding:24px 18px} }
+  </style>
+  <link rel="stylesheet" href="../assets/article.css">
+  <link rel="stylesheet" href="../assets/theme.css">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="back" href="../index.html">← 返回主页</a>
+      <a class="back" href="../roadmap/index.html">🗺️ 学习路线</a>
+      <h1>ChatGPT 做视频实操：Sora 关停后，我的完整流程</h1>
+      <div class="meta">red wenzi · 2026-09-27 · AI · 操作教程 · 📖 预计阅读 15 分钟</div>
+    </header>
+
+    <article>
+      <div class="tip">本文只讲“怎么做”，步骤和提示词都能直接抄。概念（<a href="../knowledge/index.html#workflow">工作流</a>、<a href="../knowledge/index.html#plugin">插件</a>、<a href="../knowledge/index.html#skill">技能</a>、<a href="../knowledge/index.html#storyboard">分镜表</a> 等）都收在📚知识大全，文末有直达链接。</div>
+      <div class="tip">🎯 <b>你会看到：</b>Sora 关停后还剩哪些能力、怎么把 ChatGPT 当视频前期的中枢、一套我在用的七步流程、可以直接复制的提示词模板，以及怎么用插件和技能把每次都重复的那几遍固定下来。</div>
+      <div class="warn">⚠️ <b>先说结论：</b>ChatGPT 现在已经不能直接生成视频。Sora 网页版与 App 在 2026-04-26 关停，Sora API 在 2026-09-24 关停。网上还在教“一句话出片”的教程都过期了。我以前的<a href="../knowledge/index.html#sora">Sora</a>作品，是用官方导出入口 <code>sora.chatgpt.com/sunset</code> 导出来的，导出窗口结束后数据会被永久删除。</div>
+
+      <h2>一、先划清边界：什么能做，什么不能做</h2>
+      <p>把边界划清楚，能省下大量试错时间。下面这张表是按我自己做视频时的动作整理的：</p>
+      <table>
+        <tr><th>任务</th><th>现在能不能做</th><th>说明 / 替代做法</th></tr>
+        <tr><td>文字生成视频</td><td>不能</td><td>Sora 已关停，改用自备的第三方视频工具</td></tr>
+        <tr><td>图片生成视频</td><td>不能</td><td>但可以用 ChatGPT 生成关键帧，再交给视频工具</td></tr>
+        <tr><td>上传视频让 ChatGPT 分析</td><td>不建议依赖</td><td>官方上传支持文档/表格/演示，未包含视频；可先导出关键帧截图</td></tr>
+        <tr><td>生成图片与关键帧</td><td>可以</td><td>ChatGPT Images 支持文生图、图生图、局部重绘、指定宽高比</td></tr>
+        <tr><td>写脚本、分镜、镜头提示词</td><td>可以，是强项</td><td>目前投入产出比最高的一环</td></tr>
+        <tr><td>写配音稿与字幕</td><td>可以</td><td>可同时给时间轴估算、停顿位置与断句建议</td></tr>
+        <tr><td>批量处理与剪辑指令</td><td>可以（在 Codex 里）</td><td>生成 ffmpeg 命令或脚本，做拼接、压缩、多尺寸导出</td></tr>
+      </table>
+      <p>换句话说：成像那一步得靠别的工具，但一条片子最耗时间的部分——选题、脚本、分镜、提示词、配音稿、字幕、剪辑节奏——都能交给 ChatGPT。</p>
+
+      <h2>二、让效果更好的五个做法</h2>
+      <h3>1. 别用一句话，用一张<a href="../knowledge/index.html#storyboard">分镜表</a></h3>
+      <p>“做一个关于咖啡的短视频”这种需求，模型只能自由发挥，结果不可控。把它拆成镜号、时长、画面、景别、运镜、光线、字幕、音效之后，你对成片的控制力会立刻上一个台阶，而且这张表可以直接当视频工具的逐镜输入。</p>
+
+      <h3>2. 先定<a href="../knowledge/index.html#style-anchor">风格锚点</a>，再写镜头</h3>
+      <p>风格锚点是一组固定的描述词，比如“35mm 胶片质感、低饱和青橙调、手持轻微晃动、黄昏侧逆光”。先让 ChatGPT 定 5～8 条锁死，后面每个镜头都原样复述。风格漂移通常不是模型不行，而是你每次描述都在变。</p>
+
+      <h3>3. 先用静帧锁画面，再出视频</h3>
+      <p>生成图片比生成视频便宜、快、可控。先给每个镜头做一张<a href="../knowledge/index.html#keyframe">关键帧</a>，确认构图、配色、造型，再去做<a href="../knowledge/index.html#text-to-video">图生视频</a>。不满意就改图，别反复重抽视频。</p>
+
+      <h3>4. 一次只改一个变量</h3>
+      <p>重抽的时候如果同时改了运镜、光线和场景，你根本不知道是哪一处起了作用。固定其他条件，每次只动一项，并给提示词标版本号。两三轮就能摸出一套稳定配方。</p>
+
+      <h3>5. 分工要清楚</h3>
+      <p>你负责判断和取舍，ChatGPT 负责给结构化方案和备选，视频工具负责成像。把“这个镜头不够高级”换成“保持构图，光比提高、背景虚化加深、人物视线看向画外”，修改才会真的生效。</p>
+
+      <h2>三、我在用的七步流程</h2>
+
+      <h3><span class="step">1</span>写项目简报</h3>
+      <p>先用一段话讲清用途、时长、投放平台、目标受众、必须出现和绝对不能出现的内容，让 ChatGPT 整理成简报并逐条跟你确认。五分钟的事，能省掉后面好几轮返工。</p>
+
+      <h3><span class="step">2</span>出脚本和分镜表</h3>
+      <p>先要三个方向差异明显的创意，选定一个再展开成完整分镜表。字段建议固定成：镜号、时长、画面内容、景别、运镜、光线与色调、字幕或旁白、音效。</p>
+
+      <h3><span class="step">3</span>生成关键帧</h3>
+      <p>打开 ChatGPT 侧边栏的 Images，或直接在对话里描述画面。做四件事：锁风格锚点；每个镜号出一张 16:9 或 9:16 的关键帧；用编辑器圈选局部修改，别整张重画；按镜号命名存好，后面要上传给视频工具。</p>
+
+      <h3><span class="step">4</span>转成视频工具能读懂的提示词</h3>
+      <p>把分镜表逐行改写成视频提示词，每条包含五个要素：主体与动作、镜头语言、光线与色调、风格锚点、时长与音频。一次只提交一个镜头，别把整张表塞进一段提示词。支持<a href="../knowledge/index.html#first-last-frame">首尾帧</a>的工具，就把相邻两张关键帧分别当首帧和尾帧。</p>
+
+      <h3><span class="step">5</span>配音、字幕、音乐</h3>
+      <p>让 ChatGPT 按成片节奏写配音稿，标出停顿位置和推荐语速，再基于最终配音生成字幕并断句。音乐只需要说情绪曲线，比如“前五秒克制，中段推进，结尾留白”。</p>
+
+      <h3><span class="step">6</span>剪辑与合成</h3>
+      <p>这一段的重复劳动最多：拼接、统一分辨率帧率、压体积、烧字幕、导出横竖两版。我把素材目录交给 Codex，让它生成并执行批量脚本，先在样片上验证，再跑全片。</p>
+
+      <h3><span class="step">7</span>复盘归档</h3>
+      <p>把最终提示词、参数和踩过的坑写回素材库，标出哪些写法有效。下次做同类视频直接复用，不用从零开始。</p>
+
+      <h3>环节和工具怎么配</h3>
+      <p>工具没有唯一答案，能稳定出片的就是好工具。下面是我目前的搭配，功能与额度请以各家官网为准：</p>
+      <table>
+        <tr><th>环节</th><th>我用什么</th><th>说明</th></tr>
+        <tr><td>剧本与提示词</td><td>ChatGPT 或同类模型</td><td>出简报、创意、分镜与逐镜提示词，全流程中枢</td></tr>
+        <tr><td>关键帧图像</td><td>ChatGPT Images</td><td>成本最低的试错方式，先定画面再做视频</td></tr>
+        <tr><td>视频生成</td><td>即梦这类工具</td><td>文生视频、图生视频，需要自备账号与额度</td></tr>
+        <tr><td>后期与合成</td><td>Phantom Editor、剪映一类</td><td>拼接、调色、字幕、音效与特效</td></tr>
+        <tr><td>批量与导出</td><td>Codex</td><td>统一规格、压缩、批量改名、多尺寸导出</td></tr>
+      </table>
+
+      <h2>四、动画能省，真人不能省</h2>
+      <p>这是我自己踩过的坑：同样的流程，动画和真人的容错率完全不一样，路线应该分开。判断标准只有一条——观众对瑕疵的容忍度。</p>
+      <table>
+        <tr><th>题材</th><th>推荐路线</th><th>为什么</th></tr>
+        <tr><td>动画、卡通、风格化</td><td>可以先用成本更低的模型批量出稿，再让 agent 批量处理</td><td>画面本身是抽象的，容错高，适合快速试错和大量变体</td></tr>
+        <tr><td>真人、写实、口播、产品</td><td>不建议换低成本模型，走 agent 编排加质量更高的视频工具</td><td>人像和产品细节容错极低，出问题的镜头基本补不回来</td></tr>
+        <tr><td>动画 + 真人混合</td><td>交给 agent 把两段拆开做，最后合成</td><td>动画段落跑低成本路线，真人段落走高质量路线</td></tr>
+      </table>
+      <p>所以准确的说法不是“能不能换模型”，而是“这一段能不能换”。把容忍度低的段落单独标出来，交给更强的模型或工具，其余部分再去省成本。真人题材我更推荐用 <a href="../knowledge/index.html#agent">agent</a> 来编排：拆镜头、写提示词、逐条生成和检查，而不是让一个便宜模型一口气交全片。</p>
+
+      <h2>五、可以直接抄的提示词模板</h2>
+      <p>方括号里换成你的项目信息。建议在同一条对话里连着用，让 ChatGPT 保留<a href="../knowledge/index.html#context">上下文</a>。</p>
+
+      <h3>① 项目简报</h3>
+      <pre><code>你是短视频项目的前期策划。请把我下面的想法整理成一份项目简报，包含：目标受众、
+核心信息、成片时长、投放平台、必现元素、禁忌元素、交付格式。整理完后列出三个需要
+我确认的问题，等我确认再继续。
+我的想法：[一句话描述]</code></pre>
+
+      <h3>② 创意方向与分镜表</h3>
+      <pre><code>基于上面的项目简报，先给我三个差异明显的创意方向，每个方向用三句话说明，等我选定一个。
+选定后，请输出完整分镜表，使用表格，字段为：镜号、时长、画面内容、景别、运镜、光线与
+色调、字幕或旁白、音效。要求：总时长 [xx] 秒；单镜头不超过 5 秒；所有镜头共用同一组风
+格锚点，并在表格上方先列出这组锚点。</code></pre>
+
+      <h3>③ 关键帧图像</h3>
+      <pre><code>生成第 [03] 号镜头的关键帧。画面：[人物或物体与动作]。构图与景别：[特写或中景]。
+镜头：[视角与焦段]。光线：[方向与质感]。风格锚点：[完整复述那一组锚点]。
+宽高比：[16:9]。画面中不要出现文字和水印。</code></pre>
+
+      <h3>④ 视频提示词与首尾帧</h3>
+      <pre><code>把第 [03] 号镜头改写成视频生成提示词，按这个顺序写：主体与动作、镜头运动、光线与色调、
+风格锚点、时长与音频、负向要求，整体控制在 120 字以内。如有首尾帧，请分别说明首帧与
+尾帧的画面差异，并描述中间的过渡动作。</code></pre>
+
+      <h3>⑤ 配音稿与字幕</h3>
+      <pre><code>根据最终分镜表写配音稿，每段不超过 [xx] 字，用斜杠标注停顿，并给出推荐语速。
+随后基于配音稿输出字幕文本，每行不超过 14 字，按语义断句，并标注对应的镜号。</code></pre>
+
+      <h2>六、工作流、插件与技能：把重复的那几遍省掉</h2>
+      <p>我做视频最大的痛点是：每次都要重复交代好几遍才能出好效果。后来想明白了——不是模型笨，是那些要求只存在我脑子里，没有被写进<a href="../knowledge/index.html#workflow">工作流</a>。</p>
+
+      <h3>工作流：给干活的 agent 一本手册</h3>
+      <p>工作流就是把重复出现的环节写成固定步骤：输入什么、按什么顺序处理、输出什么格式、哪一步需要人确认。固定下来的好处很直接：产出格式一致，换人接手也能对上；同类项目能复用同一套模板；出问题能定位到具体环节，不用整条链路推倒重来。</p>
+
+      <h3>插件和技能，不是一回事</h3>
+      <table>
+        <tr><th>对比项</th><th>插件 Plugin</th><th>技能 Skill</th></tr>
+        <tr><td>是什么</td><td>能力的打包单位</td><td>可复用的工作流说明</td></tr>
+        <tr><td>能装什么</td><td>技能、连接的应用、应用模板</td><td>指令、示例、代码</td></tr>
+        <tr><td>要连账号吗</td><td>看是否包含需要授权的应用</td><td>不需要</td></tr>
+        <tr><td>主要解决</td><td>让 ChatGPT 触达外部数据与工具</td><td>让产出的格式与流程保持稳定</td></tr>
+        <tr><td>怎么用</td><td>装好后用 @ 提及或加号菜单调用</td><td>装好后由 ChatGPT 自动调用</td></tr>
+      </table>
+
+      <h3>在 ChatGPT 里装插件</h3>
+      <ol>
+        <li>侧边栏进入 Plugins，看插件的说明、包含的技能和需要的应用。</li>
+        <li>选择安装；如果要连应用，按提示登录对应账号。</li>
+        <li>用的时候在对话里 @ 提及，或点加号选 More。</li>
+        <li>团队/企业工作区里，能不能用还取决于管理员的权限设置，装插件本身不会绕过这些限制。</li>
+      </ol>
+
+      <h3>在 Codex 里用插件和技能</h3>
+      <ol>
+        <li>打开任务视图里的 Sources，选择使用插件。</li>
+        <li>搜索并选中已安装的插件。</li>
+        <li>技能会在合适的时候自动调用；本机或 Codex 专属插件可能需要先导入。</li>
+        <li>视频后期这类有明确步骤的重复工作最适合写成技能，比如固定的命名规则、导出规格、压缩参数。</li>
+      </ol>
+
+      <h3>写一个自己的技能：视频分镜助手</h3>
+      <p>把下面这段直接发给 ChatGPT 的 skill-creator（技能页面里 Create → Create with chat），它会帮你生成正式文件、补示例并提示要确认的细节：</p>
+      <pre><code>技能名称：视频分镜助手
+适用场景：需要把一句创意变成可拍摄、可生成的分镜表时。
+指令内容：
+你是短视频分镜助手，按下面的顺序工作。
+1. 先复述你对目标、时长、投放平台的理解，并列出三个需要我确认的问题。
+2. 我确认后，给出三个差异明显的创意方向，等我选定其中一个。
+3. 输出分镜表，字段固定为镜号、时长、画面内容、景别、运镜、光线与色调、字幕或旁白、音效。
+4. 表格上方固定列出本次的风格锚点，共 6 条，覆盖色彩、光线、焦段、质感、节奏与氛围。
+5. 每个镜头附一条可直接粘贴到视频生成工具的提示词。
+6. 最后输出一份生成或拍摄顺序清单，标出哪些镜头可以复用同一张关键帧。</code></pre>
+
+      <h3>插件会互相打架，先筛选再装</h3>
+      <p>我做特效时遇到过：特效类插件和 AI 增效类插件容易冲突，两者都想接管同一段画面或同一条时间线，表现就是渲染失败、效果被覆盖、导出卡住。后来按四条规矩处理就稳了：</p>
+      <ol>
+        <li>一次只引入一类插件，特效类和增效类分不同项目启用。</li>
+        <li>先用一小段样片验证组合是否稳定，再跑全片。</li>
+        <li>记录每个项目实际生效的插件清单和版本。</li>
+        <li>出问题先禁用最近新增的那一个，而不是重装整套环境。</li>
+      </ol>
+      <p>插件装得越多，能复现的稳定组合就越少。按项目维护一份最小插件集，比把目录塞满实用得多。</p>
+
+      <h3>为什么总是要重复好几遍：六项一次配好</h3>
+      <ul>
+        <li><b>固定术语：</b>项目称呼、角色名、产品名、风格名统一写下来，别每次换说法。</li>
+        <li><b>固定分镜字段：</b>镜号、时长、画面、景别、运镜、光线、字幕、音效的顺序不要变。</li>
+        <li><b>固定风格锚点：</b>六条左右的描述词锁死，每次原样复述。</li>
+        <li><b>固定输出格式：</b>分镜表、视频提示词、字幕各存一份模板，直接调用。</li>
+        <li><b>固定命名与归档：</b>素材、关键帧、成片的命名规则和存放目录一次定好。</li>
+        <li><b>固定检查清单：</b>下面那一节做成清单，每次照着过一遍。</li>
+      </ul>
+      <p>这些内容放进一个技能里，等于给干活的 agent 配了一本手册：你只需要说清这条片子要什么，流程、格式和检查项都不用再重复。这一条是我做视频以来省时间最多的地方。</p>
+
+      <h2>七、导出前的检查清单</h2>
+      <ul>
+        <li>□ 核心信息在前三秒出现，没有错别字，专有名词和数字核对过。</li>
+        <li>□ 人物、产品、配色、光线在镜头之间没有跳变。</li>
+        <li>□ 手部和文字没有畸变，运动没有异常，转场没有明显的生成痕迹。</li>
+        <li>□ 配音和字幕对齐，背景音乐不压过解说，结尾有收束。</li>
+        <li>□ 分辨率、帧率、码率、宽高比符合投放平台要求。</li>
+        <li>□ 涉及真实人物、品牌、音乐、肖像的素材都有授权。</li>
+        <li>□ 横竖两版都导出了，封面、源文件、提示词都归档了。</li>
+      </ul>
+
+      <h2>八、常见问题</h2>
+      <h3>为什么不让模型直接出全片？</h3>
+      <p>一次成片的可控性太低。模型一次生成的镜头越多，出了问题越难定位是哪句指令导致的。拆成镜头之后，每个环节都能单独重跑，成本和时间也更好控制。</p>
+      <h3>便宜一点的模型到底能不能用？</h3>
+      <p>看题材，不看价格。动画和风格化可以先跑低成本模型；真人、写实、口播、产品这类画面不建议为了省钱换模型。判断标准就是这一段出问题之后能不能补。</p>
+      <h3>插件和技能是不是装得越多越好？</h3>
+      <p>不是。插件越多，冲突概率越高，能复现的稳定组合越少。按项目维护最小集合，比把目录塞满可靠。</p>
+      <h3>换成别的模型之后，之前写的东西会作废吗？</h3>
+      <p>不会。提示词、分镜格式、流程步骤、检查清单都是独立于模型的资产，需要换的只有调用入口。把提示词和流程做成不依赖具体供应商的资产，判断一套工作流合不合格，就看它换模型之后还能不能接着跑。</p>
+
+      <h2>参考来源</h2>
+      <ul>
+        <li>Sora 关停说明（OpenAI 帮助中心）：help.openai.com/en/articles/20001152</li>
+        <li>Sora 2 发布页（页面已注明 Sora 于 2026-04-26 关停）：openai.com/index/sora-2/</li>
+        <li>Plugins in ChatGPT and Codex：help.openai.com/en/articles/20001256</li>
+        <li>Skills in ChatGPT：help.openai.com/en/articles/20001066</li>
+        <li>Images in ChatGPT：help.openai.com/en/articles/11084440</li>
+        <li>ChatGPT 发布说明（含 2026 年 9 月更新）：help.openai.com/en/articles/6825453</li>
+      </ul>
+      <p style="color:var(--sub);font-size:14px">以上页面核对日期：2026-09-27。</p>
+
+      <div class="tip">
+        <b>📚 本文概念都在知识大全：</b>
+        <p style="margin-top:6px"><a href="../knowledge/index.html#workflow">工作流</a> · <a href="../knowledge/index.html#plugin">插件</a> · <a href="../knowledge/index.html#skill">技能</a> · <a href="../knowledge/index.html#sora">Sora</a> · <a href="../knowledge/index.html#text-to-video">文生视频 / 图生视频</a> · <a href="../knowledge/index.html#storyboard">分镜表</a> · <a href="../knowledge/index.html#keyframe">关键帧</a> · <a href="../knowledge/index.html#first-last-frame">首尾帧</a> · <a href="../knowledge/index.html#style-anchor">风格锚点</a> · <a href="../knowledge/index.html#prompt">Prompt</a> · <a href="../knowledge/index.html#agent">Agent</a> · <a href="../knowledge/index.html#context">上下文</a></p>
+      </div>
+      <div class="tip">⬅️ <b>相关（AI 线）：</b><a href="ai-agent-guide.html">AI Agent 上手实操：从调 API 到最小 Agent</a> —— 想让 AI 自己跑流程、调工具，先看那篇。</div>
+    </article>
+
+    <footer>
+      <p>© 2026 red wenzi · <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">晋ICP备2026014059号-1</a></p>
+    </footer>
+  </div>
+  <script src="../assets/highlight.min.js"></script>
+  <script src="../assets/article.js"></script>
+  <script src="../assets/interact.js"></script>
+  <script src="../assets/search.js"></script>
+  <script src="../assets/giscus-config.js"></script>
+  <script src="../assets/comments.js"></script>
+</body>
+</html>

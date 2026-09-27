@@ -4,9 +4,16 @@
   <subtitle>数据、AI、服务器与建站笔记</subtitle>
   <link href="https://redwenzi.icu/"/>
   <id>https://redwenzi.icu/</id>
-  <updated>2026-09-15T00:00:00Z</updated>
+  <updated>2026-09-27T00:00:00Z</updated>
   <author><name>red wenzi</name></author>
 
+  <entry>
+    <title>ChatGPT 做视频实操：Sora 关停后，我的完整流程</title>
+    <link href="https://redwenzi.icu/posts/chatgpt-video-workflow.html"/>
+    <id>https://redwenzi.icu/posts/chatgpt-video-workflow.html</id>
+    <updated>2026-09-27T00:00:00Z</updated>
+    <summary>Sora 关停后还能做什么、七步流程、可以直接抄的提示词模板，以及插件与技能怎么把重复劳动固定下来。</summary>
+  </entry>
   <entry>
     <title>数据结构与算法 · 第 3 章 数组、字符串与二分查找（四语言对照）</title>
     <link href="https://redwenzi.icu/programming/dsa/03-array-binary.html"/>

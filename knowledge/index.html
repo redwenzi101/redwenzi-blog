@@ -95,6 +95,18 @@
         <li><a href="#vllm">vLLM</a></li>
         <li><a href="#openai-compat">OpenAI 兼容 API</a></li>
       </ul>
+      <h2>AI 视频与工作流（9 条）</h2>
+      <ul>
+        <li><a href="#workflow">工作流</a></li>
+        <li><a href="#plugin">插件</a></li>
+        <li><a href="#skill">技能</a></li>
+        <li><a href="#sora">Sora</a></li>
+        <li><a href="#text-to-video">文生视频 / 图生视频</a></li>
+        <li><a href="#storyboard">分镜表</a></li>
+        <li><a href="#keyframe">关键帧</a></li>
+        <li><a href="#first-last-frame">首尾帧</a></li>
+        <li><a href="#style-anchor">风格锚点</a></li>
+      </ul>
       <h2>编程语言 · C / C++（56 条）</h2>
       <ul>
         <li><a href="#cpp-compile-link">编译与链接</a></li>
@@ -1421,6 +1433,107 @@
       </div>
       <div class="meta-links"><span>相关词条：</span><a href="#python">python</a><a href="#pip-venv">pip-venv</a></div>
       <div class="meta-links"><span>相关文章：</span><a href="../programming/python/index.html">Python 学习路线</a></div>
+    </section>
+
+    <h2 class="cat">五、AI 视频与工作流</h2>
+
+    <section class="entry" id="workflow">
+      <h3>工作流 <span class="en">Workflow</span></h3>
+      <p class="what"><b>是什么：</b>把重复出现的环节写成固定步骤：输入什么、按什么顺序处理、输出什么格式、哪一步要人确认。对 AI 来说，它就是给干活的 agent 看的一本手册。</p>
+      <p class="when"><b>什么时候用：</b>同一类任务要做很多遍（做视频、写周报、整理数据），而且每次都要重新交代要求时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>把流程拆成环节，写下每个环节的输入与产出。</li><li>固定术语、字段顺序、输出格式、命名规则。</li><li>标出必须人工确认的节点（花钱、发布、删数据）。</li><li>把整套内容写成技能，下次一句话触发。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#skill">技能</a><a href="#plugin">插件</a><a href="#agent">Agent</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../posts/chatgpt-video-workflow.html">ChatGPT 做视频实操</a></div>
+    </section>
+
+    <section class="entry" id="plugin">
+      <h3>插件 <span class="en">Plugin</span></h3>
+      <p class="what"><b>是什么：</b>把可复用的指令、连接的外部工具与其他能力打包在一起的分发单位。一个插件里可能包含技能、连接的应用，或给管理员用的应用模板。</p>
+      <p class="when"><b>什么时候用：</b>需要 ChatGPT 或 Codex 读到你的云盘、邮箱、代码库这类外部内容，或需要它执行外部动作时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>侧边栏进入 Plugins，先看它包含哪些技能、要连哪些应用。</li><li>选择安装，需要授权的应用按提示连接并登录。</li><li>使用时用 <code>@</code> 提及，或点加号选 More。</li><li>装插件不会绕过工作区权限，能读到的内容仍受账号权限限制。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#skill">技能</a><a href="#workflow">工作流</a><a href="#api">API</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../posts/chatgpt-video-workflow.html">ChatGPT 做视频实操</a></div>
+    </section>
+
+    <section class="entry" id="skill">
+      <h3>技能 <span class="en">Skill</span></h3>
+      <p class="what"><b>是什么：</b>一套可复用的工作流说明，可以包含指令、示例和代码。装好之后，ChatGPT 或 Codex 在该用的时候会自动调用它。</p>
+      <p class="when"><b>什么时候用：</b>某套要求每次都要重复交代一遍，比如固定的分镜表格式、固定的字幕断句规则、固定的导出规格。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>对话生成：技能页面选 Create → Create with chat，让 skill-creator 生成。</li><li>也可以手工编辑、从别人共享的技能里安装，或上传技能文件。</li><li>上传的技能会先被扫描，可疑内容会被标记复核或拦截。</li><li>稳定之后共享给团队，让所有人用同一套格式。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#workflow">工作流</a><a href="#plugin">插件</a><a href="#prompt">Prompt</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../posts/chatgpt-video-workflow.html">ChatGPT 做视频实操</a></div>
+    </section>
+
+    <section class="entry" id="sora">
+      <h3>Sora <span class="en">OpenAI Video Model</span></h3>
+      <p class="what"><b>是什么：</b>OpenAI 的视频生成模型与同名应用。曾经可以在 ChatGPT 里一句话生成带音效的短视频，但产品已经下线。</p>
+      <p class="when"><b>什么时候用：</b>现在用不了。Sora 网页版与 App 在 2026-04-26 关停，Sora API 在 2026-09-24 关停。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>旧作品导出：去 <code>sora.chatgpt.com/sunset</code> 选择导出，准备好会收到邮件。</li><li>导出窗口结束后数据会被永久删除，越早处理越好。</li><li>新项目改用第三方视频生成工具，ChatGPT 负责前期脚本与提示词。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#text-to-video">文生视频</a><a href="#keyframe">关键帧</a><a href="#workflow">工作流</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../posts/chatgpt-video-workflow.html">ChatGPT 做视频实操</a></div>
+    </section>
+
+    <section class="entry" id="text-to-video">
+      <h3>文生视频 / 图生视频 <span class="en">Text-to-Video / Image-to-Video</span></h3>
+      <p class="what"><b>是什么：</b>两种生成视频的方式：给一段文字直接出视频（文生视频），或给一张图片让它动起来（图生视频）。</p>
+      <p class="when"><b>什么时候用：</b>手上没有实拍素材，或想先低成本看效果时。图生视频的可控性明显更高。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>先用图片工具生成关键帧，确认构图与配色。</li><li>一条提示词只描述一个镜头：主体与动作、镜头运动、光线色调、风格锚点、时长与音频。</li><li>支持首尾帧的工具，把相邻两张关键帧分别当首帧和尾帧。</li><li>重抽时只改一个变量，并记录版本。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#keyframe">关键帧</a><a href="#first-last-frame">首尾帧</a><a href="#storyboard">分镜表</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../posts/chatgpt-video-workflow.html">ChatGPT 做视频实操</a></div>
+    </section>
+
+    <section class="entry" id="storyboard">
+      <h3>分镜表 <span class="en">Storyboard</span></h3>
+      <p class="what"><b>是什么：</b>把一条视频拆成一个个镜头，逐个镜头写清画面、景别、运镜、光线、字幕与音效的表格。它是视频从想法变成可执行方案的那一步。</p>
+      <p class="when"><b>什么时候用：</b>开始生成或拍摄之前。没有分镜表就动工，返工概率非常高。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>固定字段顺序：镜号、时长、画面内容、景别、运镜、光线与色调、字幕或旁白、音效。</li><li>单镜头别超过 5 秒，方便后面单独重跑。</li><li>表格上方固定列出本项目的风格锚点。</li><li>每个镜头附一条可直接粘贴的视频提示词。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#keyframe">关键帧</a><a href="#style-anchor">风格锚点</a><a href="#prompt">Prompt</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../posts/chatgpt-video-workflow.html">ChatGPT 做视频实操</a></div>
+    </section>
+
+    <section class="entry" id="keyframe">
+      <h3>关键帧 <span class="en">Keyframe</span></h3>
+      <p class="what"><b>是什么：</b>镜头里最有代表性的一张画面。在 AI 视频里，它通常是先用图片模型生成的静帧，用来锁定构图、配色和造型。</p>
+      <p class="when"><b>什么时候用：</b>正式生成视频之前。改一张图比反复重抽视频便宜得多，也快得多。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>每个镜号生成一张关键帧，宽高比按平台选 16:9 或 9:16。</li><li>用局部重绘修细节，尽量别整张重画。</li><li>按镜号命名保存，方便上传给视频工具。</li><li>把它们当首帧或尾帧使用，镜头之间的一致性会明显变好。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#first-last-frame">首尾帧</a><a href="#text-to-video">图生视频</a><a href="#storyboard">分镜表</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../posts/chatgpt-video-workflow.html">ChatGPT 做视频实操</a></div>
+    </section>
+
+    <section class="entry" id="first-last-frame">
+      <h3>首尾帧 <span class="en">First / Last Frame</span></h3>
+      <p class="what"><b>是什么：</b>图生视频里，指定这一段的起始画面和结束画面，让工具把中间的运动过程补出来。</p>
+      <p class="when"><b>什么时候用：</b>镜头之间需要顺滑衔接，或你很清楚这一段的起止画面时。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>准备同一套风格锚点下画出的两张关键帧。</li><li>先写清首帧与尾帧的画面差异，再描述中间的过渡动作。</li><li>过渡幅度别太大，超过模型能合理补出来的范围就会变形。</li><li>不支持的平台就用一条完整提示词描述起止状态。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#keyframe">关键帧</a><a href="#text-to-video">图生视频</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../posts/chatgpt-video-workflow.html">ChatGPT 做视频实操</a></div>
+    </section>
+
+    <section class="entry" id="style-anchor">
+      <h3>风格锚点 <span class="en">Style Anchor</span></h3>
+      <p class="what"><b>是什么：</b>一组固定的描述词，用来锁住整条片子的视觉风格，比如“35mm 胶片质感、低饱和青橙调、黄昏侧逆光、手持轻微晃动”。</p>
+      <p class="when"><b>什么时候用：</b>项目一开始就定好，之后每个镜头的提示词都原样复述一遍。</p>
+      <div class="block"><b>怎么用</b>
+        <ol><li>让模型先给 5～8 条，覆盖色彩、光线、焦段、质感、节奏、氛围。</li><li>选定后锁定措辞，不要每次换同义词。</li><li>写进技能或模板，让每次生成都自动带上。</li><li>画面风格漂移时，先检查锚点是否被改写，再怀疑模型。</li></ol>
+      </div>
+      <div class="meta-links"><span>相关词条：</span><a href="#storyboard">分镜表</a><a href="#keyframe">关键帧</a><a href="#skill">技能</a></div>
+      <div class="meta-links"><span>相关文章：</span><a href="../posts/chatgpt-video-workflow.html">ChatGPT 做视频实操</a></div>
     </section>
 
     <button class="backbtn" onclick="history.back()">← 返回刚才的文章</button>
